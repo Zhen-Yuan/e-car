@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import java.util.List;
 
 
 import org.json.JSONArray;
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     TextView txt1;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,21 +43,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                //DBConnectionHandler dbcon = new DBConnectionHandler();
+                //String result = (String)dbcon.execute(textIn.getText().toString()).get();
+                //String res = result.toString();
+                //Retrofit r = new Retrofit.Builder().baseUrl("http://pi-bo.dd-dns.de:8080/ContextAware/api/v1/").build();
+                Controller controller = new Controller();
+                String res = "";
                 try {
-                    try {
-                        DBConnectionHandler dbcon = new DBConnectionHandler();
-                        String result = (String)dbcon.execute(textIn.getText().toString()).get();
-                        String res = result.toString();
+                    List<Team> team = (List<Team>) controller.execute().get();
+
+                    for(int i=0;i< team.size();i++) {
+                        res = res + team.get(i).name + "\n";
+                    }
+
+                }catch(ExecutionException e){}
+                catch(InterruptedException e){}
+                //List<Team> team = controller.getTeams2();
 
 
-                        Retrofit r = new Retrofit.Builder().baseUrl("http://pi-bo.dd-dns.de:8080/ContextAware/api/v1/").build();
 
-                        //String res = "";
-
-                        txt1.setText(res);
-                    }catch(ExecutionException e){}
-                }catch(InterruptedException e){}
-
+                txt1.setText(res);
             }});
 
     }
