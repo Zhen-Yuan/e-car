@@ -8,4 +8,56 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- EditText style. -->
+    <style name="et_style" >
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/et_background</item>
+        <item name="android:paddingLeft">15dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:ems">10</item>
+    </style>
+
+    <!-- Regular button style. -->
+    <style name="bttnStyle">
+        <item name="android:background">@drawable/bttn_background</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- Facebook login button style. -->
+    <style name="bttnFBStyle">
+        <item name="android:background">@drawable/bttn_fb_background</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- Google login button style.-->
+    <style name="bttnGoogleStyle">
+        <item name="android:background">@drawable/bttn_google_background</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

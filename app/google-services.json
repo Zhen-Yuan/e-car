@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "370045990821",
+    "firebase_url": "https://softwareprojekt-4c899.firebaseio.com",
+    "project_id": "softwareprojekt-4c899",
+    "storage_bucket": "softwareprojekt-4c899.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370045990821:android:867c0b1de549863c",
+        "android_client_info": {
+          "package_name": "com.example.denis.ecar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370045990821-ambbds1f3plonv90626tuj68urp6rrou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.denis.ecar",
+            "certificate_hash": "586397beccc9a7015ac4091b34ee4a0e8d908fd2"
+          }
+        },
+        {
+          "client_id": "370045990821-cc7a9lbpsk4tbl04kh1smd6uo1ue6dk8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVeyTdhtKw8U5se0ce7V6h3gjNIkh1D90"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370045990821-cc7a9lbpsk4tbl04kh1smd6uo1ue6dk8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

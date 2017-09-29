@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_maps"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.denis.ecar.MapsActivity">
+
+    <TextView
+        android:id="@+id/tv_disp"
+        android:layout_width="match_parent"
+        android:layout_height="156dp"
+        android:text="Info Fenster" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="com.example.denis.ecar.MapsActivity" />
+
+        <ImageButton
+            android:id="@+id/imgbttn_focus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            app:srcCompat="@android:drawable/ic_menu_mylocation"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="22dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:id="@+id/bttn_loc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="start" />
+
+    </RelativeLayout>
+</LinearLayout>
