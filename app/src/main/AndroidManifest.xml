@@ -66,7 +66,10 @@
             android:value="AIzaSyCVsAmu2fxHkV7xAYbIQmwyUMbPWkSZrNM"/>
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"/>
+            android:label="activity_maps"/>
+        <activity
+            android:name=".Settings"
+            android:label="activity_Settings"/>
         <activity
             android:name=".MapsEval"
             android:label="Auswertung">
