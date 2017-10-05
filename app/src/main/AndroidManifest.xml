@@ -60,16 +60,13 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCKNxZcMQ5msLHTyKy3In1Wav_qCh7pDz4" />
+            android:value="AIzaSyCVsAmu2fxHkV7xAYbIQmwyUMbPWkSZrNM" />
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyCKNxZcMQ5msLHTyKy3In1Wav_qCh7pDz4"/>
+            android:value="AIzaSyCVsAmu2fxHkV7xAYbIQmwyUMbPWkSZrNM"/>
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"/>
-        <activity
-            android:name=".Settings"
-            android:label="Einstellungen"/>
         <activity
             android:name=".MapsEval"
             android:label="Auswertung">

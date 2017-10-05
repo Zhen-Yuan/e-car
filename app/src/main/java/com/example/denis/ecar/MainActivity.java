@@ -2,9 +2,11 @@ package com.example.denis.ecar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,22 +14,29 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.swipes.SwipeAdapter;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
-    TextView tv_output;
     DataGenerator dataGenerator;
     DataCollector dataCollector;
-    ImageView iv_ecar;
+
+    int images[] = {R.drawable.tesla3,R.drawable.tesla4}; //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
+    private ArrayList<Integer> arr_images = new ArrayList<>();
+    private static ViewPager vPager;
+    private static int currentPage = 0;
     int k=0;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -37,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         init();
         initButtonActivity();
-        //tv_output.setText(dataGenerator.fillStr(99));
+        initImageView();
     }
     //Methoden
     private void init()
@@ -60,10 +70,9 @@ public class MainActivity extends AppCompatActivity
         bttn_shop = (Button) findViewById(R.id.bttn_shop);
         bttn_socialmedia = (Button) findViewById(R.id.bttn_socialmedia);
         bttn_maps = (Button) findViewById(R.id.bttn_Maps);
-        //tv_output = (TextView) findViewById(R.id.tv_Output);
         dataGenerator = new DataGenerator();
-        iv_ecar = (ImageView) findViewById(R.id.iv_ECAR);
         dataCollector = new DataCollector();
+
         initImageView();
     }
     private void setActivityBackgroundcolor(int color)
@@ -73,29 +82,30 @@ public class MainActivity extends AppCompatActivity
     }
     private void initImageView()//In dieser Methode werden die Bilder gewechselt
     {
-        //TODO: ImageView
-        iv_ecar.setImageResource(R.drawable.tesla3);
-        iv_ecar.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                int x = (int) event.getX();
-                if(event.getAction() == MotionEvent.ACTION_UP)
-                {
-                    if(event.getX()>350) //Wenn Berührung auf der x-Achse rechts, oder Links -> Wechsel das Bild dementsprechend TODO: Swipes
-                    {
-                        iv_ecar.setImageResource(R.drawable.tesla4);
-                    }else if(event.getX()<200)
-                    {
-                        iv_ecar.setImageResource(R.drawable.teslawhite);
-                    }else
-                    {
-                        iv_ecar.setImageResource(R.drawable.tesla3);
-                    }
+        for(int i=0;i<images.length;i++)
+            arr_images.add(images[i]);
+
+        vPager = (ViewPager) findViewById(R.id.pager);
+        vPager.setAdapter(new SwipeAdapter(MainActivity.this,arr_images));
+        /*                  Automatische Slideshow - NICHT LÖSCHEN! (Funktioniert) Könnte für den Welcomescreen interresant sein!
+        //                  Automatische Slideshow - NICHT LÖSCHEN! (Funktioniert)
+        final Handler handler = new Handler();
+        final Runnable Update = new Runnable() {
+            public void run() {
+                if (currentPage == images.length) {
+                    currentPage = 0;
                 }
-                return dataCollector.setLOG(event);
+                mPager.setCurrentItem(currentPage++, true);
             }
-        });
+        };
+        Timer swipeTimer = new Timer();
+        swipeTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(Update);
+            }
+        }, 2500, 2500);*/
+
     }
     private void initButtonActivity()
     {
@@ -204,8 +214,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_about) {
 
-        } else if (id == R.id.nav_settings) {
-            openSettings();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -234,10 +242,5 @@ public class MainActivity extends AppCompatActivity
     private void evalMaps(){
         Intent intMapsEval = new Intent(MainActivity.this,MapsEval.class);
         startActivity(intMapsEval);
-    }
-
-    public void openSettings (){
-        Intent intSettings = new Intent (MainActivity.this, Settings.class);
-        startActivity(intSettings);
     }
 }
