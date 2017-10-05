@@ -68,6 +68,9 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"/>
         <activity
+            android:name=".Settings"
+            android:label="Einstellungen"/>
+        <activity
             android:name=".MapsEval"
             android:label="Auswertung">
             <intent-filter>

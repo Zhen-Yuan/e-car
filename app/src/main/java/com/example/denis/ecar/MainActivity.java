@@ -204,6 +204,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_about) {
 
+        } else if (id == R.id.nav_settings) {
+            openSettings();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -232,5 +234,10 @@ public class MainActivity extends AppCompatActivity
     private void evalMaps(){
         Intent intMapsEval = new Intent(MainActivity.this,MapsEval.class);
         startActivity(intMapsEval);
+    }
+
+    public void openSettings (){
+        Intent intSettings = new Intent (MainActivity.this, Settings.class);
+        startActivity(intSettings);
     }
 }
