@@ -1,6 +1,8 @@
 package com.example.denis.ecar;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -59,6 +61,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean record = false;
     private EcarDataSource dataSource = new EcarDataSource(this);
     private int SID;
+    private int interval;
+    SharedPreferences sp;
 
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
     private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
@@ -72,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        sp = getSharedPreferences("bla", Context.MODE_PRIVATE);
         init();//Aufruf der Initalisierungsmethode
         startAwareness();//Start der Awarenessmethoden.
         imgbttn_focus.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +104,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .addApi(Awareness.API) // Gewünschte Api hinzufügen.
                 .build(); //Erstellung des Objekts.
         mGoogleApiClient.connect();
+
+        interval = sp.getInt("interval", 30); //Aufnahme Intervall einstellen über sharedpreferences
+        Log.d("Aufnahme-Intervall ", interval+"");
     }
     //Awarenessmethoden
     private void startAwareness() {
