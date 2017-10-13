@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.denis.ecar.HomeActivity;
+import com.example.denis.ecar.MainActivity;
 import com.example.denis.ecar.R;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -49,11 +49,10 @@ public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth firebaseAuth;
-    private EditText txtEMail;
+    private EditText etEmail;
     private Button bttnFBSignIn;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
-
 
 
     @Override
@@ -69,14 +68,14 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        nextActivity(getUser());
+        nextActivity(firebaseAuth.getCurrentUser());
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        nextActivity(getUser());
+        nextActivity(firebaseAuth.getCurrentUser());
     }
 
 
@@ -86,9 +85,9 @@ public class LoginActivity extends BaseActivity {
     private void init() {
         // Auth fuer E-Mail/Passwort-Anmeldung initialisieren
         firebaseAuth = FirebaseAuth.getInstance();
-        txtEMail = (EditText)findViewById(R.id.etMail);
+        etEmail = (EditText)findViewById(R.id.etEmail);
 
-        // Facebook SignIn konfigurieren
+        // FACEBOOK
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         bttnFBSignIn = (Button) findViewById(R.id.bttnFBSignIn);
@@ -110,7 +109,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-        // Google-SignIn konfigurieren
+        // GOOGLE SIGN IN
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -135,27 +134,27 @@ public class LoginActivity extends BaseActivity {
      */
     private void initOnClick() {
         // leitet weiter zur Passwort-Eingabe-View
-        findViewById(R.id.bttnWeiter).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.bttnNext).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!checkForm()) {
                     return;
                 }
                 Intent next = new Intent(LoginActivity.this, EmailSignInActivity.class);
-                next.putExtra("email", txtEMail.getText().toString());
+                next.putExtra("email", etEmail.getText().toString());
                 startActivity(next);
             }
         });
 
         // leitet weiter zur Registrieren-View
-        findViewById(R.id.txtVwRegistrieren).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tvRegister).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, EmailSignInActivity.class));
             }
         });
 
-        // Facebook-Login wird eingeleitet
+        // Facebook-Login
         bttnFBSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +163,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-        // Google-Login wird eingeleitet
+        // Google-Login
         findViewById(R.id.bttnGoogleSignIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,21 +172,12 @@ public class LoginActivity extends BaseActivity {
         });
 
         // leitet zu der AGB- und Datenschutz-View weiter
-        findViewById(R.id.txtVwAGB).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tvAGB).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO
             }
         });
-    }
-
-
-    /**
-     * Methode, um den aktuellen User aus zu geben
-     * @return currentUser, gibt an, ob ein User momentan eingeloggt ist oder nicht
-     */
-    private FirebaseUser getUser() {
-        return firebaseAuth.getCurrentUser();
     }
 
 
@@ -199,12 +189,12 @@ public class LoginActivity extends BaseActivity {
     private boolean checkForm() {
         boolean valid = true;
 
-        String email = txtEMail.getText().toString();
+        String email = etEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            txtEMail.setError("Gib deine E-Mail-Adresse ein.");
+            etEmail.setError("Gib deine E-Mail-Adresse ein.");
             valid = false;
         } else if(!email.contains("@")) {
-            txtEMail.setError("E-Mail-Adresse ist nicht korrekt.");
+            etEmail.setError("E-Mail-Adresse ist nicht korrekt.");
             valid = false;
         } else {
             int i = email.indexOf('@');
@@ -213,10 +203,10 @@ public class LoginActivity extends BaseActivity {
             String suffix = domain.substring(i);
 
             if (suffix.length()<3 || suffix.length()>4) {
-                txtEMail.setError("E-Mail-Adresse ist nicht korrekt.");
+                etEmail.setError("E-Mail-Adresse ist nicht korrekt.");
                 valid = false;
             } else {
-                txtEMail.setError(null);
+                etEmail.setError(null);
             }
         }
         return valid;
@@ -239,7 +229,7 @@ public class LoginActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             // Anmeldung erfolgreich -> zur naechsten Activity
                             Log.d(TAG, "signInWithCredential:success");
-                            nextActivity(getUser());
+                            nextActivity(firebaseAuth.getCurrentUser());
                         } else {
                             // Anmeldung fehlgeschlagen -> Nachricht anzeigen
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -287,7 +277,7 @@ public class LoginActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            nextActivity(getUser());
+                            nextActivity(firebaseAuth.getCurrentUser());
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -316,7 +306,7 @@ public class LoginActivity extends BaseActivity {
      */
     private void nextActivity(FirebaseUser user) {
         if (user != null) {
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
     }
 }

@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.denis.ecar.HomeActivity;
+import com.example.denis.ecar.MainActivity;
 import com.example.denis.ecar.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,17 +30,16 @@ import com.google.firebase.auth.FirebaseUser;
 public class EmailSignInActivity extends BaseActivity {
 
     private static final String TAG = "EmailPasswordLogin";
-    private FirebaseAuth firebaseAuth;
     private String email;
-
+    private FirebaseAuth firebaseAuth;
     /** ----- GUI-Elemente ----- */
-    private TextView txtVwTitel;
-    private TextView txtVwPasswortHinweis;
-    private EditText txtUserName;
-    private EditText txtEMail;
-    private EditText txtPasswort;
-    private CheckBox chckBxPasswortAnzeigen;
-    private Button bttnAnmelden;
+    private TextView tvTitle;
+    private TextView tvPasswordHint;
+    private EditText etUsername;
+    private EditText etEmail;
+    private EditText etPassword;
+    private CheckBox chckBxShowPW;
+    private Button bttnSignIn;
 
 
     @Override
@@ -64,16 +63,15 @@ public class EmailSignInActivity extends BaseActivity {
     /**
      * Initialisiert den Firebase Authenticator und diverse View-Elemente.
      */
-    @SuppressWarnings("ConstantConditions")
     private void init() {
         firebaseAuth = FirebaseAuth.getInstance();
-        txtVwTitel = (TextView)findViewById(R.id.txtVwTitel);
-        txtVwPasswortHinweis = (TextView)findViewById(R.id.txtVwPasswortHinweis);
-        txtUserName = (EditText)findViewById(R.id.etName);
-        txtEMail = (EditText)findViewById(R.id.etMail);
-        txtPasswort = (EditText)findViewById(R.id.etPasswort);
-        chckBxPasswortAnzeigen = (CheckBox)findViewById(R.id.chckBxPwAnzeigen);
-        bttnAnmelden = (Button)findViewById(R.id.bttnAnmelden);
+        tvTitle= (TextView)findViewById(R.id.tvTitle);
+        tvPasswordHint = (TextView)findViewById(R.id.tvPasswordHint);
+        etUsername = (EditText)findViewById(R.id.etName);
+        etEmail = (EditText)findViewById(R.id.etEmail);
+        etPassword = (EditText)findViewById(R.id.etPassword);
+        chckBxShowPW = (CheckBox)findViewById(R.id.chckBxShowPW);
+        bttnSignIn = (Button)findViewById(R.id.bttnSignIn);
 
         // versucht, das EXTRA, falls vorhanden, dem String email zu uebergeben
         Bundle inBundle = getIntent().getExtras();
@@ -90,31 +88,31 @@ public class EmailSignInActivity extends BaseActivity {
      */
     private void initOnClick() {
         // leitet weiter zur Home-View, sofern die Anmeldung erfolgreich war
-        findViewById(R.id.bttnAnmelden).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.bttnSignIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bttnAnmelden.getText().equals("Anmelden")) {
-                    signIn(txtPasswort.getText().toString());
-                } else if (bttnAnmelden.getText().equals("Registrieren")) {
-                    createAccount(txtEMail.getText().toString(), txtPasswort.getText().toString());
+                if (bttnSignIn.getText().equals("Anmelden")) {
+                    signIn(etPassword.getText().toString());
+                } else if (bttnSignIn.getText().equals("Registrieren")) {
+                    createAccount(etEmail.getText().toString(), etPassword.getText().toString());
                 }
             }
         });
 
         // je nachdem, ob die Checkbox ausgewaehlt wurde, wird das Passwort angezeigt
-        findViewById(R.id.chckBxPwAnzeigen).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.chckBxShowPW).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chckBxPasswortAnzeigen.isChecked()) {
-                    txtPasswort.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                if (chckBxShowPW.isChecked()) {
+                    etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 } else {
-                    txtPasswort.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 }
             }
         });
 
         // verschickt eine E-Mail mit Passwort-Reset
-        findViewById(R.id.txtVwPasswortVergessen).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tvResetPW).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendPasswordReset(email);
@@ -134,7 +132,6 @@ public class EmailSignInActivity extends BaseActivity {
             return;
         }
         showProgressDialog();
-
         // User mit Email und Passwort erstellen
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -243,21 +240,21 @@ public class EmailSignInActivity extends BaseActivity {
         boolean valid = true;
 
         // Benutzernamen pruefen
-        String userName = txtUserName.getText().toString();
+        String userName = etUsername.getText().toString();
         if (TextUtils.isEmpty(userName)) {
-            txtUserName.setError("Gib deinen Benutzernamen ein.");
+            etUsername.setError("Gib deinen Benutzernamen ein.");
             valid = false;
         } else {
-            txtUserName.setError(null);
+            etUsername.setError(null);
         }
 
         // E-Mail-Adresse ueberpruefen
-        String email = txtEMail.getText().toString();
+        String email = etEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            txtEMail.setError("Gib deine E-Mail-Adresse ein.");
+            etEmail.setError("Gib deine E-Mail-Adresse ein.");
             valid = false;
         } else if(!email.contains("@")) {
-            txtEMail.setError("E-Mail-Adresse ist nicht korrekt.");
+            etEmail.setError("E-Mail-Adresse ist nicht korrekt.");
             valid = false;
         } else {
             int i = email.indexOf('@');
@@ -265,22 +262,22 @@ public class EmailSignInActivity extends BaseActivity {
             i = domain.indexOf('.');
             String suffix = domain.substring(i);
             if (suffix.length()<3 || suffix.length()>4) {
-                txtEMail.setError("E-Mail-Adresse ist nicht korrekt.");
+                etEmail.setError("E-Mail-Adresse ist nicht korrekt.");
                 valid = false;
             } else {
-                txtEMail.setError(null);
+                etEmail.setError(null);
             }
         }
 
         // Passwort pruefen
-        String password = txtPasswort.getText().toString();
+        String password = etPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            txtPasswort.setError("Gib dein Passwort ein.");
+            etPassword.setError("Gib dein Passwort ein.");
             valid = false;
         } else if (password.length() < 6) {
-            txtPasswort.setError("Passwort ist zu kurz.");
+            etPassword.setError("Passwort ist zu kurz.");
         } else {
-            txtPasswort.setError(null);
+            etPassword.setError(null);
         }
         return valid;
     }
@@ -293,12 +290,12 @@ public class EmailSignInActivity extends BaseActivity {
     private boolean checkPasswortForm() {
         boolean valid = true;
 
-        String password = txtPasswort.getText().toString();
+        String password = etPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            txtPasswort.setError("Gib dein Passwort ein.");
+            etPassword.setError("Gib dein Passwort ein.");
             valid = false;
         } else {
-            txtPasswort.setError(null);
+            etPassword.setError(null);
         }
         return valid;
     }
@@ -310,14 +307,14 @@ public class EmailSignInActivity extends BaseActivity {
      */
     private void updateUI(String email) {
         if (email != null) {
-            txtVwTitel.setText(R.string.Anmelden);
-            txtVwPasswortHinweis.setText(R.string.txtVwPasswort);
-            bttnAnmelden.setText(R.string.Anmelden);
+            tvTitle.setText(R.string.Anmelden);
+            tvPasswordHint.setText(R.string.txtVwPasswort);
+            bttnSignIn.setText(R.string.Anmelden);
 
             findViewById(R.id.etName).setVisibility(View.GONE);
-            findViewById(R.id.etMail).setVisibility(View.GONE);
-            findViewById(R.id.chckBxPwAnzeigen).setVisibility(View.VISIBLE);
-            findViewById(R.id.txtVwPasswortVergessen).setVisibility(View.VISIBLE);
+            findViewById(R.id.etEmail).setVisibility(View.GONE);
+            findViewById(R.id.chckBxShowPW).setVisibility(View.VISIBLE);
+            findViewById(R.id.tvResetPW).setVisibility(View.VISIBLE);
         }
     }
 
@@ -328,7 +325,7 @@ public class EmailSignInActivity extends BaseActivity {
      */
     private void nextActivity(FirebaseUser user) {
         if (user != null) {
-            startActivity(new Intent(EmailSignInActivity.this, HomeActivity.class));
+            startActivity(new Intent(EmailSignInActivity.this, MainActivity.class));
         }
     }
 }

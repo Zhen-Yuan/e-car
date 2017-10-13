@@ -13,72 +13,66 @@
     android:paddingTop="100dp"
     tools:context="com.example.denis.ecar.login.LoginActivity">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/ivLogo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="0.09"
+        android:contentDescription="@string/imgLogo"
+        app:srcCompat="@drawable/logo" />
 
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.09"
-            android:contentDescription="@string/imgLogo"
-            app:srcCompat="@drawable/logo" />
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="@string/txtVwWillkommen"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="25sp" />
 
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:text="@string/txtVwWillkommen"
-            android:textStyle="bold"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="25sp" />
+    <EditText
+        android:id="@+id/etEmail"
+        style="@style/et_style"
+        android:hint="@string/hint_mail"
+        android:textColor="@color/colorTextPrimary"
+        android:inputType="textEmailAddress" />
 
-        <EditText
-            android:id="@+id/etMail"
-            style="@style/et_style"
-            android:hint="@string/hint_mail"
-            android:textColor="@color/colorTextPrimary"
-            android:inputType="textEmailAddress" />
+    <Button
+        android:id="@+id/bttnNext"
+        style="@style/bttnStyle"
+        android:text="@string/Weiter" />
 
-        <Button
-            android:id="@+id/bttnWeiter"
-            style="@style/bttnStyle"
-            android:text="@string/Weiter" />
+    <TextView
+        android:id="@+id/tvRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/Registrieren"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextPrimary"/>
 
-        <TextView
-            android:id="@+id/txtVwRegistrieren"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/Registrieren"
-            android:textStyle="bold"
-            android:textColor="@color/colorTextPrimary"/>
+    <Button
+        android:id="@+id/bttnFBSignIn"
+        style="@style/bttnFBStyle"
+        android:layout_marginTop="20dp"
+        android:text="@string/bttnFBLogin" />
 
-        <Button
-            android:id="@+id/bttnFBSignIn"
-            style="@style/bttnFBStyle"
-            android:layout_marginTop="20dp"
-            android:text="@string/bttnFBLogin" />
+    <Button
+        android:id="@+id/bttnGoogleSignIn"
+        style="@style/bttnGoogleStyle"
+        android:text="@string/bttnGoogleLogin" />
 
-        <Button
-            android:id="@+id/bttnGoogleSignIn"
-            style="@style/bttnGoogleStyle"
-            android:text="@string/bttnGoogleLogin" />
-
-        <TextView
-            android:id="@+id/txtVwAGB"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:text="@string/rechtliches"
-            android:textStyle="bold"
-            android:textColor="@color/colorTextPrimary"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvAGB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="@string/rechtliches"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextPrimary"/>
 
 </LinearLayout>

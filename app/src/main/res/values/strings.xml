@@ -24,6 +24,7 @@
     <string name="hint_pw">Passwort</string>
 
     <string name="loading">Loading…</string>
+    <string name="logout">Logout</string>
 
     <string name="PasswortVorgabe">Das Passwort muss mindestens 6 Zeichen umfassen.</string>
 

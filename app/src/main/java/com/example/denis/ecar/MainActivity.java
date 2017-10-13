@@ -20,7 +20,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.swipes.SwipeAdapter;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity
     private static ViewPager vPager;
     private static int currentPage = 0;
     int k=0;
+    private FirebaseAuth firebaseAuth;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     // Einfache Ausgabe über LogTag zum testen ermöglichen
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity
         dataCollector = new DataCollector();
 
         initImageView();
+        firebaseAuth = FirebaseAuth.getInstance();
     }
     private void setActivityBackgroundcolor(int color)
     {
@@ -212,10 +216,10 @@ public class MainActivity extends AppCompatActivity
             toast.show();
             dataSource.close();
 
-        } else if (id == R.id.nav_about) {
-
-        }  else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_settings) {
             openSettings();
+        } else if(id == R.id.nav_logout) {
+            signOut();
         }
 
 
@@ -252,5 +256,11 @@ public class MainActivity extends AppCompatActivity
     private void openSettings(){
         Intent intSet = new Intent(MainActivity.this,Settings.class);
         startActivity(intSet);
+    }
+
+
+    private void signOut() {
+        firebaseAuth.signOut();
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
     }
 }
