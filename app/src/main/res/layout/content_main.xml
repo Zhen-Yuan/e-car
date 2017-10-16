@@ -17,7 +17,8 @@
         android:orientation="vertical"
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="16dp"
-        android:weightSum="1">
+        android:weightSum="1"
+        tools:ignore="MissingConstraints">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -25,41 +26,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_weight="0.59" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="59dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/bttn_shop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="SHOP" />
-
-            <Button
-                android:id="@+id/bttn_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="INFO" />
-
-            <Button
-                android:id="@+id/bttn_Maps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="MAPS" />
-
-            <Button
-                android:id="@+id/bttn_socialmedia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="S.-MEDIA" />
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

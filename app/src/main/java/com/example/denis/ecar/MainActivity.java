@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,19 +64,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         init();
-        initButtonActivity();
         initImageView();
     }
     //Methoden
     private void init()
     {//Initalisierung
-        bttn_info = (Button) findViewById(R.id.bttn_info);
-        bttn_shop = (Button) findViewById(R.id.bttn_shop);
-        bttn_socialmedia = (Button) findViewById(R.id.bttn_socialmedia);
-        bttn_maps = (Button) findViewById(R.id.bttn_Maps);
         dataGenerator = new DataGenerator();
         dataCollector = new DataCollector();
-
+        uebersichtFragment();
         initImageView();
         firebaseAuth = FirebaseAuth.getInstance();
     }
@@ -110,33 +106,6 @@ public class MainActivity extends AppCompatActivity
             }
         }, 2500, 2500);*/
 
-    }
-    private void initButtonActivity()
-    {
-        bttn_info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                infoFragment();
-            }
-        });
-        bttn_maps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                oeffneMaps();
-            }
-        });
-        bttn_socialmedia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: BTTN-SOCIALMEDIA
-            }
-        });
-        bttn_shop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shopFragment();
-            }
-        });
     }
     @Override
     public void onBackPressed() {
@@ -240,6 +209,13 @@ public class MainActivity extends AppCompatActivity
         InfoFragment fragment = new InfoFragment();//Erstellung des Infofragments
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.rl_Anzeige, fragment).commit();//Wechsel des Fragments in der Mainklasse(rl-> Relativelayout)
+    }
+    private void uebersichtFragment()
+    {
+        setTitle("Übersicht");
+        UebersichtFragment fragment = new UebersichtFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.rl_Anzeige, fragment).commit();
     }
     private void shopFragment()//Wechselt das relativeLayout zum ShopFragment
     {
