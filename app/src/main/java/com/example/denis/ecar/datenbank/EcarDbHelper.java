@@ -1,4 +1,4 @@
-package com.example.denis.ecar;
+package com.example.denis.ecar.datenbank;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,7 +9,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "ecarr.db";
+    public static final String DB_NAME = "ecaRnn.db";
     public static final int DB_VERSION = 1;
 
     public static final String TABLE_USER = "nutzer";
@@ -20,12 +20,15 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     public static final String COLUMN_USER_ID = "uid";
     public static final String COLUMN_USER_NAME = "name";
+    public static final String COLUMN_USER_EMAIL = "email";
+    public static final String COLUMN_USER_PICTURE = "profilbild";
 
     public static final String COLUMN_SETTINGS_ID = "setid";
     public static final String COLUMN_SETTINGS_CONSUMPTION = "verbrauch";
 
     public static final String COLUMN_SESSION_ID = "sesid";
     public static final String COLUMN_SESSION_NAME = "name";
+    public static final String COLUMN_SESSION_EVALUATION = "ausgewertet";
 
     public static final String COLUMN_DATA_ID = "did";
     public static final String COLUMN_DATA_DATA = "daten";
@@ -39,6 +42,8 @@ public class EcarDbHelper extends SQLiteOpenHelper{
                     "(" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 					COLUMN_SETTINGS_ID + " INTEGER, " +
                     COLUMN_USER_NAME + " TEXT NOT NULL, " +
+                    COLUMN_USER_EMAIL + " TEXT NOT NULL, " +
+                    COLUMN_USER_PICTURE + " BLOB, " +
 					"FOREIGN KEY("+COLUMN_SETTINGS_ID+") REFERENCES "+TABLE_SETTINGS+"("+COLUMN_SETTINGS_ID+"));";
 
     public static final String SQL_CREATE_SETTINGS =
@@ -51,6 +56,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
                     "(" + COLUMN_SESSION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_USER_ID + " INTEGER, " +
                     COLUMN_SESSION_NAME + " TEXT NOT NULL, " +
+                    COLUMN_SESSION_EVALUATION + " INTEGER, " +
                     "FOREIGN KEY("+COLUMN_USER_ID+") REFERENCES "+TABLE_USER+"("+COLUMN_USER_ID+"));";
 
     public static final String SQL_CREATE_DATA =

@@ -18,7 +18,7 @@ public class Battery
         this.dSpannung = iSpannung;
     }
 
-    public double ladeleistung()
+    public double getladeleistung()
     {
         //TODO: Stern: Ladeleistung := sqrt(3) * Spannung * Stromstärke
         //Ladeleistung Einphasenwechselstrom
@@ -38,13 +38,69 @@ public class Battery
 
     }
     //Ergebnis der Ladezeit in (h)
+    public double berechneLadezeit37e(double dKapazität, double dEnergieverbrauch, double dStrecke)
+    {
+			/*
+			    Ladeleistung (Einphasenwechselstrom):
+				Ladeleistung (3,7 kW) = Phasen (1) * Spannung (230 V) * Stromstärke (16 A)
+
+				Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Sternschaltung:
+				Ladeleistung (22 kW) = Phasen (3) * Spannung (230 V) * Stromstärke (32 A)
+
+				Alternativ: Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Dreieckschaltung:
+				Ladeleistung (22 kW) = Wurzel (3) * Spannung (400 V) * Stromstärke (32 A)
+			 */
+        return dKapazität/3.7; // Gesamte Ladezeit
+    }
+    public double berechneLadezeit37(double dKapazität, double dEnergieverbrauch, double dStrecke)
+    {
+			/*
+			    Ladeleistung (Einphasenwechselstrom):
+				Ladeleistung (3,7 kW) = Phasen (1) * Spannung (230 V) * Stromstärke (16 A)
+
+				Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Sternschaltung:
+				Ladeleistung (22 kW) = Phasen (3) * Spannung (230 V) * Stromstärke (32 A)
+
+				Alternativ: Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Dreieckschaltung:
+				Ladeleistung (22 kW) = Wurzel (3) * Spannung (400 V) * Stromstärke (32 A)
+			 */
+        return dKapazität/3.7 * getPausen(dStrecke, dKapazität); // Gesamte Ladezeit
+    }
+    public double berechneLadezeit22e(double dKapazität, double dEnergieverbrauch, double dStrecke)
+    {
+			/*
+			    Ladeleistung (Einphasenwechselstrom):
+				Ladeleistung (3,7 kW) = Phasen (1) * Spannung (230 V) * Stromstärke (16 A)
+
+				Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Sternschaltung:
+				Ladeleistung (22 kW) = Phasen (3) * Spannung (230 V) * Stromstärke (32 A)
+
+				Alternativ: Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Dreieckschaltung:
+				Ladeleistung (22 kW) = Wurzel (3) * Spannung (400 V) * Stromstärke (32 A)
+			 */
+        return dKapazität/22; //Ladezeit einmal aufladen
+    }
+    public double berechneLadezeit22(double dKapazität, double dEnergieverbrauch, double dStrecke)
+    {
+			/*
+			    Ladeleistung (Einphasenwechselstrom):
+				Ladeleistung (3,7 kW) = Phasen (1) * Spannung (230 V) * Stromstärke (16 A)
+
+				Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Sternschaltung:
+				Ladeleistung (22 kW) = Phasen (3) * Spannung (230 V) * Stromstärke (32 A)
+
+				Alternativ: Ladeleistung (Drehstrom, Dreiphasenwechselstrom), Dreieckschaltung:
+				Ladeleistung (22 kW) = Wurzel (3) * Spannung (400 V) * Stromstärke (32 A)
+			 */
+        return dKapazität/22 *getPausen(dStrecke, dKapazität);
+    }
     public double ladezeit(double dKapazitaet, double dLadeleistung) //!!!! Batteriekapaztät in kWh!!!!!!!
     {                      //!!!! Batteriekapaztät in kWh!!!!!!!
         return dKapazitaet/dLadeleistung;//!!!! Batteriekapaztät in kWh!!!!!!!
     }                      //!!!! Batteriekapaztät in kWh!!!!!!!
 
     public double reichweite(double dKapazitaet, double dEnergieverbrauch)//Reichweine in km (Rückgabe), Verbrauch = x kWh/100km. nur x angeben!
-    {
+    {// NICHT GENAU !!!! Sehr ungenau TODO: Reichweite genauer rechnerisch ermitteln
         dEnergieverbrauch = dEnergieverbrauch/100;
         return dKapazitaet/dEnergieverbrauch*100;
     }
@@ -72,4 +128,8 @@ public class Battery
         this.strStatus = strStatus;
     }
 
+    public double getPausen(double dStrecke, double dReichweite) //
+    {
+        return dStrecke/dReichweite; // Gibt Anzahl der Ladepausen an
+    }
 }

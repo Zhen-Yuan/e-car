@@ -18,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.datenbank.EcarDataSource;
+import com.example.denis.ecar.datenbank.EcarSession;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.snapshot.DetectedActivityResult;
 import com.google.android.gms.awareness.snapshot.HeadphoneStateResult;

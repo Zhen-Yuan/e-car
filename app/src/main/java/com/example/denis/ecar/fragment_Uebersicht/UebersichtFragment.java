@@ -90,21 +90,6 @@ public class UebersichtFragment extends Fragment
     }
 
     private void chartBeispiel() {
-        /*
-        int[] dataObjects = {1,2}; // x-Achse
-        int[] dataObjects2 = {450,600};// y-Achse
-
-        List<BarEntry> entries = new ArrayList<BarEntry>();
-        entries.add(new BarEntry(1,650));
-        entries.add(new BarEntry(2,550));
-        for (int i = 0; i<dataObjects.length;i++) {
-            entries.add(new BarEntry(dataObjects[i], dataObjects2[i]));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "Label");
-        BarData barData = new BarData(dataSet);
-        barChart.setData(barData);
-
-        barChart.invalidate();*/
         int groupCount = 6;
 
         chart.setPinchZoom(false);
@@ -154,7 +139,7 @@ public class UebersichtFragment extends Fragment
         l.setYOffset(20f);
         l.setXOffset(0f);
         l.setYEntrySpace(0f);
-        l.setTextSize(8f);
+        l.setTextSize(9f);
 
         //X-Achse
         XAxis xAxis = chart.getXAxis();

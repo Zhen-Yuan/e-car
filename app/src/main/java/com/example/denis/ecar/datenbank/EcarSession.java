@@ -1,4 +1,4 @@
-package com.example.denis.ecar;
+package com.example.denis.ecar.datenbank;
 
 /**
  * Created by Raja on 02.07.2017.
@@ -6,6 +6,7 @@ package com.example.denis.ecar;
 
 public class EcarSession {
 
+    private boolean bAuswertung;
     private int sesid, uid;
     private String name;
 
@@ -35,9 +36,12 @@ public class EcarSession {
         this.name = name;
     }
 
+    public boolean getbAuswertung() { return  bAuswertung; }
+    public void setbAuswertung(boolean asw) { this.bAuswertung = asw; }
+
     @Override
     public String toString() {
-        String output = "Id: "+sesid+" UserId: "+uid+" Name: "+name;
+        String output = "Id: "+sesid+"\nUserId: "+uid+"\nName: "+name+"\nAusgewertet: "+bAuswertung+"\n";
         return output;
     }
 }

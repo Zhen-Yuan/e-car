@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.denis.ecar.fuellmethoden.DataGenerator;
+
 /**
  * Created by denis on 29.07.2017.
  */

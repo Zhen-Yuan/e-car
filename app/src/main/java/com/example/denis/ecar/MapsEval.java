@@ -1,7 +1,6 @@
 package com.example.denis.ecar;
 
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -11,6 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.denis.ecar.datenbank.EcarData;
+import com.example.denis.ecar.datenbank.EcarDataSource;
+import com.example.denis.ecar.datenbank.EcarSession;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

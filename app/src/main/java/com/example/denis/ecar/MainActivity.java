@@ -2,7 +2,6 @@ package com.example.denis.ecar;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -16,19 +15,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.datenbank.EcarData;
+import com.example.denis.ecar.datenbank.EcarDataSource;
+import com.example.denis.ecar.datenbank.EcarSession;
 import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
+import com.example.denis.ecar.fuellmethoden.DataCollector;
+import com.example.denis.ecar.fuellmethoden.DataGenerator;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
