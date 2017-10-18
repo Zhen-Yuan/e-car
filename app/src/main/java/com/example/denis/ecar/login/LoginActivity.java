@@ -61,7 +61,6 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
 
         init();
-        initOnClick();
     }
 
 
@@ -126,6 +125,7 @@ public class LoginActivity extends BaseActivity {
                 })
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        initOnClick();
     }
 
 

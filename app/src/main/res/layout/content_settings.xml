@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="50dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtProfileSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profil"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/colorPrimaryDark"
+            android:paddingBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="E-Mail-Adresse" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="E-Mail-Adresse" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/pw"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Passwort"
+                    android:paddingBottom="5dp"/>
+
+                <TextView
+                    android:id="@+id/tvChangePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Passwort"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                    android:paddingBottom="10dp"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/changePw"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvOldPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Altes Passwort" />
+
+                <EditText
+                    android:id="@+id/etOldPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/tvNewPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Neues Passwort" />
+
+                <EditText
+                    android:id="@+id/etNewPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/tvRepeatPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Neues Passwort erneut eintippen" />
+
+                <EditText
+                    android:id="@+id/etRepeatPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSocialNetwork"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Soziale Netzwerke"
+            android:paddingBottom="5dp"
+            android:paddingTop="10dp"/>
+
+        <Switch
+            android:id="@+id/switchFB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Facebook"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <Switch
+            android:id="@+id/switchGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Google+"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:paddingBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/tvDeleteAcc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Konto schließen"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:paddingBottom="15dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="237dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/imageView2"
+                android:layout_below="@+id/textView6"
+                android:layout_toEndOf="@+id/imageView2"
+                android:background="@android:color/transparent"
+                android:foregroundTint="@color/colorTextPrimary"
+                android:progressBackgroundTint="@color/colorTextPrimary" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView6"
+                android:background="@android:color/transparent"
+                android:tint="@color/colorPrimaryDark"
+                app:srcCompat="@android:drawable/ic_popup_disk_full" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textView5"
+                android:layout_marginTop="11dp"
+                android:elevation="1dp"
+                android:text="Aufnahme Intervall (Sekunden)"
+                android:textColor="@color/colorTextPrimary" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_weight="0.03"
+                android:gravity="center_vertical"
+                android:text="Tracking"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/colorPrimaryDark"/>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/seekBar"
+                android:layout_below="@+id/textView6"
+                android:layout_toEndOf="@+id/seekBar"
+                android:text="TextView" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

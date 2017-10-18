@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.denis.ecar.datenbank.EcarData;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataGenerator dataGenerator;
     DataCollector dataCollector;
+    private ImageView ivProfileImage;
 
     int images[] = {R.drawable.tesla3,R.drawable.tesla4}; //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
     private ArrayList<Integer> arr_images = new ArrayList<>();
@@ -105,7 +107,13 @@ public class MainActivity extends AppCompatActivity
                 handler.post(Update);
             }
         }, 2500, 2500);*/
-
+    ivProfileImage = (ImageView)findViewById(R.id.ivProfileImage);
+        ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateImage();
+            }
+        });
     }
     @Override
     public void onBackPressed() {
@@ -235,6 +243,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void updateImage() {
+        //TODO
+    }
+
+
+    /**
+     * Logged den aktuellen User aus und wechselt dann zum Login-Screen
+     */
     private void signOut() {
         firebaseAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));

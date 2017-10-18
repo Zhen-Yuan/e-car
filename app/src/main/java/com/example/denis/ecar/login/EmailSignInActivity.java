@@ -48,7 +48,6 @@ public class EmailSignInActivity extends BaseActivity {
         setContentView(R.layout.activity_emailpassword);
 
         init();
-        initOnClick();
     }
 
 
@@ -80,6 +79,7 @@ public class EmailSignInActivity extends BaseActivity {
         } catch(NullPointerException e) {
             email = null;
         }
+        initOnClick();
     }
 
 
