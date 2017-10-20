@@ -6,26 +6,35 @@ package com.example.denis.ecar.auswertung;
 
 public class AuswertungElektro
 {
-    private double dStrecke, dStrompreis;
-    public AuswertungElektro(double dStrecke, double dStrompreis)
+    private double dStrecke, dStrompreis, dEmissionen;
+    public AuswertungElektro(double dStrecke, double dStrompreis, double dEmissionen)
     {
         this.dStrecke = dStrecke;
         this.dStrompreis = dStrompreis;
+        this.dEmissionen = dEmissionen;
     }
 
-    public double getKostenGesamteStrecke()// Spritpreis als Übergabeparameter. ACHTUNG!!! Prüfen, ob es sich um Super, Super+, Diesel, E"X" handelt!
-    {
-        return getdStrecke()/100*getdStrompreis();
+    //TODO: Ausstoß-Klasse!
+    public double getCO2CO2AusstossElektro(double dVerbrauchElektro) // Quellen: http://www.bmub.bund.de/fileadmin/Daten_BMU/Download_PDF/Verkehr/emob_klimabilanz_2015_bf.pdf, 2-> http://www.umweltbundesamt.de/themen/klima-energie/energieversorgung/strom-waermeversorgung-in-zahlen#Strommix
+    {//Ausgabe in kg /// dEmissionen = 527g pro kWh für 2016
+        return (getdStrecke()/100*dVerbrauchElektro*527)/1000; //CO2 Ausstoß für ein Elektroauto strecke/100*verbrauch()(Gramm pro kWh 2016->527) // Benzin (vorerst) -> https://legacy.bmw.com/com/de/newvehicles/7series/sedan/2012/showroom/efficiency/efficientdynamics.html
     }
-    public double getKostenProKm() // ACHTUNG! Siehe getKostenGesamteStrecke()...
-    {
-        return getKostenGesamteStrecke()/getdStrecke();
+    public double getCO2AusstossBenzin() // Quellen: http://www.bmub.bund.de/fileadmin/Daten_BMU/Download_PDF/Verkehr/emob_klimabilanz_2015_bf.pdf, 2-> http://www.umweltbundesamt.de/themen/klima-energie/energieversorgung/strom-waermeversorgung-in-zahlen#Strommix
+    {//dEmissionen für BMW 750i xDrive (Vorerst) -> https://legacy.bmw.com/com/de/newvehicles/7series/sedan/2012/showroom/efficiency/efficientdynamics.html
+        // 217g pro km
+        return (getdStrecke()*getdEmissionen())/1000; //CO2 Ausstoß für ein Benzinauto Strecke * CO2-Emissionswert! TODO: (Gramm pro kWh 2016->527) // Benzin (vorerst) -> https://legacy.bmw.com/com/de/newvehicles/7series/sedan/2012/showroom/efficiency/efficientdynamics.html
+    }
+    public double getCO2Einsparung(double dEmissionen, double dVerbrauchElektro)
+    {//Ausgabe in kg
+        return getCO2AusstossBenzin()-getCO2CO2AusstossElektro(dVerbrauchElektro);
     }
 
-    public void getCO2Einsparung() // Quellen: http://www.bmub.bund.de/fileadmin/Daten_BMU/Download_PDF/Verkehr/emob_klimabilanz_2015_bf.pdf, 2-> http://www.oekoheizstrom.de/wieviel-co2-emissionen-pro-kwh-kilowattstunde-strom-2344/
-    {
-        //TODO: Muss noch implementiert werden
+    public double getKostenElektro(double dVerbrauchElektro)// strompreis aktuell ~29.16 cent quelle https://www.stromauskunft.de/strompreise/strompreise-2017/
+    {//ausgabe in Euro (0.2916) 22.1kWh Tesla Model S
+        return getdStrecke()/100*dVerbrauchElektro*getdStrompreis();
     }
+
+
     //Getter/Setter
     public double getdStrecke() {
         return dStrecke;
@@ -42,4 +51,13 @@ public class AuswertungElektro
     public void setdStrompreis(double dStrompreis) {
         this.dStrompreis = dStrompreis;
     }
+
+    public double getdEmissionen() {
+        return dEmissionen;
+    }
+
+    public void setdEmissionen(double dEmissionen) {
+        this.dEmissionen = dEmissionen;
+    }
+
 }
