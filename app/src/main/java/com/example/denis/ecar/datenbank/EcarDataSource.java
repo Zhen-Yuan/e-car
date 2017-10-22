@@ -109,7 +109,7 @@ public class EcarDataSource {
         byte[] picture = cursor.getBlob(idBild);
 
         EcarUser ecaruser = new EcarUser(name, mail,settingsid);
-        ecaruser.setUid((int)id);
+        ecaruser.setUid((int) id);
         if(picture != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
             ecaruser.setPic(bitmap);

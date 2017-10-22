@@ -4,23 +4,29 @@ package com.example.denis.ecar;
  * Created by Norbert on 01.10.2017.
  * Modified by Shinmei on 17.10.2017.
  */
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.camera2.params.Face;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.denis.ecar.login.LoginActivity;
+import com.example.denis.ecar.login.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -45,25 +51,27 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.Arrays;
 
 
-public class Settings extends AppCompatActivity {
+public class Settings extends AppCompatActivity implements  DatabaseReference.CompletionListener {
+
     public static final String TAG = "settings";
     SharedPreferences sp;
     SharedPreferences.Editor spe;
     FirebaseAuth firebaseAuth;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
-    private AccessToken accessToken;
-    private String googleToken;
+    private User user;
     private static final int RC_SIGN_IN_GOOGLE = 9001;
     private SeekBar seekBar;
     private TextView tv3;
     private EditText etEmail;
-    private Switch switchFB;
-    private Switch switchGoogle;
+    private EditText etPassword;
+    private Button bttnReg_ChangePw;
 
 
     @Override
@@ -73,21 +81,16 @@ public class Settings extends AppCompatActivity {
         sp = getSharedPreferences("bla", Context.MODE_PRIVATE);
         spe = sp.edit();
         init();//Aufruf der Initalisierungsmethode
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // TODO
+        initButtons();
+        initUser();
     }
 
 
     public void init(){
         etEmail = (EditText)findViewById(R.id.etEmail);
+        etPassword = (EditText) findViewById(R.id.etPassword);
         firebaseAuth = FirebaseAuth.getInstance();
-        switchFB = (Switch) findViewById(R.id.switchFB);
-        switchGoogle = (Switch) findViewById(R.id.switchGoogle);
+        bttnReg_ChangePw = (Button) findViewById(R.id.bttnReg_ChangePw);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         tv3 = (TextView) findViewById(R.id.textView3);
         seekBar.setMax(60);
@@ -114,19 +117,17 @@ public class Settings extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                accessToken = loginResult.getAccessToken();
+                facebookAccessData(loginResult.getAccessToken());
             }
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
-                Toast.makeText(Settings.this, "Login has been canceled.",
-                        Toast.LENGTH_SHORT).show();
-                switchFB.toggle();
+                Toast.makeText(Settings.this, "Anmeldung abgebrochen.", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                switchFB.toggle();
+                Toast.makeText(Settings.this, "Anmeldung fehlgeschlagen.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -146,35 +147,6 @@ public class Settings extends AppCompatActivity {
                 })
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-    }
-
-
-    private void initOnClick() {
-        switchFB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (switchFB.isChecked() && !isLinked(FacebookAuthProvider.PROVIDER_ID)) {
-                    LoginManager.getInstance().logInWithReadPermissions(Settings.this,
-                            Arrays.asList("public_profile", "email", "user_friends"));
-                    linkProvider("facebook", (accessToken != null ? accessToken.getToken(): null));
-                } else {
-                    unlinkProvider(FacebookAuthProvider.PROVIDER_ID);
-                }
-            }
-        });
-
-        switchGoogle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // do something, the isChecked will be
-                // true if the switch is in the On position
-                if (switchGoogle.isChecked() && !isLinked(GoogleAuthProvider.PROVIDER_ID)) {
-                    linkProvider("google", googleToken);
-                } else {
-
-                    unlinkProvider(GoogleAuthProvider.PROVIDER_ID);
-                }
-            }
-        });
 
         findViewById(R.id.tvDeleteAcc).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,15 +157,70 @@ public class Settings extends AppCompatActivity {
     }
 
 
+    private void initButtons() {
+        if (isLinked(EmailAuthProvider.PROVIDER_ID)) {
+            bttnReg_ChangePw.setText(R.string.PasswortAendern);
+            etPassword.setVisibility(View.GONE);
+        } else {
+            bttnReg_ChangePw.setText(R.string.Registrieren);
+            etPassword.setVisibility(View.VISIBLE);
+        }
+        bttnReg_ChangePw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bttnReg_ChangePw.getText().equals("Registrieren")) {
+                    emailAccessData(etEmail.getText().toString(), etPassword.getText().toString());
+                } else if (bttnReg_ChangePw.getText().equals("Passwort ändern")) {
+                    changePasswort();
+                }
+            }
+        });
+
+        setButtonLabel(R.id.bttnFB, FacebookAuthProvider.PROVIDER_ID, R.string.linkFB,
+                R.string.unlinkFB);
+
+        setButtonLabel(R.id.bttnGoogle, GoogleAuthProvider.PROVIDER_ID, R.string.linkGoogle,
+                R.string.unlinkGoogle);
+    }
+
+
+    private void setButtonLabel(int bttnId, String providerId, int linkId, int unlinkId) {
+        if (isLinked(providerId)) {
+            ((Button) findViewById(bttnId)).setText(unlinkId);
+        } else {
+            ((Button) findViewById(bttnId)).setText(linkId);
+        }
+    }
+
+
+    private void initUser() {
+        user = new User();
+        user.setEmail( etEmail.getText().toString());
+    }
+
+
+    @Override
+    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        if (databaseError != null){
+            Log.d(TAG, "fireBase databaseError: " + databaseError.toString());
+            Toast.makeText(Settings.this, "Error: " + databaseError.toString(),
+                    Toast.LENGTH_SHORT).show();
+        }
+            firebaseAuth.getCurrentUser().delete();
+            firebaseAuth.signOut();
+            finish();
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == RC_SIGN_IN_GOOGLE) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                // Google Sign erfolgreich -> Authentifizierung mit Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
-                googleToken = account != null ? account.getIdToken() : null;
+                googleAccessData(account.getIdToken());
             }
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -202,12 +229,117 @@ public class Settings extends AppCompatActivity {
 
 
     /**
-     * Ordnet den EmailAuth von firebase einem String zu fuer die spaetere Verwendung.
+     * Ordnet den EmailAuth von firebase einen String zu fuer die spaetere Verwendung.
      * @param email enthaelt die E-Mail-Adresse des Users
      * @param password enthaelt das Passwort des Users
      */
     private void emailAccessData(String email, String password) {
         linkProvider("email", email, password);
+    }
+
+
+    /**
+     * Ordnet dem Facebook accessToken einen String zu fuer die spaetere Verwendung.
+     * @param accessToken enthaelt den Facebook AcessToken
+     */
+    private void facebookAccessData(AccessToken accessToken) {
+        linkProvider("facebook", (accessToken != null ? accessToken.getToken() : null));
+    }
+
+
+    /**
+     * Ordnet dem Google accessToken einen String zu fuer die spaetere Verwendung.
+     * @param accessToken enthaelt den Google AccessToken
+     */
+    private void googleAccessData(String accessToken) {
+        linkProvider("google", accessToken);
+    }
+
+
+    /**
+     * Prueft, ob ein token vorhanden ist und um welchen es sich handelt mithilfe des im String
+     * angegebenen providers. Daraufhin wird der provider mit dem Acc verbunden.
+     * @param provider uebergibt den aktuellen Provider an
+     * @param token uebergibt den/die benoetigten token
+     */
+    private void linkProvider(final String provider, String... token) {
+        if(token != null && token.length > 0 && token[0] != null) {
+            AuthCredential credential = FacebookAuthProvider.getCredential(token[0]);
+            credential = provider.equalsIgnoreCase("google") ?
+                    GoogleAuthProvider.getCredential(token[0], null) : credential;
+            credential = provider.equalsIgnoreCase("email") ?
+                    EmailAuthProvider.getCredential(token[0], token[1]) : credential;
+
+            firebaseAuth.getCurrentUser().linkWithCredential(credential)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                initButtons();
+                            } else {
+                                Log.w(TAG, "fehlgeschlagen", task.getException());
+                                Toast.makeText(Settings.this, "Anmeldung fehltgeschlagen.",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+                    });
+        } else {
+            firebaseAuth.signOut();
+        }
+    }
+
+
+    public void sendFBLoginData(View view) {
+        if (isLinked(FacebookAuthProvider.PROVIDER_ID)) {
+            unlinkProvider(FacebookAuthProvider.PROVIDER_ID);
+            return;
+        }
+        LoginManager.getInstance().logInWithReadPermissions(Settings.this,
+                Arrays.asList("public_profile", "email", "user_friends"));
+    }
+
+
+    public void sendGoogleLoginData(View view) {
+        if (isLinked(GoogleAuthProvider.PROVIDER_ID)) {
+            unlinkProvider(GoogleAuthProvider.PROVIDER_ID);
+            return;
+        }
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN_GOOGLE);
+    }
+
+
+    /**
+     * Trennt die Verbindung zum angegebenen Provider zum Acc.
+     * @param providerId enthaelt die ProviderID, von dem getrennt werden soll
+     */
+    private void unlinkProvider(final String providerId) {
+        firebaseAuth.getCurrentUser().unlink(providerId)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(Settings.this, "Verbindung getrennt.",
+                                    Toast.LENGTH_SHORT).show();
+                            initButtons();
+                            if (isLastProvider(providerId)){
+                                user.setId(firebaseAuth.getCurrentUser().getUid());
+                                user.removeDB(Settings.this);
+                            }
+                        } else {
+                            Log.w(TAG, "fehlgeschlagen", task.getException());
+                            Toast.makeText(Settings.this, "Fehlgeschlagen.",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Settings.this, "Error: " + e, Toast.LENGTH_LONG).show();
+                    }
+        });
     }
 
 
@@ -226,64 +358,43 @@ public class Settings extends AppCompatActivity {
 
 
     /**
-     * Prueft, ob ein token vorhanden ist und um welchen es sich handelt mithilfe des im String
-     * angegebenen providers. Daraufhin wird der provider mit dem Acc verbunden.
-     * @param provider uebergibt den aktuellen Provider an
-     * @param token uebergibt den/die benoetigten token
+     * Ueberprueft, ob der letzte Provider EmailAuth ist
+     * @param providerId beinhaltet die Provider-ID
+     * @return true, wenn der Fall eintrifft
      */
-    private void linkProvider(String provider, String... token) {
-        if(token != null && token.length > 0 && token[0] != null) {
-            AuthCredential credential = FacebookAuthProvider.getCredential(token[0]);
-            credential = provider.equalsIgnoreCase("google") ?
-                    GoogleAuthProvider.getCredential(token[0], null) : credential;
-            credential = provider.equalsIgnoreCase("email") ?
-                    EmailAuthProvider.getCredential(token[0], token[1]) : credential;
-
-            firebaseAuth.getCurrentUser().linkWithCredential(credential)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = task.getResult().getUser();
-                                //updateUI(user);
-                            } else {
-                                Log.w(TAG, "fehlgeschlagen", task.getException());
-                                Toast.makeText(Settings.this, "Anmeldung fehltgeschlagen.",
-                                        Toast.LENGTH_SHORT).show();
-                                //updateUI(null);
-                            }
-                        }
-                    });
-        }
+    private boolean isLastProvider(String providerId) {
+        int size = firebaseAuth.getCurrentUser().getProviders().size();
+        return (size == 0 || (size == 1 && providerId.equals(EmailAuthProvider.PROVIDER_ID)));
     }
 
 
-    /**
-     * Trennt die Verbindung zum angegebenen Provider zum Acc.
-     * @param providerId enthaelt die ProviderID, von dem getrennt werden soll
-     */
-    private void unlinkProvider(final String providerId) {
-        firebaseAuth.getCurrentUser().unlink(providerId)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(Settings.this, "Verbindung getrennt.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(task.getResult().getUser());
-                        } else {
-                            Log.w(TAG, "fehlgeschlagen", task.getException());
-                            Toast.makeText(Settings.this, "Verbindung konnte nicht getrennt werden.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+    private void changePasswort() {
+        View view = (LayoutInflater.from(Settings.this)).inflate(R.layout.input_change_password, null);
+        final EditText etNewPassword = (EditText) view.findViewById(R.id.etNewPassword);
+        final String password = etNewPassword.getText().toString();
+        AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
 
-            }
+        builder.setTitle("Passwort ändern")
+        .setView(view);
+
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+           public void onClick(DialogInterface dialog, int id) {
+               if (!TextUtils.isEmpty(password) &&
+                       password.length() > 5) {
+                   firebaseAuth.getCurrentUser().updatePassword(password);
+               } else {
+                   etNewPassword.setError("Ungültiges Passwort.");
+               }
+           }
         });
+        builder.setNegativeButton("abbrechen",new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 
 
@@ -295,4 +406,5 @@ public class Settings extends AppCompatActivity {
         user.delete();
         startActivity(new Intent(Settings.this, LoginActivity.class));
     }
+
 }

@@ -23,9 +23,12 @@
     <string name="hint_name">Benutzername</string>
     <string name="hint_pw">Passwort</string>
 
+    <string name="linkFB">Facebook - Verbinden</string>
+    <string name="linkGoogle">Google+ - Verbinden</string>
     <string name="loading">Loading…</string>
     <string name="logout">Logout</string>
 
+    <string name="PasswortAendern">Passwort ändern</string>
     <string name="PasswortVorgabe">Das Passwort muss mindestens 6 Zeichen umfassen.</string>
 
     <string name="rechtliches">AGB und Datenschutzrichtlinien</string>
@@ -34,6 +37,9 @@
     <string name="txtVwPasswort">Gib dein Passwort ein.</string>
     <string name="txtVwPasswortVergessen">Passwort vergessen?</string>
     <string name="txtVwWillkommen">Willkommen bei ECar</string>
+
+    <string name="unlinkFB">Facebook - Trennen</string>
+    <string name="unlinkGoogle">Google+ - Trennen</string>
 
     <string name="Weiter">Weiter</string>
 

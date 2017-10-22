@@ -8,6 +8,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.denis.ecar.datenbank.EcarData;
@@ -37,8 +39,10 @@ public class MainActivity extends AppCompatActivity
     DataGenerator dataGenerator;
     DataCollector dataCollector;
     private ImageView ivProfileImage;
+    private TextView tvUsername;
 
-    int images[] = {R.drawable.tesla3,R.drawable.tesla4}; //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
+    int images[] = {R.drawable.tesla3,R.drawable.tesla4};
+    //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
     private ArrayList<Integer> arr_images = new ArrayList<>();
     private static ViewPager vPager;
     private static int currentPage = 0;
@@ -76,6 +80,8 @@ public class MainActivity extends AppCompatActivity
         uebersichtFragment();
         initImageView();
         firebaseAuth = FirebaseAuth.getInstance();
+        tvUsername = (TextView)findViewById(R.id.tvUsername);
+        //tvUsername.setText("");
     }
     private void setActivityBackgroundcolor(int color)
     {
@@ -107,13 +113,13 @@ public class MainActivity extends AppCompatActivity
                 handler.post(Update);
             }
         }, 2500, 2500);*/
-    ivProfileImage = (ImageView)findViewById(R.id.ivProfileImage);
+    /*ivProfileImage = (ImageView)findViewById(R.id.ivProfileImage);
         ivProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateImage();
             }
-        });
+        }); */
     }
     @Override
     public void onBackPressed() {

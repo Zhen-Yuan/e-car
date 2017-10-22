@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 
 public class EcarUser {
 
-
     private String name;
     private String email;
     private int uid;

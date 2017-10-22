@@ -15,11 +15,14 @@ import android.widget.Toast;
 
 import com.example.denis.ecar.MainActivity;
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Login oder Registrierung mit E-Mail-Adresse und Passwort.
@@ -32,6 +35,8 @@ public class EmailSignInActivity extends BaseActivity {
     private static final String TAG = "EmailPasswordLogin";
     private String email;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference firebaseDB;
+    private EcarUser user;
     /** ----- GUI-Elemente ----- */
     private TextView tvTitle;
     private TextView tvPasswordHint;
@@ -64,6 +69,7 @@ public class EmailSignInActivity extends BaseActivity {
      */
     private void init() {
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDB = FirebaseDatabase.getInstance().getReference();
         tvTitle= (TextView)findViewById(R.id.tvTitle);
         tvPasswordHint = (TextView)findViewById(R.id.tvPasswordHint);
         etUsername = (EditText)findViewById(R.id.etName);
@@ -152,6 +158,9 @@ public class EmailSignInActivity extends BaseActivity {
                         hideProgressDialog();
                     }
                 });
+        // User in DB speichern
+        /*user = new EcarUser(etUsername.getText().toString(),
+                email, firebaseAuth.getCurrentUser().getUid()); */
     }
 
 
@@ -316,6 +325,11 @@ public class EmailSignInActivity extends BaseActivity {
             findViewById(R.id.chckBxShowPW).setVisibility(View.VISIBLE);
             findViewById(R.id.tvResetPW).setVisibility(View.VISIBLE);
         }
+    }
+
+
+    private void writeNewUser(String userId, String name, String email) {
+
     }
 
 

@@ -41,82 +41,26 @@
             android:text="E-Mail-Adresse" />
 
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvPassword"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:text="Passwort"
+            android:paddingBottom="5dp"/>
 
-            <LinearLayout
-                android:id="@+id/pw"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Passwort"
+            android:inputType="textPassword" />
 
-                <TextView
-                    android:id="@+id/tvPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Passwort"
-                    android:paddingBottom="5dp"/>
-
-                <TextView
-                    android:id="@+id/tvChangePassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Passwort"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-                    android:paddingBottom="10dp"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/changePw"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/tvOldPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Altes Passwort" />
-
-                <EditText
-                    android:id="@+id/etOldPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPassword" />
-
-                <TextView
-                    android:id="@+id/tvNewPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Neues Passwort" />
-
-                <EditText
-                    android:id="@+id/etNewPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPassword" />
-
-                <TextView
-                    android:id="@+id/tvRepeatPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Neues Passwort erneut eintippen" />
-
-                <EditText
-                    android:id="@+id/etRepeatPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPassword" />
-
-            </LinearLayout>
-        </LinearLayout>
+        <Button
+            android:id="@+id/bttnReg_ChangePw"
+            style="@style/bttnStyle"
+            android:text="Registrieren"
+            android:onClick="sendEmailLoginData"/>
 
         <TextView
             android:id="@+id/tvSocialNetwork"
@@ -126,20 +70,17 @@
             android:paddingBottom="5dp"
             android:paddingTop="10dp"/>
 
-        <Switch
-            android:id="@+id/switchFB"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Facebook"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        <Button
+            android:id="@+id/bttnFB"
+            style="@style/bttnFBStyle"
+            android:text="Facebook - Verbinden"
+            android:onClick="sendFBLoginData"/>
 
-        <Switch
-            android:id="@+id/switchGoogle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Google+"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:paddingBottom="10dp"/>
+        <Button
+            android:id="@+id/bttnGoogle"
+            style="@style/bttnGoogleStyle"
+            android:text="Google+ - Verbinden"
+            android:onClick="sendGoogleLoginData"/>
 
         <TextView
             android:id="@+id/tvDeleteAcc"
@@ -147,7 +88,8 @@
             android:layout_height="wrap_content"
             android:text="Konto schließen"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:paddingBottom="15dp"/>
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"/>
 
         <RelativeLayout
             android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.example.denis.ecar.datenbank;
+package com.example.denis.ecar;
 
 import android.app.Activity;
 import android.app.Application;
