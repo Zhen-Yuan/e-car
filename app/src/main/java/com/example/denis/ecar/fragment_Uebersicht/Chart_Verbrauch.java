@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Created by Denis on 16.10.2017.
  */
 
-public class AuswertungFragment extends Fragment
+public class Chart_Verbrauch extends Fragment
 {
     private View v;
     float barWidth;
@@ -33,7 +33,7 @@ public class AuswertungFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_auswertung,container,false);
+        v = inflater.inflate(R.layout.chart_verbrauch,container,false);
         init();
         //TODO: Infoausgabe
         return v;

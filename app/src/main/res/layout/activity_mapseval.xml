@@ -52,7 +52,7 @@
 
         <fragment
             android:id="@+id/auswertung"
-            android:name="com.example.denis.ecar.fragment_Uebersicht.AuswertungFragment"
+            android:name="com.example.denis.ecar.fragment_Uebersicht.Chart_Verbrauch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

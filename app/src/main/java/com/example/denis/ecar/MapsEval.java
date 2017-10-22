@@ -2,9 +2,7 @@ package com.example.denis.ecar;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,8 +14,7 @@ import android.widget.TextView;
 import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
-import com.example.denis.ecar.fragment_Uebersicht.AuswertungFragment;
-import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
+import com.example.denis.ecar.fragment_Uebersicht.Chart_Verbrauch;
 import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,7 +47,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     private String strSpeed;
     private Button bttn_ausw;
     SupportMapFragment mapFragment;
-    private AuswertungFragment auswert;
+    private Chart_Verbrauch auswert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +58,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         //auswertungFragment();
-        auswert = (AuswertungFragment) getSupportFragmentManager().findFragmentById(R.id.auswertung);
+        auswert = (Chart_Verbrauch) getSupportFragmentManager().findFragmentById(R.id.auswertung);
         auswert.getView().setVisibility(View.GONE);
 
         ddmenu = (Spinner) findViewById(R.id.ddmenuspinner);
@@ -100,26 +97,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                                                  auswert.getView().setVisibility(View.GONE);
                                                  mapFragment.getView().setVisibility(View.VISIBLE);
                                              }else{
-
-                                                 ArrayList y = new ArrayList();
-
-                                                 double dist = 0;
-                                                 double time = 0;
-                                                 double bat = 100;
-                                                 double reich = 415000;
-                                                 for (int i = 1; i<ecarLatList.size(); i++){
-                                                     dist = dist + calcDist(ecarLatList.get(i-1).getData(),ecarLongList.get(i-1).getData(),ecarLatList.get(i).getData(),ecarLongList.get(i).getData());
-                                                     time = time + ecarLatList.get(i).getTime()-ecarLatList.get(i-1).getTime();
-                                                     bat = 100 - (dist/reich*100);
-                                                     y.add(new BarEntry((float)time,(float)bat));
-
-
-                                                 }
-
-
-
-
-                                                 auswert.chartBeispiel(y);
+                                                 chartVerbrauch();
                                                  auswert.getView().setVisibility(View.VISIBLE);
                                                  mapFragment.getView().setVisibility(View.GONE);
                                              }
@@ -267,13 +245,23 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         return "Strecke: " + getStrDist()+ "\nGeschw.: " + getStrSpeed();
     }
 
-    private void auswertungFragment()
-    {
-        setTitle("Auswertung");
-        auswert = new AuswertungFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.auswertung, auswert).commit();
 
+    //Methode um den Verbrauchs Chart zu errechnen
+    //Gefahrene Zeit in Sekunden und Batteriestatus in %
+    private void chartVerbrauch(){
+        ArrayList y = new ArrayList();
+
+        double dist = 0;
+        double time = 0;
+        double bat = 100;
+        double reich = 415000;
+        for (int i = 1; i<ecarLatList.size(); i++){
+            dist = dist + calcDist(ecarLatList.get(i-1).getData(),ecarLongList.get(i-1).getData(),ecarLatList.get(i).getData(),ecarLongList.get(i).getData());
+            time = time + ecarLatList.get(i).getTime()-ecarLatList.get(i-1).getTime();
+            bat = 100 - (dist/reich*100);
+            y.add(new BarEntry((float)time,(float)bat));
+        }
+        auswert.chartBeispiel(y);
     }
 
     public String getStrDist() {
