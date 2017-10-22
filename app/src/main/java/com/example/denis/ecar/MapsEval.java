@@ -2,17 +2,23 @@ package com.example.denis.ecar;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
+import com.example.denis.ecar.fragment_Uebersicht.AuswertungFragment;
+import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
@@ -41,16 +48,21 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     private float color2;
     private double ddist = 0;
     private String strSpeed;
+    private Button bttn_ausw;
+    SupportMapFragment mapFragment;
+    private AuswertungFragment auswert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapseval);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        //auswertungFragment();
+        auswert = (AuswertungFragment) getSupportFragmentManager().findFragmentById(R.id.auswertung);
+        auswert.getView().setVisibility(View.GONE);
 
         ddmenu = (Spinner) findViewById(R.id.ddmenuspinner);
         ddmenu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -80,8 +92,42 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
 
         tv_disp = (TextView) findViewById(R.id.textView2);
         tv_disp.setText("Bitte Strecke auswählen...");
+        bttn_ausw = (Button) findViewById(R.id.bttn_ausw);
+        bttn_ausw.setOnClickListener(new View.OnClickListener() {
+                                         @Override
+                                         public void onClick(View v) {
+                                             if(auswert.getView().getVisibility() == View.VISIBLE) {
+                                                 auswert.getView().setVisibility(View.GONE);
+                                                 mapFragment.getView().setVisibility(View.VISIBLE);
+                                             }else{
 
+                                                 ArrayList y = new ArrayList();
+
+                                                 double dist = 0;
+                                                 double time = 0;
+                                                 double bat = 100;
+                                                 double reich = 415000;
+                                                 for (int i = 1; i<ecarLatList.size(); i++){
+                                                     dist = dist + calcDist(ecarLatList.get(i-1).getData(),ecarLongList.get(i-1).getData(),ecarLatList.get(i).getData(),ecarLongList.get(i).getData());
+                                                     time = time + ecarLatList.get(i).getTime()-ecarLatList.get(i-1).getTime();
+                                                     bat = 100 - (dist/reich*100);
+                                                     y.add(new BarEntry((float)time,(float)bat));
+
+
+                                                 }
+
+
+
+
+                                                 auswert.chartBeispiel(y);
+                                                 auswert.getView().setVisibility(View.VISIBLE);
+                                                 mapFragment.getView().setVisibility(View.GONE);
+                                             }
+                                         }
+                                     }
+        );
     }
+
 
 
     /**
@@ -101,9 +147,9 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         if(ecarLatList.size() > 0) {
             initMarker();
 
-        float zoomLevel = 14; //This goes up to 21
-        LatLng center = new LatLng(ecarLatList.get(ecarLatList.size()/2).getData(),ecarLongList.get(ecarLongList.size()/2).getData());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoomLevel));
+            float zoomLevel = 14; //This goes up to 21
+            LatLng center = new LatLng(ecarLatList.get(ecarLatList.size()/2).getData(),ecarLongList.get(ecarLongList.size()/2).getData());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoomLevel));
         }
     }
 
@@ -198,9 +244,9 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         double lng = Math.toRadians(lon1 - lon2);
         double a = Math.sin(lat/2) * Math.sin(lat/2) +
                 Math.cos(Math.toRadians(lat2))
-                *Math.cos(Math.toRadians(lat1))
-                *Math.sin(lng/2)
-                *Math.sin(lng/2);
+                        *Math.cos(Math.toRadians(lat1))
+                        *Math.sin(lng/2)
+                        *Math.sin(lng/2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         dist = earth * c;
         return (dist);
@@ -219,6 +265,15 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     private String ausgabe()//Methode, welche einen String zum ausgeben erzeugt
     {
         return "Strecke: " + getStrDist()+ "\nGeschw.: " + getStrSpeed();
+    }
+
+    private void auswertungFragment()
+    {
+        setTitle("Auswertung");
+        auswert = new AuswertungFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.auswertung, auswert).commit();
+
     }
 
     public String getStrDist() {

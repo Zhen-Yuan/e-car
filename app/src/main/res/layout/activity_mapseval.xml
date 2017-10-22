@@ -42,6 +42,23 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="30dp" />
 
+        <Button
+            android:id="@+id/bttn_ausw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/ddmenuspinner"
+            android:text="Auswertung" />
+
+        <fragment
+            android:id="@+id/auswertung"
+            android:name="com.example.denis.ecar.fragment_Uebersicht.AuswertungFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/map" />
 
 
     </RelativeLayout>
