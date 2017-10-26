@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
     DataCollector dataCollector;
     private ImageView ivProfileImage;
     private TextView tvUsername;
-
+////////////
     int images[] = {R.drawable.tesla3,R.drawable.tesla4};
     //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
     private ArrayList<Integer> arr_images = new ArrayList<>();
