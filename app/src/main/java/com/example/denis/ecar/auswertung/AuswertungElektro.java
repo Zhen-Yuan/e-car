@@ -19,6 +19,11 @@ public class AuswertungElektro
         return getdStrecke()/100*dVerbrauchElektro*getdStrompreis();
     }
 
+    public double getKostenElektroProKm(double dVerbrauchElektro)
+    {
+        return getKostenElektro(dVerbrauchElektro)/getdStrecke(); // € pro km
+    }
+
     //Getter/Setter
     public double getdStrecke() {
         return dStrecke;

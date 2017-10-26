@@ -21,6 +21,10 @@ public class AuswertungBenzin {
     {//Ausgabe in Euro, Verbrauch BMW 750i xDrive 11.9l/100km
         return getdStrecke()/100*dVerbrauchBenzin*dBenzinpreis;
     }
+    public double getKostenBenzinProKm(double dVerbrauchBenzin,double dBenzinpreis)
+    {
+        return getKostenBenzin(dVerbrauchBenzin,dBenzinpreis)/getdStrecke();
+    }
     //Getter/Setter
     public double getdStrecke() {
         return dStrecke;
