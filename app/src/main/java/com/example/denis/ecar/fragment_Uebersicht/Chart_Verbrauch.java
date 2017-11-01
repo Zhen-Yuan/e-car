@@ -7,9 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.TextView;
 
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -42,6 +44,10 @@ public class Chart_Verbrauch extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        return MoveAnimation.create(MoveAnimation.UP,enter,300);
     }
     private void init()
     {

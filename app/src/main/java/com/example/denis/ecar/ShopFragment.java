@@ -6,8 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 
 /**
  * Created by denis on 29.07.2017.
@@ -33,7 +36,10 @@ public class ShopFragment extends Fragment
         });
         return v;
     }
-
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        return MoveAnimation.create(MoveAnimation.UP,enter,300);
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

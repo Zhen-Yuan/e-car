@@ -7,8 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.TextView;
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -46,7 +48,10 @@ public class UebersichtFragment extends Fragment
         //TODO: Infoausgabe
         return v;
     }
-
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        return MoveAnimation.create(MoveAnimation.UP,enter,300);
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
