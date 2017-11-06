@@ -8,7 +8,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.denis.ecar.datenbank.EcarData;
@@ -29,6 +27,7 @@ import com.example.denis.ecar.fuellmethoden.DataGenerator;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,7 @@ public class MainActivity extends AppCompatActivity
     DataGenerator dataGenerator;
     DataCollector dataCollector;
     private ImageView ivProfileImage;
-    private TextView tvUsername;
-////////////
+
     int images[] = {R.drawable.tesla3,R.drawable.tesla4};
     //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
     private ArrayList<Integer> arr_images = new ArrayList<>();
@@ -80,8 +78,9 @@ public class MainActivity extends AppCompatActivity
         uebersichtFragment();
         initImageView();
         firebaseAuth = FirebaseAuth.getInstance();
-        tvUsername = (TextView)findViewById(R.id.tvUsername);
-        //tvUsername.setText("");
+        //firebaseDB = UserPref.getFirebaseDB();
+        //((TextView)findViewById(R.id.tvUsername)).setText(updateUsername());
+        //tvUsername.setText(firebaseAuth.getCurrentUser().getDisplayName());
     }
     private void setActivityBackgroundcolor(int color)
     {
@@ -206,8 +205,6 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -249,8 +246,26 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void updateUsername() {
+        //TODO
+    }
+
+
     private void updateImage() {
         //TODO
+    }
+
+    /**
+     * Prueft, ob der im Paramenter angegebene Provider mit dem Acc verbunden ist.
+     * @param providerId enthaelt den zu pruefenden Provider.
+     * @return false, wenn dies nicht der Fall ist und true, wenn es zutrifft
+     */
+    private boolean isLinked(String providerId) {
+        for (UserInfo userInfo: firebaseAuth.getCurrentUser().getProviderData()) {
+            if (userInfo.getProviderId().equals(providerId))
+                return true;
+        }
+        return false;
     }
 
 

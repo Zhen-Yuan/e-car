@@ -1,17 +1,15 @@
 package com.example.denis.ecar;
 
-/**
- * Created by Norbert on 01.10.2017.
- * Modified by Shinmei on 17.10.2017.
- */
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.camera2.params.Face;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -20,13 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.denis.ecar.login.LoginActivity;
-import com.example.denis.ecar.login.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -51,24 +49,29 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.Arrays;
 
+/**
+ * Created by Norbert on 01.10.2017.
+ * Modified by Shinmei on 17.10.2017.
+ */
 
-public class Settings extends AppCompatActivity implements  DatabaseReference.CompletionListener {
+
+public class Settings extends AppCompatActivity {
 
     public static final String TAG = "settings";
+    public static final int REQUEST_GALLERY = 11;
     SharedPreferences sp;
     SharedPreferences.Editor spe;
     FirebaseAuth firebaseAuth;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
-    private User user;
     private static final int RC_SIGN_IN_GOOGLE = 9001;
     private SeekBar seekBar;
+    private ImageView ivProfile;
     private TextView tv3;
+    private TextView tvUsername;
     private EditText etEmail;
     private EditText etPassword;
     private Button bttnReg_ChangePw;
@@ -87,15 +90,25 @@ public class Settings extends AppCompatActivity implements  DatabaseReference.Co
 
 
     public void init(){
+        ivProfile = (ImageView)findViewById(R.id.ivProfile);
         etEmail = (EditText)findViewById(R.id.etEmail);
         etPassword = (EditText) findViewById(R.id.etPassword);
         firebaseAuth = FirebaseAuth.getInstance();
         bttnReg_ChangePw = (Button) findViewById(R.id.bttnReg_ChangePw);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         tv3 = (TextView) findViewById(R.id.textView3);
+        tvUsername = (TextView) findViewById(R.id.tvUsername);
         seekBar.setMax(60);
         seekBar.setProgress(sp.getInt("interval", 30));
         tv3.setText(String.valueOf(seekBar.getProgress()));
+
+        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+        });
         seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -194,11 +207,11 @@ public class Settings extends AppCompatActivity implements  DatabaseReference.Co
 
 
     private void initUser() {
-        user = new User();
-        user.setEmail( etEmail.getText().toString());
+        //user = new User();
+        //user.setEmail( etEmail.getText().toString());
     }
 
-
+    /*
     @Override
     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
         if (databaseError != null){
@@ -209,13 +222,17 @@ public class Settings extends AppCompatActivity implements  DatabaseReference.Co
             firebaseAuth.getCurrentUser().delete();
             firebaseAuth.signOut();
             finish();
-    }
+    }   */
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_GALLERY) {
+                Uri selectImage = data.getData();
+                ivProfile.setImageURI(selectImage);
+        }
         if (requestCode == RC_SIGN_IN_GOOGLE) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
@@ -225,6 +242,13 @@ public class Settings extends AppCompatActivity implements  DatabaseReference.Co
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+
+    }
+
+
+    public void selectImage() {
+        Intent gallery = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, REQUEST_GALLERY);
     }
 
 
@@ -324,8 +348,8 @@ public class Settings extends AppCompatActivity implements  DatabaseReference.Co
                                     Toast.LENGTH_SHORT).show();
                             initButtons();
                             if (isLastProvider(providerId)){
-                                user.setId(firebaseAuth.getCurrentUser().getUid());
-                                user.removeDB(Settings.this);
+                                //user.setId(firebaseAuth.getCurrentUser().getUid());
+                               // user.removeDB(Settings.this);
                             }
                         } else {
                             Log.w(TAG, "fehlgeschlagen", task.getException());
@@ -397,14 +421,47 @@ public class Settings extends AppCompatActivity implements  DatabaseReference.Co
         dialog.show();
     }
 
+    /**
+     * Verschickt eine Verfizierungs-E-Mail mithilfe von firebase.
+     * @param user ist der aktuelle User
+     */
+    private void sendEmailVerification(FirebaseUser user) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //showToast("E-Mail-Verfikation gesendet.");
+                        } else {
+                            Log.e(TAG, "sendEmailVerification", task.getException());
+                            //showToast("Versenden fehlgeschlagen.");
+                        }
+                    }
+                });
+    }
+
 
     /**
      * Loescht den Account des Users und leitet zum Loginscreen weiter.
      * @param user enthaelt den aktuellen User
      */
     private void deleteAcc(FirebaseUser user) {
-        user.delete();
-        startActivity(new Intent(Settings.this, LoginActivity.class));
+        if (user == null) {
+            return;
+        }
+        user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "fehlgeschlagen", task.getException());
+                    Toast.makeText(Settings.this, "Löschung fehlgeschlagen.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(Settings.this, "Löschung erfolgreich.",
+                        Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(Settings.this, LoginActivity.class));
+            }
+        });
     }
-
 }

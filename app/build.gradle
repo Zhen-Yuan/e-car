@@ -25,8 +25,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.google.android.gms:play-services-awareness:11.0.4'
@@ -34,6 +34,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:11.0.4'
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    compile 'com.google.firebase:firebase-crash:11.0.4'
     compile 'com.google.firebase:firebase-database:11.0.4'
     compile 'com.labo.kaji:fragmentanimations:0.1.1'
     testCompile 'junit:junit:4.12'

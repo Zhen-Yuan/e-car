@@ -18,11 +18,11 @@
         android:id="@+id/ivProfileImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:paddingBottom="10dp"
         android:src="@drawable/default_profile"/>
 
     <TextView
         android:id="@+id/tvUsername"
+        android:paddingTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 

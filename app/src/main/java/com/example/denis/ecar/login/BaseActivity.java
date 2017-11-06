@@ -1,42 +1,43 @@
 package com.example.denis.ecar.login;
 
-import android.app.ProgressDialog;
-import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.example.denis.ecar.R;
 
 /**
  * Created by Shinmei on 22.08.2017.
  */
 
-public class BaseActivity extends AppCompatActivity {
+abstract public class BaseActivity extends AppCompatActivity {
+
+    protected EditText etEmail;
+    protected EditText etPassword;
+    protected ProgressBar progressBar;
 
 
-    @VisibleForTesting
-    public ProgressDialog mProgressDialog;
-
-
-    public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.loading));
-            mProgressDialog.setIndeterminate(true);
-        }
-        mProgressDialog.show();
+    protected void showSnackbar(String message ){
+        Snackbar.make(progressBar, message, Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
 
 
-    public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
+    protected void showToast( String message ){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        hideProgressDialog();
+    protected void openProgressBar(){
+        progressBar.setVisibility( View.VISIBLE );
     }
+
+
+    protected void closeProgressBar(){
+        progressBar.setVisibility( View.GONE );
+    }
+
+
+    abstract protected void initUser();
 }

@@ -30,6 +30,7 @@
 
     <string name="PasswortAendern">Passwort ändern</string>
     <string name="PasswortVorgabe">Das Passwort muss mindestens 6 Zeichen umfassen.</string>
+    <string name="PasswortReset">Passwort zurücksetzen</string>
 
     <string name="rechtliches">AGB und Datenschutzrichtlinien</string>
     <string name="Registrieren">Registrieren</string>

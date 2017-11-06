@@ -1,4 +1,4 @@
-package com.example.denis.ecar.login;
+package com.example.denis.ecar.sharedPref;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,24 +6,27 @@ import android.content.SharedPreferences;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+
 /**
  * Created by Shinmei on 20.10.2017.
  */
 
-public class SaveProviders {
+public class UserPref {
 
-    public static String PREF = "com.example.denis.ecar.PREF";
+    public static String PREF = "com.example.denis.ecar.sharedPref.PREF";
     private static DatabaseReference firebaseDB;
 
 
-    private SaveProviders() {}
+    private UserPref() {
+
+    }
 
 
-    public static DatabaseReference getFirebaseDB() {
-        if (firebaseDB == null) {
+    public static DatabaseReference getFirebaseDB(){
+        if(firebaseDB == null){
             firebaseDB = FirebaseDatabase.getInstance().getReference();
         }
-        return firebaseDB;
+        return(firebaseDB);
     }
 
 
