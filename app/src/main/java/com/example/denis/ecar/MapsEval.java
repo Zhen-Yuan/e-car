@@ -15,6 +15,7 @@ import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
 import com.example.denis.ecar.fragment_Uebersicht.Chart_Verbrauch;
+import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche;
 import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
@@ -47,7 +49,8 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     private String strSpeed;
     private Button bttn_ausw;
     SupportMapFragment mapFragment;
-    private Chart_Verbrauch auswert;
+    private Chart_Verbrauch auswertVerbrauch;
+    private Chart_Woche auswertWoche;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +61,10 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         //auswertungFragment();
-        auswert = (Chart_Verbrauch) getSupportFragmentManager().findFragmentById(R.id.auswertung);
-        auswert.getView().setVisibility(View.GONE);
+        auswertVerbrauch = (Chart_Verbrauch) getSupportFragmentManager().findFragmentById(R.id.auswertung);
+        auswertVerbrauch.getView().setVisibility(View.GONE);
+        auswertWoche = (Chart_Woche) getSupportFragmentManager().findFragmentById(R.id.auswertungWoche);
+        auswertWoche.getView().setVisibility(View.GONE);
 
         ddmenu = (Spinner) findViewById(R.id.ddmenuspinner);
         ddmenu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -93,13 +98,17 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         bttn_ausw.setOnClickListener(new View.OnClickListener() {
                                          @Override
                                          public void onClick(View v) {
-                                             if(auswert.getView().getVisibility() == View.VISIBLE) {
-                                                 auswert.getView().setVisibility(View.GONE);
-                                                 mapFragment.getView().setVisibility(View.VISIBLE);
-                                             }else{
+                                             if (mapFragment.getView().getVisibility() == View.VISIBLE) {
                                                  chartVerbrauch();
-                                                 auswert.getView().setVisibility(View.VISIBLE);
+                                                 auswertVerbrauch.getView().setVisibility(View.VISIBLE);
                                                  mapFragment.getView().setVisibility(View.GONE);
+                                             } else if (auswertVerbrauch.getView().getVisibility() == View.VISIBLE) {
+                                                 chartWoche();
+                                                 auswertVerbrauch.getView().setVisibility(View.GONE);
+                                                 auswertWoche.getView().setVisibility(View.VISIBLE);
+                                             } else if (auswertWoche.getView().getVisibility() == View.VISIBLE) {
+                                                 auswertWoche.getView().setVisibility(View.GONE);
+                                                 mapFragment.getView().setVisibility(View.VISIBLE);
                                              }
                                          }
                                      }
@@ -261,7 +270,83 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
             bat = 100 - (dist/reich*100);
             y.add(new BarEntry((float)time,(float)bat));
         }
-        auswert.chartBeispiel(y);
+        auswertVerbrauch.chartBeispiel(y);
+    }
+
+    private void chartWoche(){
+        ArrayList<Double> y = new ArrayList<Double>();
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        double dist = 0;
+        List<EcarData> allData;
+        dataSource.open();
+        allData = dataSource.getAllEcarData();  //lat->long->lat->long....
+        dataSource.close();
+        Calendar calnow = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
+        for (int i = 0; i < allData.size() - 2; i = i + 2) {
+            cal.setTimeInMillis((long) allData.get(i).getTime() * 1000);
+            //calendar.add(Calendar.DAY_OF_YEAR, -90);
+
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(6, y.get(6) + dist);
+                }
+            }
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(5, y.get(5) + dist);
+                }
+            }
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(4, y.get(4) + dist);
+                }
+            }
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(3, y.get(3) + dist);
+                }
+            }
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(2, y.get(2) + dist);
+                }//Log.d("dist",dist/1000+"");
+            }
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(1, y.get(1) + dist);
+                }
+            }
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                    y.set(0, y.get(0) + dist);
+                }
+            }
+            calnow.add(Calendar.DATE, 6);
+        }
+
+
+        //Log.d("Calendar",calnow.get(Calendar.DATE)+"");
+        auswertWoche.chartBeispiel(y);
     }
 
     public String getStrDist() {

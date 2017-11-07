@@ -237,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     dataSource.open();
                     SID = getNewSID();
                     dataSource.createEcarSession(SID, "Strecke_"+SID);
-                    handler(2000);
+                    handler(interval*1000);
 
                 }
                 else
@@ -355,7 +355,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Berechnung der Geschwindigkeit
     private double calcVelocity(Location p1, Location p2){
         double dist = calcDist(p1.getLatitude(), p1.getLongitude(), p2.getLatitude(), p2.getLongitude());
-        double time_s = 2;//(p2.getTime() - p1.getTime()) / 1000.0;
+        double time_s = interval;//(p2.getTime() - p1.getTime()) / 1000.0;
         double speed_mps = dist / time_s;
         double speed_kph = (speed_mps * 3600.0) / 1000.0;
         return speed_kph;
