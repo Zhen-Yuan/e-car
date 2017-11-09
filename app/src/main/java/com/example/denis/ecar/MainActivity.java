@@ -24,6 +24,7 @@ import com.example.denis.ecar.datenbank.EcarSession;
 import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
 import com.example.denis.ecar.fuellmethoden.DataCollector;
 import com.example.denis.ecar.fuellmethoden.DataGenerator;
+import com.example.denis.ecar.liveAuswertung.LiveAuswertung;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity
         // Navigation
         int id = item.getItemId();
         if (id == R.id.nav_activity1) {
-            evalMaps();
+            oeffneMain();
         } else if (id == R.id.nav_Activity2) {
             oeffneMaps();
         } else if (id == R.id.nav_Activity3) {
@@ -202,12 +203,30 @@ public class MainActivity extends AppCompatActivity
             openSettings();
         } else if(id == R.id.nav_logout) {
             signOut();
+        } else if(id == R.id.nav_ActivityAuswertung)
+        {
+            evalMaps();
+        }else if(id == R.id.nav_ActivityLiveAuswertung)
+        {
+            oeffneLiveAuswertung();
         }
+
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void oeffneLiveAuswertung()
+    {
+        Intent intentAuswertung = new Intent(MainActivity.this, LiveAuswertung.class);
+        startActivity(intentAuswertung);
+    }
+    private void oeffneMain()
+    {
+        Intent intentMain = new Intent(MainActivity.this,MainActivity.class);
+        startActivity(intentMain);
     }
     private void oeffneMaps()//Öffnet eine neue Activity(Maps)
     {

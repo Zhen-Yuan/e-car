@@ -18,6 +18,14 @@
             android:id="@+id/nav_Activity4"
             android:icon="@android:drawable/ic_menu_info_details"
             android:title="Info" />
+        <item
+            android:id="@+id/nav_ActivityAuswertung"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Auswertung" />
+        <item
+            android:id="@+id/nav_ActivityLiveAuswertung"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="LiveAuswertung" />
     </group>
 
     <item

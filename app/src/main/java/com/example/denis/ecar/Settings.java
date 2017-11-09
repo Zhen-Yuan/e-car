@@ -373,9 +373,12 @@ public class Settings extends AppCompatActivity {
      * @return false, wenn dies nicht der Fall ist und true, wenn es zutrifft
      */
     private boolean isLinked(String providerId) {
-        for (UserInfo userInfo: firebaseAuth.getCurrentUser().getProviderData()) {
-            if (userInfo.getProviderId().equals(providerId))
-                return true;
+        if(providerId != null) // Um Crash bei nicht vorhandener Verlinkung zu unterbinden
+        {
+            for (UserInfo userInfo : firebaseAuth.getCurrentUser().getProviderData()) {
+                if (userInfo.getProviderId().equals(providerId))
+                    return true;
+            }
         }
         return false;
     }
