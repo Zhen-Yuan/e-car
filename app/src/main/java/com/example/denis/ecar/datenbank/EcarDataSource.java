@@ -204,6 +204,18 @@ public class EcarDataSource {
 
         return ecarUser;
     }
+    public void updateUser(EcarUser euser){
+        ContentValues values = new ContentValues();
+        values.put(EcarDbHelper.COLUMN_USER_NAME, euser.getName());
+        values.put(EcarDbHelper.COLUMN_USER_EMAIL, euser.getEmail());
+        values.put(EcarDbHelper.COLUMN_SETTINGS_ID, euser.getSid());
+        try {
+            database.update(EcarDbHelper.TABLE_USER, values, "_id=" + euser.getUid(), null);
+        }
+        catch (Exception ex){
+            Log.d(LOG_TAG, "Fehler: "+ex);
+        }
+    }
 
     public EcarSettings createEcarSettings(){
         ContentValues values = new ContentValues();
@@ -606,6 +618,7 @@ public class EcarDataSource {
 
         return ecarCarList;
     }
+
     public Cursor SqlQuarry(String com, String[] vars){
         // Anwendungs beispiel: rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
         try {
@@ -624,4 +637,5 @@ public class EcarDataSource {
             Log.d(LOG_TAG,"Fehler: " +ex);
         }
     }
+
 }
