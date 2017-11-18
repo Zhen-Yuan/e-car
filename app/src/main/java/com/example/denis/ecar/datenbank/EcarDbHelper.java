@@ -1,4 +1,4 @@
-package com.example.denis.ecar.datenbank;
+package com.example.denis.ecar.datenbank;//.
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
