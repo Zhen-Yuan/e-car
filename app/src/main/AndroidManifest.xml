@@ -61,10 +61,10 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAqZEcbunmWjxHoEJyD8FYFPnP6xSIOKLo" />
+            android:value="AIzaSyCVsAmu2fxHkV7xAYbIQmwyUMbPWkSZrNM" />
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyAqZEcbunmWjxHoEJyD8FYFPnP6xSIOKLo" />
+            android:value="AIzaSyCVsAmu2fxHkV7xAYbIQmwyUMbPWkSZrNM" />
 
         <activity
             android:name=".MapsActivity"
