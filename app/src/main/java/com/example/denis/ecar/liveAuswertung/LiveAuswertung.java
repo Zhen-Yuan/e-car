@@ -40,6 +40,7 @@ public class LiveAuswertung extends Activity
     TextView tvGeschwindigkeit;
     ListView lvAusgabe;
     FloatingActionButton fabStartStop;
+    String[] values;
     public String strActivity;
     public String strWeather;
     public String strHeadphones;
@@ -74,7 +75,33 @@ public class LiveAuswertung extends Activity
         tvGeschwindigkeit.setText("0"+" km/h");
         fabStartStop = (FloatingActionButton) findViewById(R.id.fabStartStop);
         lvAusgabe = (ListView) findViewById(R.id.lvDaten);
+        // Anzeigearray
+        values = new String[]{
+                "Geschwindigkeit(⌀): ",
+                "Batterie: ",
+                "Strecke: ",
+                "CO2 Einsparung: ",
+                "Wetter: ",
+        };
 
+        // Adapterdefinition
+        // Erster  Parameter - Context
+        // Zweiter Parameter - Layout(reihen)
+        // Dritter Parameter - lvID (Wo wird geschrieben?)
+        // Vierter Parameter - DatenArray
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+
+        // Zuweisung des Adapters
+        lvAusgabe.setAdapter(adapter);
+        //Nicht plausible Startwerte
+        setBatterie(-1);
+        setCO2Einsparung(-1);
+        setDurchschnittGeschwindigkeit(-1);
+        setWetter("-1");
+        setStrecke(-1);
     }
     private void initAwareness()
     {
@@ -103,12 +130,12 @@ public class LiveAuswertung extends Activity
             {
                 if (!weatherResult.getStatus().isSuccess()) {
                     setStrWeather("Wetter: Wetter konnte nicht geladen werden.");
-                    //tv_disp.setText(ausgabe());
+                    //AUSGABE
                     return;
                 }
                 Weather weather = weatherResult.getWeather();
                 setStrWeather(weather.toString());
-                //tv_disp.setText(ausgabe());
+                //AUSGABE
             }
         });
     }//Methode, welche durch die AwarenessAPI das aktuelle Wetter ermittelt.
@@ -119,13 +146,13 @@ public class LiveAuswertung extends Activity
             public void onResult(@NonNull DetectedActivityResult detectedActivityResult) {
                 if (!detectedActivityResult.getStatus().isSuccess()) {
                     setStrActivity("Konnte noch nicht ermittelt werden.");//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                    //tv_disp.setText(ausgabe());
+                    //AUSGABE
                     return;
                 }
                 ActivityRecognitionResult ar = detectedActivityResult.getActivityRecognitionResult();
                 DetectedActivity probableActivity = ar.getMostProbableActivity();
                 setStrActivity(probableActivity.toString());//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                //tv_disp.setText(ausgabe());
+                //AUSGABE
             }
         });
     }
@@ -148,7 +175,7 @@ public class LiveAuswertung extends Activity
             public void onResult(@NonNull LocationResult locationResult) {
                 if (!locationResult.getStatus().isSuccess()) {
                     setStrLocation("Locationstatus nicht verfügbar");
-                    //tv_disp.setText(ausgabe());
+                    //AUSGABE
                     return;
                 }
 
@@ -201,4 +228,30 @@ public class LiveAuswertung extends Activity
         this.location = location;
     }
 
+    //Setter für value
+    /*
+    Beispiel:
+    setDurchschnittGeschwindigkeit(dBerechnete Geschwindigkeit)
+    Fertig. Anzeige aktualisiert!
+     */
+    private void setDurchschnittGeschwindigkeit(double dDurchschnittGeschwindigkeit)
+    {
+        values[0] = "Geschwindigkeit(⌀): " + String.valueOf(dDurchschnittGeschwindigkeit)+"km/h";
+    }
+    private void setBatterie(double dBatterieProzent)
+    {
+        values[1] = "Batterie: " + String.valueOf(dBatterieProzent)+"%";
+    }
+    private void setStrecke(double dStrecke)
+    {
+        values[2] = "Strecke: " + String.valueOf(dStrecke) +"km";
+    }
+    private void setCO2Einsparung(double dCO2Einsparung)
+    {
+        values[3] = "CO2 Einsparung: " + String.valueOf(dCO2Einsparung) + "g";
+    }
+    private void setWetter(String strWetter)
+    {
+        values[4] = "Wetter: " + strWetter;
+    }
 }

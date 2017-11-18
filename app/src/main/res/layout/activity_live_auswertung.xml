@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -23,10 +24,13 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@android:drawable/ic_media_play" />
 
     <ListView
         android:id="@+id/lvDaten"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:textSize="30dp"
+        android:layout_height="match_parent"
+        android:divider="@android:drawable/divider_horizontal_bright"
+        tools:background="@color/colorAccent" />
 </LinearLayout>
