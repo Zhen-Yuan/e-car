@@ -1,14 +1,34 @@
 package com.example.denis.ecar.liveAuswertung;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.denis.ecar.MapsActivity;
 import com.example.denis.ecar.R;
+import com.google.android.gms.awareness.Awareness;
+import com.google.android.gms.awareness.snapshot.DetectedActivityResult;
+import com.google.android.gms.awareness.snapshot.LocationResult;
+import com.google.android.gms.awareness.snapshot.WeatherResult;
+import com.google.android.gms.awareness.state.Weather;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.DetectedActivity;
+
+import java.util.ArrayList;
 
 /**
  * Created by Denis on 09.11.2017.
@@ -17,13 +37,29 @@ import com.example.denis.ecar.R;
 public class LiveAuswertung extends Activity
 {
 
-    TextView tvLiveAuswertung;
+    TextView tvGeschwindigkeit;
+    ListView lvAusgabe;
+    FloatingActionButton fabStartStop;
+    public String strActivity;
+    public String strWeather;
+    public String strHeadphones;
+    public String strLocation;
+    private Location location;
+    public Activity activity; // Für die Initalisierung der Ggl-AwarenessAPI benötigt -> siehe initAwareness
+    GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
+    private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
+    public LiveAuswertung()
+    {
+
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_auswertung);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Landscape erzwingen
+        init();
+        initAwareness();
     }
 
     @Override
@@ -32,11 +68,137 @@ public class LiveAuswertung extends Activity
         super.setContentView(view);
     }
 
-    public LiveAuswertung()
+    private void init()
     {
-        //Initialisierung der Platzhalter
-        //tvLiveAuswertung = (TextView) findViewById(R.id.tvLiveauswertung);
-        //Button bttnPlatzhalter0 = (Button) findViewById(R.id.PLATZHALTER1);
-        //Button bttnPlatzhalter1 = (Button) findViewById(R.id.PLATZHALTER2);
+        tvGeschwindigkeit = (TextView) findViewById(R.id.tvGeschwindigkeit);
+        tvGeschwindigkeit.setText("0"+" km/h");
+        fabStartStop = (FloatingActionButton) findViewById(R.id.fabStartStop);
+        lvAusgabe = (ListView) findViewById(R.id.lvDaten);
+
     }
+    private void initAwareness()
+    {
+        mGoogleApiClient = new GoogleApiClient.Builder(LiveAuswertung.this) //Erstellung eines GoogleApiClients, um die AwarenessAPI verwenden zu können.
+                .addApi(Awareness.API) // Gewünschte Api hinzufügen.
+                .build(); //Erstellung des Objekts.
+        mGoogleApiClient.connect();
+        location();
+    }
+
+    private void weather() {
+        //Persmissioncheck
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Awareness.SnapshotApi.getWeather(mGoogleApiClient).setResultCallback(new ResultCallback<WeatherResult>() {
+            @Override
+            public void onResult(@NonNull WeatherResult weatherResult)
+            {
+                if (!weatherResult.getStatus().isSuccess()) {
+                    setStrWeather("Wetter: Wetter konnte nicht geladen werden.");
+                    //tv_disp.setText(ausgabe());
+                    return;
+                }
+                Weather weather = weatherResult.getWeather();
+                setStrWeather(weather.toString());
+                //tv_disp.setText(ausgabe());
+            }
+        });
+    }//Methode, welche durch die AwarenessAPI das aktuelle Wetter ermittelt.
+    private void activity() //Methode, welche durch die AwarenessAPI die aktuelle Aktivität ermittelt.
+    {
+        Awareness.SnapshotApi.getDetectedActivity(mGoogleApiClient).setResultCallback(new ResultCallback<DetectedActivityResult>() {
+            @Override
+            public void onResult(@NonNull DetectedActivityResult detectedActivityResult) {
+                if (!detectedActivityResult.getStatus().isSuccess()) {
+                    setStrActivity("Konnte noch nicht ermittelt werden.");//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
+                    //tv_disp.setText(ausgabe());
+                    return;
+                }
+                ActivityRecognitionResult ar = detectedActivityResult.getActivityRecognitionResult();
+                DetectedActivity probableActivity = ar.getMostProbableActivity();
+                setStrActivity(probableActivity.toString());//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
+                //tv_disp.setText(ausgabe());
+            }
+        });
+    }
+
+
+    private void location() {
+        //Automatisch generierter Permissioncheck.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Awareness.SnapshotApi.getLocation(mGoogleApiClient).setResultCallback(new ResultCallback<LocationResult>() {
+            @Override
+            public void onResult(@NonNull LocationResult locationResult) {
+                if (!locationResult.getStatus().isSuccess()) {
+                    setStrLocation("Locationstatus nicht verfügbar");
+                    //tv_disp.setText(ausgabe());
+                    return;
+                }
+
+                setLocation(locationResult.getLocation()); //Aktuelle Location wird zwischengespeichert.
+                setStrLocation("Latitude: " + locationResult.getLocation().getLatitude() + "//Longitude:" + locationResult.getLocation().getLongitude());
+                locationList.add(locationResult.getLocation());// Für spätere Verwendung werden die Locations in einer Liste temporär gespeichert.
+                setLocation(locationResult.getLocation());
+            }
+        });
+    }//Methode, welche durch die AwarenessAPI die aktuelle Location ermittelt.
+
+    //GETTER SETTER
+    public String getStrActivity() {
+        return strActivity;
+    }
+
+    public void setStrActivity(String strActivity) {
+        this.strActivity = strActivity;
+    }
+
+    public String getStrWeather() {
+        return strWeather;
+    }
+
+    public void setStrWeather(String strWeather) {
+        this.strWeather = strWeather;
+    }
+
+    public String getStrHeadphones() {
+        return strHeadphones;
+    }
+
+    public void setStrHeadphones(String strHeadphones) {
+        this.strHeadphones = strHeadphones;
+    }
+
+    public String getStrLocation() {
+        return strLocation;
+    }
+
+    public void setStrLocation(String strLocation) {
+        this.strLocation = strLocation;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
 }

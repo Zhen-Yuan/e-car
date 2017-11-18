@@ -1,46 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/PLATZHALTER2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Platzhalter Batterie" />
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvGeschwindigkeit"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="194dp"
+        android:background="@drawable/side_nav_bar"
+        android:clickable="false"
+        android:gravity="center"
+        android:text="0 km/h"
+        android:textColor="#EEEEEE"
+        android:textSize="60sp"
+        android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabStartStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
-            <Button
-                android:id="@+id/PLATZHALTER1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Platzhaler Tacho" />
-
-            <TextView
-                android:id="@+id/tvLiveauswertung"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Platzhalter LiveAuswertung(text)" />
-        </LinearLayout>
-
-    </LinearLayout>
+    <ListView
+        android:id="@+id/lvDaten"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

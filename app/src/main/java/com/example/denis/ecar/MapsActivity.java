@@ -53,7 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String strWeather;
     private String strHeadphones;
     private String strLocation;
-    private String strDist = "0";
+    private String strDist = "0"; // TODO: Warum wird die Variable hier initalisiert?
     private String strSpeed;
     private LatLng latLng;
     private TextView tv_disp; //-> Infofenster.
@@ -63,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean record = false;
     private EcarDataSource dataSource = new EcarDataSource(this);
     private int SID;
-    private int interval;
+    private int intervall;
     SharedPreferences sp;
 
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
@@ -107,8 +107,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build(); //Erstellung des Objekts.
         mGoogleApiClient.connect();
 
-        interval = sp.getInt("interval", 30); //Aufnahme Intervall einstellen über sharedpreferences
-        Log.d("Aufnahme-Intervall ", interval+"");
+        intervall = sp.getInt("intervall", 30); //Aufnahme Intervall einstellen über sharedpreferences
+        Log.d("Aufnahmeintervall ", intervall+"");
     }
     //Awarenessmethoden
     private void startAwareness() {
@@ -237,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     dataSource.open();
                     SID = getNewSID();
                     dataSource.createEcarSession(SID, "Strecke_"+SID);
-                    handler(interval*1000);
+                    handler(intervall*1000);
 
                 }
                 else
@@ -355,7 +355,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Berechnung der Geschwindigkeit
     private double calcVelocity(Location p1, Location p2){
         double dist = calcDist(p1.getLatitude(), p1.getLongitude(), p2.getLatitude(), p2.getLongitude());
-        double time_s = interval;//(p2.getTime() - p1.getTime()) / 1000.0;
+        double time_s = intervall;//(p2.getTime() - p1.getTime()) / 1000.0;
         double speed_mps = dist / time_s;
         double speed_kph = (speed_mps * 3600.0) / 1000.0;
         return speed_kph;
