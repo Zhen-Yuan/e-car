@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class EcarDbHelper extends SQLiteOpenHelper{
+public class EcarDbHelper extends SQLiteOpenHelper{//0
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 

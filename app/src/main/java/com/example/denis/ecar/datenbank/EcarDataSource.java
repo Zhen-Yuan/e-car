@@ -70,7 +70,7 @@ public class EcarDataSource {
 
     public void close() {
         dbHelper.close();
-        Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
+        Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen. ");
     }
 
     public EcarUser createEcarUser(String name, String mail, int settingid){
