@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Raja on 25.06.2017.
+ * Created by Raja on 25.06.2017...
  */
 
 public class EcarDataSource {
@@ -46,6 +46,17 @@ public class EcarDataSource {
     private String[] columnssettings = {
             EcarDbHelper.COLUMN_SETTINGS_ID
     };
+    private String[] columnscar = {
+            EcarDbHelper.COLUMN_CAR_ID,
+            EcarDbHelper.COLUMN_CAR_NAME,
+            EcarDbHelper.COLUMN_CAR_MANUFACTURER,
+            EcarDbHelper.COLUMN_CAR_DESC,
+            EcarDbHelper.COLUMN_CAR_EMISSIONS,
+            EcarDbHelper.COLUMN_CAR_CONSUMPTION,
+            EcarDbHelper.COLUMN_CAR_RANGE,
+            EcarDbHelper.COLUMN_CAR_PICTURE,
+            EcarDbHelper.COLUMN_FUEL_ID,
+    };
 
     public EcarDataSource(Context context) {
         Log.d(LOG_TAG, "Unsere DataSource erzeugt jetzt den dbHelper.");
@@ -56,21 +67,6 @@ public class EcarDataSource {
         Log.d(LOG_TAG, "Eine Referenz auf die Datenbank wird jetzt angefragt.");
         database = dbHelper.getWritableDatabase();
         Log.d(LOG_TAG, "Datenbank-Referenz erhalten. Pfad zur Datenbank: " + database.getPath());
-        //Kurzes Einfügen von Daten um die tieferen Tabellen testen zu können
-        //Diese Einträge sollten in der finalen Version im EcarDbHelper OnCreate stehen.
-        try {
-            database.execSQL("INSERT INTO "+dbHelper.TABLE_SETTINGS+" ("+dbHelper.COLUMN_SETTINGS_ID+","+dbHelper.COLUMN_SETTINGS_CONSUMPTION+")\n" +
-                    "VALUES (1, 5);");
-            database.execSQL("INSERT INTO "+dbHelper.TABLE_USER+" ("+dbHelper.COLUMN_USER_ID+","+dbHelper.COLUMN_USER_EMAIL+","+dbHelper.COLUMN_SETTINGS_ID+")\n" +
-                    "VALUES (1, 'test@test.com', 1);");
-            database.execSQL("INSERT INTO "+dbHelper.TABLE_VALUES+" ("+dbHelper.COLUMN_VALUES_ID+","+dbHelper.COLUMN_VALUES_NAME+")\n" +
-                    "VALUES (1, 'Latitude');");
-            database.execSQL("INSERT INTO "+dbHelper.TABLE_VALUES+" ("+dbHelper.COLUMN_VALUES_ID+","+dbHelper.COLUMN_VALUES_NAME+")\n" +
-                    "VALUES (2, 'Longitude');");
-        }
-        catch (Exception ex) {
-            Log.e("Fehler", "Fehler beim Befehl: " + ex.getMessage());
-        }
     }
 
     public void close() {
@@ -109,7 +105,7 @@ public class EcarDataSource {
         byte[] picture = cursor.getBlob(idBild);
 
         EcarUser ecaruser = new EcarUser(name, mail,settingsid);
-        ecaruser.setUid((int) id);
+        ecaruser.setUid((int)id);
         if(picture != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
             ecaruser.setPic(bitmap);
@@ -134,7 +130,7 @@ public class EcarDataSource {
 
         ContentValues values = new ContentValues();
         values.put(EcarDbHelper.COLUMN_USER_PICTURE, barry);
-        database.update(EcarDbHelper.TABLE_USER,values,EcarDbHelper.COLUMN_USER_ID+"="+usr.getUid(), null);
+        database.update(EcarDbHelper.TABLE_USER,values, EcarDbHelper.COLUMN_USER_ID+"="+usr.getUid(), null);
 
         Cursor cursor = database.query(EcarDbHelper.TABLE_USER,
                 columnsuser, EcarDbHelper.COLUMN_USER_ID + "=" + usr.getUid(),
@@ -191,7 +187,7 @@ public class EcarDataSource {
     public EcarUser checkUser(String name, String email){
         String whereClause = null;
         String[] whereArgs = null;
-        whereClause = EcarDbHelper.COLUMN_USER_NAME + " = ? AND "+EcarDbHelper.COLUMN_USER_EMAIL+" = ?";
+        whereClause = EcarDbHelper.COLUMN_USER_NAME + " = ? AND "+ EcarDbHelper.COLUMN_USER_EMAIL+" = ?";
         whereArgs = new String[]{
                 "" + name,
                 "" + email
@@ -208,6 +204,18 @@ public class EcarDataSource {
         cursor.close();
 
         return ecarUser;
+    }
+    public void updateUser(EcarUser euser){
+        ContentValues values = new ContentValues();
+        values.put(EcarDbHelper.COLUMN_USER_NAME, euser.getName());
+        values.put(EcarDbHelper.COLUMN_USER_EMAIL, euser.getEmail());
+        values.put(EcarDbHelper.COLUMN_SETTINGS_ID, euser.getSid());
+        try {
+            database.update(EcarDbHelper.TABLE_USER, values, "_id=" + euser.getUid(), null);
+        }
+        catch (Exception ex){
+            Log.d(LOG_TAG, "Fehler: "+ex);
+        }
     }
 
     public EcarSettings createEcarSettings(){
@@ -295,7 +303,7 @@ public class EcarDataSource {
     public EcarSession auswertungEintragen (EcarSession eses){
         ContentValues values = new ContentValues();
         values.put(EcarDbHelper.COLUMN_SESSION_EVALUATION, 1);
-        database.update(EcarDbHelper.TABLE_SESSION,values,EcarDbHelper.COLUMN_SESSION_ID+"="+eses.getSesid(), null);
+        database.update(EcarDbHelper.TABLE_SESSION,values, EcarDbHelper.COLUMN_SESSION_ID+"="+eses.getSesid(), null);
         //String strSQL = "UPDATE "+EcarDbHelper.TABLE_SESSION+" SET "+EcarDbHelper.COLUMN_SESSION_EVALUATION+" = 1 WHERE "+EcarDbHelper.COLUMN_SESSION_ID+" = "+ eses.getSesid();
         Cursor cursor = database.query(EcarDbHelper.TABLE_SESSION,
                 columnssession, EcarDbHelper.COLUMN_SESSION_ID + "=" + eses.getSesid(),
@@ -362,6 +370,33 @@ public class EcarDataSource {
         cursor.close();
 
         return ecarSessionList;
+    }
+    public EcarSession getNamedSession(String s) {
+        String whereClause = null;
+        String[] whereArgs = null;
+
+        whereClause = EcarDbHelper.COLUMN_SESSION_NAME + " = ?";
+        whereArgs = new String[]{
+                "" + s
+        };
+        Cursor cursor = database.query(
+                EcarDbHelper.TABLE_SESSION,
+                columnssession,
+                whereClause,
+                whereArgs,
+                null, null, null);
+
+        if (cursor.getCount() == 0){
+            return null;
+        }
+
+        cursor.moveToFirst();
+        EcarSession eses;
+        eses = cursorToEcarSession(cursor);
+        Log.d(LOG_TAG, eses.toString());
+        cursor.close();
+
+        return eses;
     }
 
     public EcarData createEcarData(double data, int session, int value) {
@@ -432,7 +467,7 @@ public class EcarDataSource {
 
         return ecarDataList;
     }
-    public List<EcarData> getSpecificEcarData(int session,int value) {
+    public List<EcarData> getSpecificEcarData(int session, int value) {
         List<EcarData> ecarDataList = new ArrayList<>();
 
         String whereClause = null;
@@ -475,6 +510,164 @@ public class EcarDataSource {
         cursor.close();
 
         return ecarDataList;
+    }
+
+    public EcarCar createEcarCar(String name, String hersteller, String beschreibung, double emissionen, double verbrauch, double reichweite, Bitmap bild, int treibstoffid){
+
+        ByteArrayOutputStream blob = new ByteArrayOutputStream();
+        if(bild != null) {
+            bild.compress(Bitmap.CompressFormat.PNG, 0 /* Ignored for PNGs */, blob);
+        }
+        byte[] barry = blob.toByteArray();
+
+
+        ContentValues values = new ContentValues();
+        values.put(EcarDbHelper.COLUMN_CAR_NAME, name);
+        values.put(EcarDbHelper.COLUMN_CAR_MANUFACTURER, hersteller);
+        values.put(EcarDbHelper.COLUMN_CAR_DESC, beschreibung);
+        values.put(EcarDbHelper.COLUMN_CAR_EMISSIONS, emissionen);
+        values.put(EcarDbHelper.COLUMN_CAR_CONSUMPTION, verbrauch);
+        values.put(EcarDbHelper.COLUMN_CAR_RANGE, reichweite);
+        values.put(EcarDbHelper.COLUMN_CAR_PICTURE, barry);
+        values.put(EcarDbHelper.COLUMN_FUEL_ID, treibstoffid);
+
+        long insertId = database.insert(EcarDbHelper.TABLE_CAR, null, values);
+
+        Cursor cursor = database.query(EcarDbHelper.TABLE_CAR,
+                columnscar, EcarDbHelper.COLUMN_CAR_ID + "=" + insertId,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        EcarCar ecarauto = cursorToEcarCar(cursor);
+        cursor.close();
+
+        return ecarauto;
+    }
+    private EcarCar cursorToEcarCar(Cursor cursor) {
+        int idIndex = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_ID);
+        int idName = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_NAME);
+        int idHersteller = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_MANUFACTURER);
+        int idBeschreibung = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_DESC);
+        int idEmissionen = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_EMISSIONS);
+        int idVerbrauch = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_CONSUMPTION);
+        int idReichweite = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_RANGE);
+        int idBild = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_PICTURE);
+        int idTreibstoff = cursor.getColumnIndex(EcarDbHelper.COLUMN_FUEL_ID);
+
+        long id = cursor.getLong(idIndex);
+        String name = cursor.getString(idName);
+        String hersteller = cursor.getString(idHersteller);
+        String beschreibung = cursor.getString(idBeschreibung);
+        double emissionen = cursor.getDouble(idEmissionen);
+        double verbrauch = cursor.getDouble(idVerbrauch);
+        double reichweite = cursor.getDouble(idReichweite);
+        byte[] picture = cursor.getBlob(idBild);
+        int treibstoff = cursor.getInt(idTreibstoff);
+
+        EcarCar ecarauto = new EcarCar(
+                name,
+                hersteller,
+                beschreibung,
+                emissionen,
+                verbrauch,
+                reichweite,
+                null,
+                treibstoff);
+
+        if(picture != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
+            ecarauto.setCarpic(bitmap);
+        }
+        ecarauto.setCid((int)id);
+        return ecarauto;
+    }
+    public void deleteEcarCar(EcarCar ecarcar) {
+        int id = ecarcar.getCid();
+
+        database.delete(EcarDbHelper.TABLE_CAR,
+                EcarDbHelper.COLUMN_CAR_ID + "=" + id,
+                null);
+
+        Log.d(LOG_TAG, "Eintrag gelöscht! Inhalt: " + ecarcar.toString());
+    }
+    public List<EcarCar> getCarType(int treibstoff) {
+        List<EcarCar> ecarCarList = new ArrayList<>();
+        String whereClause = null;
+        String[] whereArgs = null;
+
+        whereClause = EcarDbHelper.COLUMN_FUEL_ID + " = ?";
+        whereArgs = new String[]{
+                "" + treibstoff
+        };
+        Cursor cursor = database.query(
+                EcarDbHelper.TABLE_CAR,
+                columnscar,
+                whereClause,
+                whereArgs,
+                null, null, null);
+
+        if (cursor.getCount() == 0) {
+            return null;
+        }
+
+        cursor.moveToFirst();
+        EcarCar ecarcar;
+
+        while (!cursor.isAfterLast()) {
+            ecarcar = cursorToEcarCar(cursor);
+            ecarCarList.add(ecarcar);
+            Log.d(LOG_TAG, "Inhalt: " + ecarcar.toString());
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        return ecarCarList;
+    }
+    public List<EcarCar> getAllCar() {
+        List<EcarCar> ecarCarList = new ArrayList<>();
+
+        Cursor cursor = database.query(
+                EcarDbHelper.TABLE_CAR,
+                columnscar,
+                null,
+                null,
+                null, null, null);
+
+        if (cursor.getCount() == 0) {
+            return null;
+        }
+
+        cursor.moveToFirst();
+        EcarCar ecarcar;
+
+        while (!cursor.isAfterLast()) {
+            ecarcar = cursorToEcarCar(cursor);
+            ecarCarList.add(ecarcar);
+            Log.d(LOG_TAG, "Inhalt: " + ecarcar.toString());
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        return ecarCarList;
+    }
+
+    public Cursor SqlQuarry(String com, String[] vars){
+        // Anwendungs beispiel: rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
+        try {
+            return database.rawQuery(com, vars);
+        }
+        catch (Exception ex){
+            Log.d(LOG_TAG,"Fehler: " +ex);
+            return null;
+        }
+    }
+    public void SqlExec(String com){
+        try {
+            database.execSQL(com);
+        }
+        catch (Exception ex){
+            Log.d(LOG_TAG,"Fehler: " +ex);
+        }
     }
 
 }

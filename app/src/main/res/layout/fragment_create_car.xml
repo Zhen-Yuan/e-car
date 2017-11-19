@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+        <EditText
+            android:id="@+id/eT_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name des Autos"/>
+
+        <EditText
+            android:id="@+id/eT_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/eT_name"
+            android:hint="Beschreibung"/>
+
+        <EditText
+            android:id="@+id/eT_manu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/eT_desc"
+            android:hint="Hersteller"/>
+
+        <RadioGroup
+            android:id="@+id/Fuel_Group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Consumption_Seeker"
+            android:checkedButton="@+id/Fuel_B"
+            android:gravity="center_horizontal">
+
+            <RadioButton
+                android:id="@+id/Fuel_B"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/Fuel_D"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/Fuel_E"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </RadioGroup>
+
+    <SeekBar
+        android:id="@+id/Consumption_Seeker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eT_manu"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/tv_consumption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Consumption_Seeker"
+        android:gravity="center_horizontal" />
+
+    <Button
+        android:id="@+id/bttn_save"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/Consumption_Seeker"
+        android:text="done" />
+
+</RelativeLayout>
+</ScrollView>

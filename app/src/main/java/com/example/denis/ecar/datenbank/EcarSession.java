@@ -1,7 +1,7 @@
 package com.example.denis.ecar.datenbank;
 
 /**
- * Created by Raja on 02.07.2017.
+ * Created by Raja on 02.07.2017...
  */
 
 public class EcarSession {
