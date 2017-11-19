@@ -38,8 +38,6 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     private EcarDataSource dataSource;
     private Spinner ddmenu;
     private TextView tv_disp;
-    private EcarData cardatalat;
-    private EcarData cardatalong;
     private List<EcarSession> ecarSessionList;
     private List<EcarData> ecarLatList;
     private List<EcarData> ecarLongList;

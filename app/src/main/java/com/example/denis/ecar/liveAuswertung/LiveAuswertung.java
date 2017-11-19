@@ -2,6 +2,8 @@ package com.example.denis.ecar.liveAuswertung;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -18,6 +20,8 @@ import android.widget.TextView;
 
 import com.example.denis.ecar.MapsActivity;
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarData;
+import com.example.denis.ecar.datenbank.EcarSession;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.snapshot.DetectedActivityResult;
 import com.google.android.gms.awareness.snapshot.LocationResult;
@@ -29,6 +33,7 @@ import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Denis on 09.11.2017.
@@ -41,6 +46,8 @@ public class LiveAuswertung extends Activity
     ListView lvAusgabe;
     FloatingActionButton fabStartStop;
     String[] values;
+    private List<EcarSession> ecarSessionList;
+    private List<EcarData> ecarLatList, ecarLongList;
     public String strActivity;
     public String strWeather;
     public String strHeadphones;
@@ -60,7 +67,6 @@ public class LiveAuswertung extends Activity
         setContentView(R.layout.activity_live_auswertung);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Landscape erzwingen
         init();
-        initAwareness();
     }
 
     @Override
@@ -102,6 +108,34 @@ public class LiveAuswertung extends Activity
         setDurchschnittGeschwindigkeit(-1);
         setWetter("-1");
         setStrecke(-1);
+        initAwareness();
+        fabStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
+                builder.setMessage("Eine neue Strecke starten?")
+                        .setTitle("Neue Strecke")
+                        .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User bricht ab
+                                setWetter("dreizehn");
+                                lvAusgabe.invalidate();
+                            }
+                        })
+                        .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                // Erstellt AlertDialogobjekt und zeigt es an
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+    private void startAwareness() {
+        activity();
+        location();
+        weather();
     }
     private void initAwareness()
     {
@@ -109,7 +143,7 @@ public class LiveAuswertung extends Activity
                 .addApi(Awareness.API) // Gewünschte Api hinzufügen.
                 .build(); //Erstellung des Objekts.
         mGoogleApiClient.connect();
-        location();
+        startAwareness();
     }
 
     private void weather() {
@@ -130,12 +164,13 @@ public class LiveAuswertung extends Activity
             {
                 if (!weatherResult.getStatus().isSuccess()) {
                     setStrWeather("Wetter: Wetter konnte nicht geladen werden.");
+
                     //AUSGABE
                     return;
                 }
                 Weather weather = weatherResult.getWeather();
                 setStrWeather(weather.toString());
-                //AUSGABE
+                setWetter(weather.toString());
             }
         });
     }//Methode, welche durch die AwarenessAPI das aktuelle Wetter ermittelt.
@@ -156,7 +191,6 @@ public class LiveAuswertung extends Activity
             }
         });
     }
-
 
     private void location() {
         //Automatisch generierter Permissioncheck.

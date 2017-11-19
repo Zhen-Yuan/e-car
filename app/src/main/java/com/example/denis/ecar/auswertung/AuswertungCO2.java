@@ -26,9 +26,13 @@ public class AuswertungCO2
     }
     public AuswertungCO2(double dEmissionenBenzin, double dEmissionenElektro, double dStrecke)
     {
-        this.dEmissionenBenzin = dEmissionenBenzin;
-        this.dEmissionenElektro = dEmissionenElektro;
-        this.dStrecke = dStrecke;
+    this.dEmissionenBenzin = dEmissionenBenzin;
+    this.dEmissionenElektro = dEmissionenElektro;
+    this.dStrecke = dStrecke;
+    }
+
+    public AuswertungCO2()
+    {
     }
 
     public double getCO2CO2AusstossElektro(double dVerbrauchElektro) // Quellen: http://www.bmub.bund.de/fileadmin/Daten_BMU/Download_PDF/Verkehr/emob_klimabilanz_2015_bf.pdf, 2-> http://www.umweltbundesamt.de/themen/klima-energie/energieversorgung/strom-waermeversorgung-in-zahlen#Strommix
