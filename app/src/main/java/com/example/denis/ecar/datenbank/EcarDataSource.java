@@ -53,8 +53,9 @@ public class EcarDataSource {
             EcarDbHelper.COLUMN_CAR_DESC,
             EcarDbHelper.COLUMN_CAR_EMISSIONS,
             EcarDbHelper.COLUMN_CAR_CONSUMPTION,
+            EcarDbHelper.COLUMN_CAR_RANGE,
             EcarDbHelper.COLUMN_CAR_PICTURE,
-            EcarDbHelper.COLUMN_FUEL_ID
+            EcarDbHelper.COLUMN_FUEL_ID,
     };
 
     public EcarDataSource(Context context) {
@@ -370,6 +371,33 @@ public class EcarDataSource {
 
         return ecarSessionList;
     }
+    public EcarSession getNamedSession(String s) {
+        String whereClause = null;
+        String[] whereArgs = null;
+
+        whereClause = EcarDbHelper.COLUMN_SESSION_NAME + " = ?";
+        whereArgs = new String[]{
+                "" + s
+        };
+        Cursor cursor = database.query(
+                EcarDbHelper.TABLE_SESSION,
+                columnssession,
+                whereClause,
+                whereArgs,
+                null, null, null);
+
+        if (cursor.getCount() == 0){
+            return null;
+        }
+
+        cursor.moveToFirst();
+        EcarSession eses;
+        eses = cursorToEcarSession(cursor);
+        Log.d(LOG_TAG, eses.toString());
+        cursor.close();
+
+        return eses;
+    }
 
     public EcarData createEcarData(double data, int session, int value) {
         ContentValues values = new ContentValues();
@@ -484,7 +512,7 @@ public class EcarDataSource {
         return ecarDataList;
     }
 
-    public EcarCar createEcarCar(String name, String hersteller, String beschreibung, double emissionen, double verbrauch, Bitmap bild, int treibstoffid){
+    public EcarCar createEcarCar(String name, String hersteller, String beschreibung, double emissionen, double verbrauch, double reichweite, Bitmap bild, int treibstoffid){
 
         ByteArrayOutputStream blob = new ByteArrayOutputStream();
         if(bild != null) {
@@ -499,6 +527,7 @@ public class EcarDataSource {
         values.put(EcarDbHelper.COLUMN_CAR_DESC, beschreibung);
         values.put(EcarDbHelper.COLUMN_CAR_EMISSIONS, emissionen);
         values.put(EcarDbHelper.COLUMN_CAR_CONSUMPTION, verbrauch);
+        values.put(EcarDbHelper.COLUMN_CAR_RANGE, reichweite);
         values.put(EcarDbHelper.COLUMN_CAR_PICTURE, barry);
         values.put(EcarDbHelper.COLUMN_FUEL_ID, treibstoffid);
 
@@ -521,6 +550,7 @@ public class EcarDataSource {
         int idBeschreibung = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_DESC);
         int idEmissionen = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_EMISSIONS);
         int idVerbrauch = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_CONSUMPTION);
+        int idReichweite = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_RANGE);
         int idBild = cursor.getColumnIndex(EcarDbHelper.COLUMN_CAR_PICTURE);
         int idTreibstoff = cursor.getColumnIndex(EcarDbHelper.COLUMN_FUEL_ID);
 
@@ -530,6 +560,7 @@ public class EcarDataSource {
         String beschreibung = cursor.getString(idBeschreibung);
         double emissionen = cursor.getDouble(idEmissionen);
         double verbrauch = cursor.getDouble(idVerbrauch);
+        double reichweite = cursor.getDouble(idReichweite);
         byte[] picture = cursor.getBlob(idBild);
         int treibstoff = cursor.getInt(idTreibstoff);
 
@@ -539,6 +570,7 @@ public class EcarDataSource {
                 beschreibung,
                 emissionen,
                 verbrauch,
+                reichweite,
                 null,
                 treibstoff);
 
