@@ -1,7 +1,7 @@
 package com.example.denis.ecar.datenbank;
 
 /**
- * Created by Raja on 11.10.2017.
+ * Created by Raja on 11.10.2017..
  */
 
 public class EcarSettings {

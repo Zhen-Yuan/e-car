@@ -3,7 +3,7 @@ package com.example.denis.ecar.datenbank;
 import android.graphics.Bitmap;
 
 /**
- * Created by Raja on 04.10.2017.
+ * Created by Raja on 04.10.2017..
  */
 
 public class EcarUser {
