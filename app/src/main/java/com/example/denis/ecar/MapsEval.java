@@ -357,7 +357,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         return speed_kph;
     }
 
-    //Methode, welche einen String zum ausgeben erzeugt
+    //Methode, welche einen String zum Ausgeben erzeugt
     private String ausgabe(){
         double verbrauch = ddist/415000*100;
 

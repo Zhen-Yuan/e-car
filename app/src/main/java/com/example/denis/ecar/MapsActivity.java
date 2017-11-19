@@ -43,6 +43,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +74,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     SharedPreferences sp;
     private Context con = this;
     private EcarSession ecs;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser fUser;
 
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
     private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
@@ -86,6 +90,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         sp = getSharedPreferences("bla", Context.MODE_PRIVATE);
+
+        //Todo UserID
+        fUser = mAuth.getCurrentUser();
+        int bla = fUser.getUid().hashCode();
+        Log.d("UserID", fUser.getUid());
+
+
         init();//Aufruf der Initalisierungsmethode
         startAwareness();//Start der Awarenessmethoden.
         imgbttn_focus.setOnClickListener(new View.OnClickListener() {
