@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.widget.TextView;
 
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.LineData;
@@ -28,7 +29,7 @@ public class Chart_Verbrauch extends Fragment
     float barWidth;
     float barSpace;
     float groupSpace;
-
+    private EcarCar car;
 
     private TextView tv_titelElektro, tv_beschreibungElektro;
     LineChart chart;
@@ -58,13 +59,16 @@ public class Chart_Verbrauch extends Fragment
         barSpace = 0f;
         groupSpace = 0.4f;
         tv_titelElektro.setText("Verbrauch");
-        tv_beschreibungElektro.setText("Gefahrene Zeit(s) und Batteriestatus(%)\nTesla Model S\nVerbrauch: 20.5 kWh/100km (ADAC)\nAkkukapazität: 85kWh\nReichweite ~ 415km");
+
 
 
 
     }
 
-    public void chartBeispiel(ArrayList yVals) {
+    public void chartBeispiel(ArrayList yVals, EcarCar car) {
+        this.car=car;
+        tv_beschreibungElektro.setText("Gefahrene Zeit(s) und Batteriestatus(%)\n" +
+                car.getName()+"\nVerbrauch:"+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: ????kWh\nReichweite ~ ????km");
 
         LineDataSet set1 = new LineDataSet(yVals, "Ladezustand");
         set1.setColor(Color.RED);

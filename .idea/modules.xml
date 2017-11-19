@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/E-CarNew.iml" filepath="$PROJECT_DIR$/E-CarNew.iml" />
+      <module fileurl="file://D:\Android_Studio\workspace\e-car10\E-CarNew.iml" filepath="D:\Android_Studio\workspace\e-car10\E-CarNew.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\Raja\Documents\e-carLiveAuswertung\app\app.iml" filepath="C:\Users\Raja\Documents\e-carLiveAuswertung\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/e-car10.iml" filepath="$PROJECT_DIR$/e-car10.iml" />
       <module fileurl="file://C:\Users\Raja\Documents\E-CarNew\e-carr.iml" filepath="C:\Users\Raja\Documents\E-CarNew\e-carr.iml" />
     </modules>
   </component>

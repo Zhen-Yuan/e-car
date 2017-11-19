@@ -7,9 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.TextView;
 
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarCar;
+import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -34,6 +37,7 @@ public class Chart_Woche extends Fragment
     float barWidth;
     float barSpace;
     float groupSpace;
+    private EcarCar car;
 
 
     private TextView tv_titelElektro, tv_beschreibungElektro;
@@ -51,6 +55,12 @@ public class Chart_Woche extends Fragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
+
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        return MoveAnimation.create(MoveAnimation.UP,enter,300);
+    }
+
     private void init()
     {
         tv_titelElektro = (TextView) v.findViewById(R.id.tv_ecarTitel);
@@ -60,13 +70,16 @@ public class Chart_Woche extends Fragment
         barSpace = 0f;
         groupSpace = 0.4f;
         tv_titelElektro.setText("Wochen-Statistik");
-        tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\nTesla Model S\nVerbrauch: 20.5 kWh/100km (ADAC)\nAkkukapazität: 85kWh\nReichweite ~ 415km");
+
 
 
 
     }
 
-    public void chartBeispiel(ArrayList<Double> yVals) {
+    public void chartBeispiel(ArrayList<Double> yVals, EcarCar car) {
+        this.car = car;
+        tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
+                car.getName()+"\nVerbrauch:"+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: ????kWh\nReichweite ~ ????km");
 
 
         chart.setPinchZoom(false);

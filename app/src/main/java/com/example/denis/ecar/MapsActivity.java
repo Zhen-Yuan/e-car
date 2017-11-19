@@ -1,7 +1,9 @@
 package com.example.denis.ecar;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -11,9 +13,12 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int SID;
     private int intervall;
     SharedPreferences sp;
+    private Context con = this;
+    private EcarSession ecs;
 
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
     private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
@@ -107,7 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build(); //Erstellung des Objekts.
         mGoogleApiClient.connect();
 
-        intervall = sp.getInt("intervall", 30); //Aufnahme Intervall einstellen über sharedpreferences
+        intervall = sp.getInt("interval", 30); //Aufnahme Intervall einstellen über sharedpreferences
         Log.d("Aufnahmeintervall ", intervall+"");
     }
     //Awarenessmethoden
@@ -229,16 +236,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bttn_loc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bttn_loc.getText() == "start")
-                {
-                    bttn_loc.setText("stop");
-                    bttn_loc.invalidate();
-                    record = true;
-                    dataSource.open();
-                    SID = getNewSID();
-                    dataSource.createEcarSession(SID, "Strecke_"+SID);
-                    handler(intervall*1000);
+                if (bttn_loc.getText() == "start"){
 
+                    final String[] m_Text = {"Strecke_" + SID};
+                    AlertDialog.Builder builder = new AlertDialog.Builder(con);
+                    builder.setTitle("Streckenname:");
+
+                    final EditText input = new EditText(con);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            m_Text[0] = input.getText().toString();
+                            //SID = getNewSID();
+                            bttn_loc.setText("stop");
+                            bttn_loc.invalidate();
+                            record = true;
+                            dataSource.open();
+                            ecs = dataSource.createEcarSession(1, m_Text[0]);
+                            handler(intervall*1000);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
                 }
                 else
                 {
@@ -273,9 +301,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         //setStrSpeed(locationList.get(locationList.size() - 1).getTime()+"-"+locationList.get(locationList.size() - 2).getTime());
                     }
 
-                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLatitude(),SID,1);
-                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLongitude(),SID,2);
-                    Log.d("DB insert: ", locationList.get(locationList.size()-1).getLatitude() + " , " + SID + " , " + 1);
+                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLatitude(),ecs.getSesid(),1);
+                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLongitude(),ecs.getSesid(),2);
+                    Log.d("DB insert: ", locationList.get(locationList.size()-1).getLatitude() + " , " + ecs.getSesid() + " , " + 1);
                 }
             }
         }, i);
@@ -287,8 +315,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<EcarSession> ecarSessionList;
         try {
             ecarSessionList = dataSource.getAllEcarSession();
+            Log.d("getNewSID: ", "try");
             return ecarSessionList.get(ecarSessionList.size() - 1).getSesid() + 1;
         }catch(Exception e){
+            Log.d("getNewSID: ", "catch");
             return 1;
         }
     }

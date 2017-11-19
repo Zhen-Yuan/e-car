@@ -1,19 +1,26 @@
 package com.example.denis.ecar;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
+import com.example.denis.ecar.datenbank.EcarUser;
+import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.example.denis.ecar.fragment_Uebersicht.Chart_Verbrauch;
 import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche;
 import com.github.mikephil.charting.data.BarEntry;
@@ -34,86 +41,157 @@ import java.util.List;
 public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    public static final String LOG_TAG = "lel";
+    public static final String LOG_TAG = "MapsEval";
     private EcarDataSource dataSource;
     private Spinner ddmenu;
+    private Spinner ddmenu2;
     private TextView tv_disp;
     private List<EcarSession> ecarSessionList;
+    private EcarSession session_strecke;
     private List<EcarData> ecarLatList;
     private List<EcarData> ecarLongList;
+    private List<EcarCar> ecarCars;
+    private EcarCar ecarCar;
     private int color;
     private float color2;
     private double ddist = 0;
     private String strSpeed;
     private Button bttn_ausw;
+    private Button bttn_delete;
     SupportMapFragment mapFragment;
     private Chart_Verbrauch auswertVerbrauch;
     private Chart_Woche auswertWoche;
+    private Context con = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        con = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapseval);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        tv_disp = (TextView) findViewById(R.id.textView2);
+        tv_disp.setText("Bitte legen Sie erst\neine Strecke an...");
+        dataSource = new EcarDataSource(this);
+        dataSource.open();
+        List<EcarSession> bla = dataSource.getAllEcarSession();
+        dataSource.close();
+
         //auswertungFragment();
         auswertVerbrauch = (Chart_Verbrauch) getSupportFragmentManager().findFragmentById(R.id.auswertung);
         auswertVerbrauch.getView().setVisibility(View.GONE);
         auswertWoche = (Chart_Woche) getSupportFragmentManager().findFragmentById(R.id.auswertungWoche);
         auswertWoche.getView().setVisibility(View.GONE);
 
-        ddmenu = (Spinner) findViewById(R.id.ddmenuspinner);
-        ddmenu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-                // An item was selected. You can retrieve the selected item using
-                // parent.getItemAtPosition(pos)
-                ecarLatList.clear();
-                ecarLongList.clear();
-                dataSource.open();
-                ecarLatList = dataSource.getSpecificEcarData((pos+1),1);
-                ecarLongList = dataSource.getSpecificEcarData((pos+1),2);
-                //ecarTimeList = dataSource.getSpecificEcarData((pos+1),2);
-                dataSource.close();
-                mMap.clear();
-                if(ecarLatList.size()>0) {
-                    setColor(true);
-                    initMarker();
+
+        if(bla!=null) {
+
+            mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+
+            //Spinner für Strecken, suche nach dem ausgewählten Element
+            ddmenu = (Spinner) findViewById(R.id.ddmenuspinner);
+            ddmenu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+                    dataSource.open();
+                    List<EcarSession> bla = dataSource.getAllEcarSession();
+                    String blub = ddmenu.getSelectedItem().toString();
+                    Log.d("Selected Item", blub);
+
+
+                    for (int u = 0; u < bla.size(); u++) {
+                        if (bla.get(u).getName().equals(blub)) {
+                            Log.d("SesID", "" + bla.get(u).getSesid());
+                            session_strecke = bla.get(u);
+                            ecarLatList = dataSource.getSpecificEcarData((bla.get(u).getSesid()), 1);
+                            ecarLongList = dataSource.getSpecificEcarData((bla.get(u).getSesid()), 2);
+                        }
+                    }
+                    dataSource.close();
+                    mMap.clear();
+                    if (ecarLatList.size() > 0) {
+                        setColor(true);
+                        initMarker();
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
 
-            }
-        });
+            //Spinner für E-Autos, suche nach dem ausgewählten Element
+            ddmenu2 = (Spinner) findViewById(R.id.ddmenuspinner2);
+            ddmenu2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+                    dataSource.open();
+                    for (int i = 0; i < ecarCars.size(); i++) {
+                        if (ddmenu2.getSelectedItem().toString().equals(ecarCars.get(i).getName())) {
+                            ecarCar = ecarCars.get(i);
+                            Log.d("MapsEval", "Selected Ecar: " + ecarCar.getName());
+                            break;
+                        }
+                    }
+                    dataSource.close();
+                }
 
-        tv_disp = (TextView) findViewById(R.id.textView2);
-        tv_disp.setText("Bitte Strecke auswählen...");
-        bttn_ausw = (Button) findViewById(R.id.bttn_ausw);
-        bttn_ausw.setOnClickListener(new View.OnClickListener() {
-                                         @Override
-                                         public void onClick(View v) {
-                                             if (mapFragment.getView().getVisibility() == View.VISIBLE) {
-                                                 chartVerbrauch();
-                                                 auswertVerbrauch.getView().setVisibility(View.VISIBLE);
-                                                 mapFragment.getView().setVisibility(View.GONE);
-                                             } else if (auswertVerbrauch.getView().getVisibility() == View.VISIBLE) {
-                                                 chartWoche();
-                                                 auswertVerbrauch.getView().setVisibility(View.GONE);
-                                                 auswertWoche.getView().setVisibility(View.VISIBLE);
-                                             } else if (auswertWoche.getView().getVisibility() == View.VISIBLE) {
-                                                 auswertWoche.getView().setVisibility(View.GONE);
-                                                 mapFragment.getView().setVisibility(View.VISIBLE);
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+
+            bttn_ausw = (Button) findViewById(R.id.bttn_ausw);
+            bttn_ausw.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View v) {
+                                                 if (mapFragment.getView().getVisibility() == View.VISIBLE) {
+                                                     chartVerbrauch();
+                                                     auswertVerbrauch.getView().setVisibility(View.VISIBLE);
+                                                     mapFragment.getView().setVisibility(View.GONE);
+                                                 } else if (auswertVerbrauch.getView().getVisibility() == View.VISIBLE) {
+                                                     chartWoche();
+                                                     auswertVerbrauch.getView().setVisibility(View.GONE);
+                                                     auswertWoche.getView().setVisibility(View.VISIBLE);
+                                                 } else if (auswertWoche.getView().getVisibility() == View.VISIBLE) {
+                                                     auswertWoche.getView().setVisibility(View.GONE);
+                                                     mapFragment.getView().setVisibility(View.VISIBLE);
+                                                 }
                                              }
                                          }
-                                     }
-        );
+            );
+
+            bttn_delete = (Button) findViewById(R.id.bttn_delete);
+            bttn_delete.setOnClickListener(new View.OnClickListener() {
+                                               @Override
+                                               public void onClick(View v) {
+                                                   DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+                                                           switch (which) {
+                                                               case DialogInterface.BUTTON_POSITIVE:
+                                                                   dataSource.open();
+                                                                   dataSource.deleteEcarSession(session_strecke);
+                                                                   dataSource.close();
+                                                                   initDB();
+                                                                   break;
+                                                               case DialogInterface.BUTTON_NEGATIVE:
+                                                                   break;
+                                                           }
+                                                       }
+                                                   };
+                                                   AlertDialog.Builder ab = new AlertDialog.Builder(con);
+                                                   ab.setMessage("Wollen Sie die Strecke '" + session_strecke.getName() + "' wirklich löschen?").setPositiveButton("Ja", dialogClickListener)
+                                                           .setNegativeButton("Nein", dialogClickListener).show();
+                                               }
+                                           }
+            );
+
+
+        }
     }
-
-
 
     /**
      * Manipulates the map once available.
@@ -129,6 +207,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
 
         initDB();
+        if(ecarLatList!=null){
         if(ecarLatList.size() > 0) {
             initMarker();
 
@@ -136,8 +215,9 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
             LatLng center = new LatLng(ecarLatList.get(ecarLatList.size()/2).getData(),ecarLongList.get(ecarLongList.size()/2).getData());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoomLevel));
         }
-    }
+    }}
 
+    //Platziert Marker der entsprechenden Strecke auf der Map
     public void initMarker(){
         LatLng latLng = new LatLng(0,0);
         LatLng latLng2 = new LatLng(0,0);
@@ -169,16 +249,17 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                     .color(color));
             latLng = latLng2;
         }
-        setStrSpeed(calcVelocity(ecarLatList.get(0).getData(), ecarLongList.get(0).getData(), ecarLatList.get(0).getTime(), ecarLatList.get(ecarLatList.size()-1).getData(), ecarLongList.get(ecarLatList.size()-1).getData(), ecarLatList.get(ecarLatList.size()-1).getTime())+ "");
+        setStrSpeed(calcVelocity(ecarLatList.get(0).getData(), ecarLongList.get(0).getData(), ecarLatList.get(0).getTime(), ecarLatList.get(ecarLatList.size()-1).getData(), ecarLongList.get(ecarLatList.size()-1).getData(), ecarLatList.get(ecarLatList.size()-1).getTime()));
         float zoomLevel = 14;
         LatLng center = new LatLng(ecarLatList.get(ecarLatList.size()/2).getData(),ecarLongList.get(ecarLongList.size()/2).getData());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoomLevel));
         tv_disp.setText(ausgabe());
     }
 
+    //Initialisierung der Datenbank
+    //Füllen der Spinner
     public void initDB() {
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
-        dataSource = new EcarDataSource(this);
         dataSource.open();
         //EcarSession carses = dataSource.createEcarSession(1, "Testlauf");
         //EcarSession carses2 = dataSource.createEcarSession(1, "Listentest");
@@ -189,20 +270,47 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         //cardatalong = dataSource.createEcarData(7.230914,3,2);
         //cardatalat = dataSource.createEcarData(51.487481,2,1);
         //cardatalong = dataSource.createEcarData(7.210878,2,2);
+        //dataSource.createEcarCar("Panzerkampfwagen VI Tiger","Henschel", "schwerer deutscher Panzer",9001,535,null,1);
+        //dataSource.createEcarCar("Panzerkampfwagen V Panther","MAN", "mittlerer deutscher Panzer",9001,365,null,1);
+        //dataSource.deleteAndClean();
         ecarSessionList = dataSource.getAllEcarSession();
         ecarLatList = dataSource.getSpecificEcarData(1, 1);
         ecarLongList = dataSource.getSpecificEcarData(1, 2);
+        ecarCars = dataSource.getAllCar();
 
         dataSource.close();
 
-        String[] items = new String[ecarSessionList.size()];
-        for (int i = 0; i< ecarSessionList.size();i++){
-            items[i] = ecarSessionList.get(i).getName();
+        if(ecarSessionList!=null) {
+
+
+            String[] items = new String[ecarSessionList.size()];
+
+            for (int i = 0; i < ecarSessionList.size(); i++) {
+                items[i] = ecarSessionList.get(i).getName();
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
+            ddmenu.setAdapter(adapter);
+
+
+            String[] itemsCar = new String[ecarCars.size()];
+            for (int i = 0; i < ecarCars.size(); i++) {
+                itemsCar[i] = ecarCars.get(i).getName();
+            }
+            ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, itemsCar);
+            ddmenu2.setAdapter(adapter2);
+
+        }else{
+            tv_disp.setText("Bitte legen Sie erst\neine Strecke an...");
+
+            ddmenu.setAdapter(null);
+            ddmenu2.setAdapter(null);
+            bttn_ausw.setEnabled(false);
+            bttn_delete.setEnabled(false);
+
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        ddmenu.setAdapter(adapter);
     }
 
+    //Farbe für den Marker
     public void setColor(boolean col){
         if (col == true){
             color = Color.GREEN;
@@ -213,10 +321,12 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
+    //Umrechnung Grad zu Bogenmaß
     private double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     } //Für die zukünftige Verwendung in Maps
 
+    //Umrechnung Bogenmaß zu Grad
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
     }//Siehe deg2rad
@@ -237,7 +347,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         return (dist);
     }
 
-
+    //Berechnung der Geschwindigkeit zwischen zwei Punkten
     private double calcVelocity(double lat1, double lon1, int time1, double lat2, double lon2, int time2){
         double dist = calcDist(lat1, lon1, lat2, lon2);
         double time_s = time1 - time2;
@@ -247,9 +357,13 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         return speed_kph;
     }
 
-    private String ausgabe()//Methode, welche einen String zum ausgeben erzeugt
-    {
-        return "Strecke: " + getStrDist()+ "\nGeschw.: " + getStrSpeed();
+    //Methode, welche einen String zum ausgeben erzeugt
+    private String ausgabe(){
+        double verbrauch = ddist/415000*100;
+
+        return "Strecke:       " + getStrDist()+ "m\n" +
+                "Geschw.:      " + getStrSpeed()+"Kmh\n" +
+                "Akku Verbr.: " + String.format("%.2f", verbrauch)+"%";
     }
 
 
@@ -268,9 +382,10 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
             bat = 100 - (dist/reich*100);
             y.add(new BarEntry((float)time,(float)bat));
         }
-        auswertVerbrauch.chartBeispiel(y);
+        auswertVerbrauch.chartBeispiel(y, ecarCar);
     }
 
+    //Berechnet und erstellt die Auswertung zu den gefahrenen Strecken der letzten 7-Tage
     private void chartWoche(){
         ArrayList<Double> y = new ArrayList<Double>();
         y.add(0.0);
@@ -344,11 +459,15 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
 
 
         //Log.d("Calendar",calnow.get(Calendar.DATE)+"");
-        auswertWoche.chartBeispiel(y);
+        auswertWoche.chartBeispiel(y, ecarCar);
     }
 
+
+
+    //Getter und Setter
+
     public String getStrDist() {
-        return ddist+"";
+        return String.format("%.2f", ddist)+"";
     }
 
 
@@ -356,7 +475,9 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         return strSpeed;
     }
 
-    public void setStrSpeed(String strSpeed) {
-        this.strSpeed = strSpeed;
+
+    public void setStrSpeed(double strSpeed) {
+        this.strSpeed = String.format("%.2f", strSpeed);
     }
+
 }

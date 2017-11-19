@@ -9,7 +9,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "snesw.db";
+    public static final String DB_NAME = "snesy.db";
     public static final int DB_VERSION = 1;
 
     public static final String TABLE_USER = "nutzer";
