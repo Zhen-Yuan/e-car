@@ -14,6 +14,7 @@ import com.example.denis.ecar.MainActivity;
 import com.example.denis.ecar.R;
 import com.example.denis.ecar.sharedPref.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,9 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 
 public class SignUpActivity extends BaseActivity implements DatabaseReference.CompletionListener {
 
+    private User user;
+
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseListener;
-    private User user;
 
     private EditText etUsername;
     private CheckBox chckBxShowPW;
@@ -42,6 +44,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+
         init();
     }
 
@@ -51,6 +54,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         super.onStart();
         firebaseAuth.addAuthStateListener(firebaseListener);
     }
+
 
     @Override
     protected void onStop() {
@@ -72,8 +76,8 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
                 if( firebaseUser == null || user.getId() != null ){
                     return;
                 }
-                user.setId( firebaseUser.getUid() );
-                user.saveDB( SignUpActivity.this );
+                user.setId(firebaseUser.getUid());
+                user.saveDB(SignUpActivity.this);
             }
         };
 
@@ -113,6 +117,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         user = new User();
         user.setName(etUsername.getText().toString());
         user.setEmail(etEmail.getText().toString());
+        user.setPassword(etPassword.getText().toString());
     }
 
 
@@ -144,7 +149,12 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
                             closeProgressBar();
                         }
                     }
-                });
+                }).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                showSnackbar(e.getMessage());
+            }
+        });
     }
 
 

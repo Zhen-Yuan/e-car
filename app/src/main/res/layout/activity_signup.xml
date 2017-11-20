@@ -13,11 +13,11 @@
     tools:context="com.example.denis.ecar.login.SignUpActivity">
 
     <ProgressBar
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:id="@+id/sign_up_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
 
@@ -26,55 +26,60 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvTitle"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:text="@string/Registrieren"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:ems="10"
-            android:fontFamily="sans-serif"
-            android:hint="@string/hint_name"
-            android:inputType="textPersonName"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:ems="10"
+                android:fontFamily="sans-serif"
+                android:hint="@string/hint_name"
+                android:inputType="textPersonName"
+                android:textSize="20sp"/>
+        </android.support.design.widget.TextInputLayout>
 
 
-        <EditText
-            android:id="@+id/etEmail"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:hint="@string/hint_mail"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/colorTextPrimary"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="@string/hint_mail"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="20sp"/>
+        </android.support.design.widget.TextInputLayout>
 
         <TextView
             android:id="@+id/tvPasswordHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
             android:text="@string/PasswortVorgabe"
             android:textColor="@color/colorTextAccent" />
 
-        <EditText
-            android:id="@+id/etPassword"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:hint="@string/hint_pw"
-            android:inputType="textPassword"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="@string/hint_pw"
+                android:inputType="textPassword"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="20sp"/>
+        </android.support.design.widget.TextInputLayout>
+
 
         <CheckBox
             android:id="@+id/chckBxShowPW"
@@ -83,6 +88,7 @@
             android:layout_marginBottom="10dp"
             android:text="@string/chckBx_pw" />
 
+
         <Button
             android:id="@+id/bttnSignUp"
             style="@style/bttnStyle"
@@ -90,6 +96,5 @@
             android:layout_marginTop="25dp"
             android:text="@string/Registrieren" />
     </LinearLayout>
-
 
 </RelativeLayout>

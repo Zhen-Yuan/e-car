@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.example.denis.ecar.sharedPref.LinkAccounts">
+
+
+    <TextView
+        android:id="@+id/tvSocialNetwork"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Soziale Netzwerke"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"/>
+
+    <Button
+        android:id="@+id/bttnFB"
+        style="@style/bttnFBStyle"
+        android:text="Facebook - Verbinden"
+        android:onClick="sendFBLoginData"/>
+
+    <Button
+        android:id="@+id/bttnGoogle"
+        style="@style/bttnGoogleStyle"
+        android:text="Google+ - Verbinden"
+        android:onClick="sendGoogleLoginData"/>
+</LinearLayout>

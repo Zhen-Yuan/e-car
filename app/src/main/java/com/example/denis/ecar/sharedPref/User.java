@@ -3,6 +3,7 @@ package com.example.denis.ecar.sharedPref;
 import android.content.Context;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -19,6 +20,9 @@ public class User {
     private String id;
     private String name;
     private String email;
+    private String password;
+    private String newPassword;
+    private String image;
 
 
     public User(){
@@ -91,13 +95,44 @@ public class User {
     }
 
 
-    public void saveProviderSP(Context context, String token){
-        UserPref.saveSP( context, PROVIDER, token );
+    @Exclude
+    public String getPassword() {
+        return password;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+    @Exclude
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+
+    public String getImage() {
+        return this.image;
+    }
+
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+
+    public void saveProviderSP(Context context, String token){
+        UserPref.saveSP(context, PROVIDER, token);
+    }
+
+
     public String getProviderSP(Context context){
         return(UserPref.getSP(context, PROVIDER));
     }
-
 
 
     public void saveDB(DatabaseReference.CompletionListener... completionListener){

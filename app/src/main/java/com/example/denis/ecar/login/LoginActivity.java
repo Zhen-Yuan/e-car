@@ -25,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -47,9 +48,10 @@ public class LoginActivity extends BaseActivity {
 
     private static final int RC_SIGN_IN_GOOGLE = 9001;
 
+    private User user;
+
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseListener;
-    private User user;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
 
@@ -61,22 +63,6 @@ public class LoginActivity extends BaseActivity {
 
         init();
         initUser();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        verifyLogged();
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (firebaseListener != null) {
-            firebaseAuth.removeAuthStateListener(firebaseListener);
-        }
     }
 
 
@@ -116,23 +102,7 @@ public class LoginActivity extends BaseActivity {
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-                if( firebaseUser == null ){
-                    return;
-                }
-                if(user.getId() == null && isNameOk(user, firebaseUser)){
-                    user.setId(firebaseUser.getUid());
-                    user.setNameIfNull(firebaseUser.getDisplayName());
-                    user.setEmailIfNull(firebaseUser.getEmail());
-                    user.saveDB();
-                }
-                nextActivity();
-            }
-        };
+        firebaseListener = getFirebaseAuthResultHandler();
 
         // View-Elemente
         etEmail = (EditText)findViewById(R.id.etEmail);
@@ -165,7 +135,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this,
-                        Arrays.asList("public_profile", "email", "user_friends"));
+                        Arrays.asList("public_profile", "user_friends", "email"));
             }
         });
 
@@ -193,6 +163,42 @@ public class LoginActivity extends BaseActivity {
     protected void initUser() {
         user = new User();
         user.setEmail(etEmail.getText().toString());
+        user.setPassword(etPassword.getText().toString());
+    }
+
+
+    /**
+     * Meldet den User mit seiner E-Mailadresse von der Login-View zusammen mit dem eingegebenen
+     * Passwort via firebase an.
+     */
+    private void signIn() {
+        user.saveProviderSP(LoginActivity.this, "");
+        firebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(!task.isSuccessful()){
+                            showSnackbar("Login fehlgeschlagen.");
+                            return;
+                        }
+                    }
+                });
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        verifyLogged();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (firebaseListener != null) {
+            firebaseAuth.removeAuthStateListener(firebaseListener);
+        }
     }
 
 
@@ -234,8 +240,8 @@ public class LoginActivity extends BaseActivity {
 
 
     /**
-     * Prueft, ob ein token vorhanden ist und um welchen es sich handelt mithilfe des im String
-     * angegebenen providers. Daraufhin wird der provider mit dem Acc verbunden.
+     * Prueft, ob ein token vorhanden ist und um welchen es sich handelt(mithilfe des im String
+     * angegebenen providers). Daraufhin wird der provider mit dem Acc verbunden.
      * @param provider uebergibt den aktuellen Provider an
      * @param token uebergibt den/die benoetigten token
      */
@@ -261,27 +267,30 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    private boolean isNameOk( User user, FirebaseUser firebaseUser ){
-        return(user.getName() != null || firebaseUser.getDisplayName() != null);
+    private FirebaseAuth.AuthStateListener getFirebaseAuthResultHandler() {
+        FirebaseAuth.AuthStateListener callback = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+                if (firebaseUser == null) {
+                    return;
+                }
+                if (user.getId() == null && isNameOk(user, firebaseUser)) {
+                    user.setId(firebaseUser.getUid());
+                    user.setNameIfNull(firebaseUser.getDisplayName());
+                    user.setEmailIfNull(firebaseUser.getEmail());
+                    user.saveDB();
+                }
+                nextActivity();
+            }
+        };
+        return (callback);
     }
 
 
-    /**
-     * Meldet den User mit seiner E-Mailadresse von der Login-View zusammen mit dem eingegebenen
-     * Passwort via firebase an.
-     */
-    private void signIn() {
-        user.saveProviderSP(LoginActivity.this, "");
-        firebaseAuth.signInWithEmailAndPassword(user.getEmail(), etPassword.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
-                            showSnackbar("Login fehlgeschlagen.");
-                            return;
-                        }
-                    }
-                });
+    private boolean isNameOk( User user, FirebaseUser firebaseUser ){
+        return(user.getName() != null || firebaseUser.getDisplayName() != null);
     }
 
 
@@ -295,18 +304,8 @@ public class LoginActivity extends BaseActivity {
 
 
     /**
-     * Wechselt zur MainActivity.
-     */
-    private void nextActivity() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
-    }
-
-
-    /**
-     * ueberprueft, ob die Form der Emailadresse stimmt(beinhaltet ein '@'und .Suffix<3 oder
-     * Suffix>4)
-     * @return true, wenn die Form korrekt ist und false, wenn die Form nicht korrekt ist
+     * ueberprueft, ob (k)eine Eingabe erfolgt ist
+     * @return true, wenn was eingegeben wurde; false, falls das Feld leer ist
      */
     private boolean checkForm() {
         boolean valid = true;
@@ -316,20 +315,8 @@ public class LoginActivity extends BaseActivity {
         if (TextUtils.isEmpty(email)) {
             etEmail.setError("Gib deine E-Mail-Adresse ein.");
             valid = false;
-        } else if(!email.contains("@")) {
-            etEmail.setError("E-Mail-Adresse ist nicht korrekt.");
-            valid = false;
         } else {
-            int i = email.indexOf('@');
-            String domain = email.substring(i);
-            i = domain.indexOf('.');
-            String suffix = domain.substring(i);
-            if (suffix.length()<3 || suffix.length()>4) {
-                etEmail.setError("E-Mail-Adresse ist nicht korrekt.");
-                valid = false;
-            } else {
-                etEmail.setError(null);
-            }
+            etEmail.setError(null);
         }
 
         // Passwort pruefen
@@ -337,12 +324,19 @@ public class LoginActivity extends BaseActivity {
         if (TextUtils.isEmpty(password)) {
             etPassword.setError("Gib dein Passwort ein.");
             valid = false;
-        } else if (password.length() < 6) {
-            etPassword.setError("Passwort ist zu kurz.");
         } else {
             etPassword.setError(null);
         }
         return valid;
+    }
+
+
+    /**
+     * Wechselt zur MainActivity.
+     */
+    private void nextActivity() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
 }

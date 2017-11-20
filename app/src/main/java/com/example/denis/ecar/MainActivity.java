@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.denis.ecar.datenbank.EcarData;
@@ -27,19 +28,23 @@ import com.example.denis.ecar.fragmente_Auto.InfoFragment;
 import com.example.denis.ecar.fuellmethoden.DataCollector;
 import com.example.denis.ecar.liveAuswertung.LiveAuswertung;
 import com.example.denis.ecar.login.LoginActivity;
+import com.example.denis.ecar.sharedPref.Settings;
+import com.example.denis.ecar.sharedPref.User;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener /*, ValueEventListener, DatabaseReference.CompletionListener */ {
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataGenerator dataGenerator;
     DataCollector dataCollector;
+    private FirebaseAuth firebaseAuth;
+    private User user;
     private ImageView ivProfileImage;
+    private TextView etName;
 
     int images[] = {R.drawable.tesla3,R.drawable.tesla4};
     //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
@@ -47,7 +52,6 @@ public class MainActivity extends AppCompatActivity
     private static ViewPager vPager;
     private static int currentPage = 0;
     int k=0;
-    private FirebaseAuth firebaseAuth;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     // Einfache Ausgabe über LogTag zum testen ermöglichen
@@ -79,10 +83,12 @@ public class MainActivity extends AppCompatActivity
         dataCollector = new DataCollector();
         uebersichtFragment();
         initImageView();
+
         firebaseAuth = FirebaseAuth.getInstance();
-        //firebaseDB = UserPref.getFirebaseDB();
-        //((TextView)findViewById(R.id.tvUsername)).setText(updateUsername());
-        //tvUsername.setText(firebaseAuth.getCurrentUser().getDisplayName());
+        user = new User();
+        user.setId(firebaseAuth.getCurrentUser().getUid());
+        //user.contextDataDB(this);
+        etName = (TextView) findViewById(R.id.tvUsername);
     }
     private void setActivityBackgroundcolor(int color)
     {
@@ -265,28 +271,26 @@ public class MainActivity extends AppCompatActivity
         startActivity(intSet);
     }
 
-
-    private void updateUsername() {
-        //TODO
-    }
-
-
-    private void updateImage() {
-        //TODO
-    }
-
-    /**
-     * Prueft, ob der im Paramenter angegebene Provider mit dem Acc verbunden ist.
-     * @param providerId enthaelt den zu pruefenden Provider.
-     * @return false, wenn dies nicht der Fall ist und true, wenn es zutrifft
-     */
-    private boolean isLinked(String providerId) {
-        for (UserInfo userInfo: firebaseAuth.getCurrentUser().getProviderData()) {
-            if (userInfo.getProviderId().equals(providerId))
-                return true;
+/*
+    @Override
+    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        if (databaseError != null) {
+            Toast.makeText(this, "Fehler: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Aktualisierung wurde erfolgreich durchgeführt.", Toast.LENGTH_SHORT ).show();
         }
-        return false;
     }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        User u = dataSnapshot.getValue(User.class);
+        etName.setText(u.getName());
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
+    }   */
 
 
     /**

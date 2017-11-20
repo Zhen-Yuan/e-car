@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settings"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    app:theme="@style/AppTheme.NoActionBar" >
+    app:theme="@style/AppTheme.NoActionBar">
 
 
     <LinearLayout
@@ -19,118 +20,35 @@
             android:id="@+id/txtProfileSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
             android:text="Profil"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@color/colorPrimaryDark"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"/>
+            android:textColor="@color/colorPrimaryDark" />
+        <!--
+        <fragment
+            android:id="@+id/fragmentProfile"
+            android:name="com.example.denis.ecar.sharedPref.ProfileFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_profile" />  -->
+
+
+        <fragment
+            android:id="@+id/fragmentLinkAcc"
+            android:name="com.example.denis.ecar.sharedPref.LinkAccountsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_link_accounts" />
+
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageView
-                android:id="@+id/ivProfile"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:contentDescription="profie Image"
-                app:srcCompat="@drawable/default_profile" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="81dp"
-                android:clickable="true"
-                app:backgroundTint="@color/colorPrimary"
-                app:elevation="0dp"
-                app:fabSize="mini"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
-        </RelativeLayout>
-
-
-        <TextView
-            android:id="@+id/tvUsername"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Benutzername"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:text="E-Mail-Adresse" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="E-Mail-Adresse" />
-
-
-        <TextView
-            android:id="@+id/tvPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Passwort"
-            android:paddingBottom="5dp"/>
-
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Passwort"
-            android:inputType="textPassword" />
-
-        <Button
-            android:id="@+id/bttnReg_ChangePw"
-            style="@style/bttnStyle"
-            android:text="Registrieren"
-            android:onClick="sendEmailLoginData"/>
-
-        <TextView
-            android:id="@+id/tvSocialNetwork"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Soziale Netzwerke"
-            android:paddingBottom="5dp"
-            android:paddingTop="10dp"/>
-
-        <Button
-            android:id="@+id/bttnFB"
-            style="@style/bttnFBStyle"
-            android:text="Facebook - Verbinden"
-            android:onClick="sendFBLoginData"/>
-
-        <Button
-            android:id="@+id/bttnGoogle"
-            style="@style/bttnGoogleStyle"
-            android:text="Google+ - Verbinden"
-            android:onClick="sendGoogleLoginData"/>
-
-        <TextView
-            android:id="@+id/tvDeleteAcc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Konto schließen"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:paddingTop="15dp">
 
             <SeekBar
                 android:id="@+id/seekBar"
@@ -169,6 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_weight="0.03"
+                android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:text="Tracking"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -184,6 +103,16 @@
                 android:text="TextView" />
 
         </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/tvDeleteAcc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:paddingTop="35dp"
+            android:text="Konto schließen"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>
