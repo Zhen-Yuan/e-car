@@ -89,6 +89,18 @@ public class LiveAuswertung extends Activity
                 "CO2 Einsparung: ",
                 "Wetter: ",
         };
+        initListView(values);
+        //Nicht plausible Startwerte
+        setBatterie(-1);
+        setCO2Einsparung(-1);
+        setDurchschnittGeschwindigkeit(-1);
+        setWetter("-1");
+        setStrecke(-1);
+        initAwareness();
+        initFab();
+    }
+
+    private void initListView(String[] values) {
 
         // Adapterdefinition
         // Erster  Parameter - Context
@@ -102,36 +114,8 @@ public class LiveAuswertung extends Activity
 
         // Zuweisung des Adapters
         lvAusgabe.setAdapter(adapter);
-        //Nicht plausible Startwerte
-        setBatterie(-1);
-        setCO2Einsparung(-1);
-        setDurchschnittGeschwindigkeit(-1);
-        setWetter("-1");
-        setStrecke(-1);
-        initAwareness();
-        fabStartStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
-                builder.setMessage("Eine neue Strecke starten?")
-                        .setTitle("Neue Strecke")
-                        .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User bricht ab
-                                setWetter("dreizehn");
-                                lvAusgabe.invalidate();
-                            }
-                        })
-                        .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
-                        });
-                // Erstellt AlertDialogobjekt und zeigt es an
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
     }
+
     private void startAwareness() {
         activity();
         location();
@@ -171,6 +155,7 @@ public class LiveAuswertung extends Activity
                 Weather weather = weatherResult.getWeather();
                 setStrWeather(weather.toString());
                 setWetter(weather.toString());
+                initListView(values); //Anzeige ListView! String[] values ändern und Methode aufrufen, um text zu aktualisieren.
             }
         });
     }//Methode, welche durch die AwarenessAPI das aktuelle Wetter ermittelt.
@@ -187,7 +172,7 @@ public class LiveAuswertung extends Activity
                 ActivityRecognitionResult ar = detectedActivityResult.getActivityRecognitionResult();
                 DetectedActivity probableActivity = ar.getMostProbableActivity();
                 setStrActivity(probableActivity.toString());//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                //AUSGABE
+
             }
         });
     }
@@ -220,6 +205,31 @@ public class LiveAuswertung extends Activity
             }
         });
     }//Methode, welche durch die AwarenessAPI die aktuelle Location ermittelt.
+
+    private void initFab() {
+        fabStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
+                builder.setMessage("Eine neue Strecke starten?")
+                        .setTitle("Neue Strecke")
+                        .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User bricht ab
+                            }
+                        })
+                        .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                initAwareness();
+
+                            }
+                        });
+                // Erstellt AlertDialogobjekt und zeigt es an
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }//Listener
 
     //GETTER SETTER
     public String getStrActivity() {
