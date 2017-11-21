@@ -34,6 +34,10 @@
         android:title="Mehr">
         <menu>
             <item
+                android:id="@+id/nav_newcar"
+                android:icon="@mipmap/ic_directions_car_black_24dp"
+                android:title="Eigenes Auto" />
+            <item
                 android:id="@+id/nav_dbtest"
                 android:icon="@mipmap/ic_launcher_round"
                 android:title="dbtest" />

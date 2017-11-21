@@ -1,5 +1,7 @@
 package com.example.denis.ecar.fragmente_Auto;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,8 +21,6 @@ import com.example.denis.ecar.R;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 
-import static com.example.denis.ecar.fragmente_Auto.InfoFragment.carinfoID;
-
 /**
  * Created by Rajen on 04.11.2017.
  */
@@ -34,6 +34,7 @@ public class CreateCarFragment extends Fragment {
     private RadioButton rbB, rbD, rbE;
     private Button Bsave;
     private EcarDataSource dS;
+    private Bitmap BmNewcar;
     private String Verbrauchsart;
     private int FuelId;
     @Nullable
@@ -95,11 +96,9 @@ public class CreateCarFragment extends Fragment {
                 else{
                     try {
                         dS.open();
-                        //Todo Reichweite, aktuell = 1
-                        EcarCar car = dS.createEcarCar(output, eTHersteller.getText() + "", eTBeschreibung.getText() + "", 0, sbVerbrauch.getProgress(),1, null, FuelId);
+                        EcarCar car = dS.createEcarCar(output, eTHersteller.getText() + "", eTBeschreibung.getText() + "", 0, sbVerbrauch.getProgress(), 0, BmNewcar, FuelId);
                         dS.close();
                         Toast toast = Toast.makeText(getActivity(), "Das Auto '"+output+"' wurde angelegt!", Toast.LENGTH_LONG);
-                        carinfoID = car.getCid()-1;
                         toast.show();
 
 
@@ -123,6 +122,7 @@ public class CreateCarFragment extends Fragment {
 
     private void init()
     {
+        BmNewcar = BitmapFactory.decodeResource(getResources(), R.drawable.newhidden);
         tvVerbrauch = (TextView)v.findViewById(R.id.tv_consumption);
         eTName = (EditText) v.findViewById(R.id.eT_name);
         eTHersteller = (EditText) v.findViewById(R.id.eT_manu);

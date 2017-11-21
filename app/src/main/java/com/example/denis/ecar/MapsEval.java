@@ -375,7 +375,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         double dist = 0;
         double time = 0;
         double bat = 100;
-        double reich = 415000;
+        double reich = ecarCar.getRange()*1000;
         for (int i = 1; i<ecarLatList.size(); i++){
             dist = dist + calcDist(ecarLatList.get(i-1).getData(),ecarLongList.get(i-1).getData(),ecarLatList.get(i).getData(),ecarLongList.get(i).getData());
             time = time + ecarLatList.get(i).getTime()-ecarLatList.get(i-1).getTime();
