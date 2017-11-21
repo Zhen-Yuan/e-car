@@ -77,13 +77,6 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         return view;
     }
 
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-
     public void init(){
         // FACEBOOK
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -103,13 +96,10 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
 
         // GOOGLE SIGN IN
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+                .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .enableAutoManage(getActivity(), this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = new User();
@@ -356,7 +346,6 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         firebaseAuth.getCurrentUser().delete();
         firebaseAuth.signOut();
     }
-
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

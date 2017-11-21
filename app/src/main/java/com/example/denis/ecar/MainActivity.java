@@ -37,16 +37,22 @@ import com.example.denis.ecar.sharedPref.Settings;
 import com.example.denis.ecar.sharedPref.User;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener /*, ValueEventListener, DatabaseReference.CompletionListener */ {
+        implements ValueEventListener, NavigationView.OnNavigationItemSelectedListener {
+
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataGenerator dataGenerator;
     DataCollector dataCollector;
     private FirebaseAuth firebaseAuth;
-    private User user;
+    private DatabaseReference firebaseDB;
     private ImageView ivProfileImage;
     public static ViewPager vPager;
     private static int currentPage = 0;
@@ -54,7 +60,6 @@ public class MainActivity extends AppCompatActivity
     public InfoFragment ifragment;
     public static SelectedIdVariable selectedCarId;
     public SwipeAdapter swad;
-    int k=0;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     // Einfache Ausgabe über LogTag zum testen ermöglichen
@@ -97,12 +102,10 @@ public class MainActivity extends AppCompatActivity
         dataCollector = new DataCollector();
         uebersichtFragment();
         initImageView();
-
         firebaseAuth = FirebaseAuth.getInstance();
-        user = new User();
-        user.setId(firebaseAuth.getCurrentUser().getUid());
-        //user.contextDataDB(this);
-        etName = (TextView) findViewById(R.id.tvUsername);
+        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users")
+                .child(firebaseAuth.getCurrentUser().getUid());
+        firebaseDB.addListenerForSingleValueEvent(this);
     }
     private void InitTestValues(){
         dataSource.open();
@@ -327,10 +330,6 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.replace(R.id.rl_Anzeige, fragment).commit();//Wechsel des Fragments in der Mainklasse(rl-> Relativelayout)
     }
 
-    private void updateUsername() {
-        //TODO
-    }
-
 
     private void updateImage() {
         //TODO
@@ -354,5 +353,15 @@ public class MainActivity extends AppCompatActivity
     private void signOut() {
         firebaseAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        User u = dataSnapshot.getValue(User.class);
+        ((TextView)findViewById(R.id.tvUsername)).setText(u.getName());
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
     }
 }
