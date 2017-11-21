@@ -163,7 +163,7 @@ public class Settings extends AppCompatActivity implements DatabaseReference.Com
                 })
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
+ */
         findViewById(R.id.tvDeleteAcc).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,7 +171,7 @@ public class Settings extends AppCompatActivity implements DatabaseReference.Com
             }
         });
 
-        firebaseAuth = FirebaseAuth.getInstance();  */
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
 /*

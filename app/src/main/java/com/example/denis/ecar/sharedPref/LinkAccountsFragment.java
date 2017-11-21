@@ -1,11 +1,12 @@
 package com.example.denis.ecar.sharedPref;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,33 +40,36 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
-public class LinkAccountsFragment extends Fragment
-        implements GoogleApiClient.OnConnectionFailedListener, DatabaseReference.CompletionListener {
+public class LinkAccountsFragment extends Fragment implements ValueEventListener,
+        GoogleApiClient.OnConnectionFailedListener, DatabaseReference.CompletionListener {
 
     public static final String TAG = "settings_link_account";
 
     private View view;
     private TextView tvName, tvEmail;
     private EditText etName, etEmail, etPassword;
-    private Button bttnSubmit, bttnFB, bttnGoogle;
+    private Button bttnSubmit;
 
     private User user;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference firebaseDB;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
     private static final int RC_SIGN_IN_GOOGLE = 9001;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_link_accounts, container, false);
 
         init();
@@ -87,17 +91,12 @@ public class LinkAccountsFragment extends Fragment
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 facebookAccessData(loginResult.getAccessToken());
             }
             @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-                makeToast("Anmeldung abgebrochen");
-            }
+            public void onCancel() { }
             @Override
             public void onError(FacebookException error) {
-                Log.d(TAG, "facebook:onError", error);
                 makeToast(error.getMessage());
             }
         });
@@ -114,6 +113,9 @@ public class LinkAccountsFragment extends Fragment
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = new User();
+        user.setId(firebaseAuth.getCurrentUser().getUid());
+        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users").child(user.getId());
+        firebaseDB.addListenerForSingleValueEvent(this);
 
         tvName = (TextView)view.findViewById(R.id.tvName);
         tvEmail = (TextView)view.findViewById(R.id.tvEmail);
@@ -121,22 +123,15 @@ public class LinkAccountsFragment extends Fragment
         etEmail = (EditText)view.findViewById(R.id.etEmail);
         etPassword = (EditText)view.findViewById(R.id.etPassword);
         bttnSubmit = (Button)view.findViewById(R.id.bttnSubmit);
-        if (isLinked(EmailAuthProvider.PROVIDER_ID)) {
-            showHideFields(true, R.id.tvName, R.id.tvEmail);
-            showHideFields(false, R.id.etName, R.id.etEmail, R.id.etPassword);
-            bttnSubmit.setText(R.string.PasswortAendern);
-        }
+        updateUI();
         changeBttnLabels();
     }
 
-
     protected void initUser() {
-        user = new User();
         user.setName(etName.getText().toString());
         user.setEmail(etEmail.getText().toString());
         user.setPassword(etPassword.getText().toString());
     }
-
 
     protected void initOnClick() {
         tvName.setOnClickListener(new View.OnClickListener() {
@@ -158,12 +153,17 @@ public class LinkAccountsFragment extends Fragment
         bttnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bttnSubmit.getText().equals("Passwort ändern")) {
-
+                if (bttnSubmit.getText().equals("Registrieren")) {
+                    initUser();
+                    createAccount(user.getEmail(), user.getPassword());
                 }
             }
         });
 
+        /*
+        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);    */
         (view.findViewById(R.id.bttnFB)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,7 +189,6 @@ public class LinkAccountsFragment extends Fragment
         });
     }
 
-
     private void changeBttnLabels() {
         setButtonLabel(R.id.bttnFB, FacebookAuthProvider.PROVIDER_ID,
                 R.string.linkFB, R.string.unlinkFB);
@@ -197,7 +196,6 @@ public class LinkAccountsFragment extends Fragment
         setButtonLabel(R.id.bttnGoogle, GoogleAuthProvider.PROVIDER_ID,
                 R.string.linkGoogle, R.string.unlinkGoogle);
     }
-
 
     private void setButtonLabel(int bttnId, String providerId, int linkId, int unlinkId) {
         if (isLinked(providerId)) {
@@ -207,10 +205,17 @@ public class LinkAccountsFragment extends Fragment
         }
     }
 
-
     private void showHideFields(boolean status, int... ids) {
         for (int id: ids) {
             view.findViewById(id).setVisibility(status ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void updateUI() {
+        if (!isLinked(EmailAuthProvider.PROVIDER_ID)) {
+            showHideFields(false, R.id.tvName, R.id.tvEmail);
+            showHideFields(true, R.id.etName, R.id.etEmail, R.id.etPassword);
+            bttnSubmit.setText(R.string.Registrieren);
         }
     }
 
@@ -234,23 +239,17 @@ public class LinkAccountsFragment extends Fragment
     }
 
 
-    /**
-     * Ordnet dem Facebook accessToken einen String zu fuer die spaetere Verwendung.
-     * @param accessToken enthaelt den Facebook AcessToken
-     */
+    private void createAccount(String email, String pw) {
+        linkProvider("email", email, pw);
+    }
+
     private void facebookAccessData(AccessToken accessToken) {
         linkProvider("facebook", (accessToken != null ? accessToken.getToken() : null));
     }
 
-
-    /**
-     * Ordnet dem Google accessToken einen String zu fuer die spaetere Verwendung.
-     * @param accessToken enthaelt den Google AccessToken
-     */
     private void googleAccessData(String accessToken) {
         linkProvider("google", accessToken);
     }
-
 
     /**
      * Prueft, ob ein token vorhanden ist und um welchen es sich handelt mithilfe des im String
@@ -263,6 +262,8 @@ public class LinkAccountsFragment extends Fragment
             AuthCredential credential = FacebookAuthProvider.getCredential(token[0]);
             credential = provider.equalsIgnoreCase("google") ?
                     GoogleAuthProvider.getCredential(token[0], null) : credential;
+            credential = provider.equalsIgnoreCase("email") ?
+                    EmailAuthProvider.getCredential(token[0], token[1] ) : credential;
 
             firebaseAuth.getCurrentUser().linkWithCredential(credential)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -272,7 +273,7 @@ public class LinkAccountsFragment extends Fragment
                                 return;
                             }
                             changeBttnLabels();
-                            makeToast("Konto erfolgreich mit " + provider + "verknüpft");
+                            makeToast("Konto erfolgreich mit " + provider + " verknüpft");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -280,11 +281,14 @@ public class LinkAccountsFragment extends Fragment
                     makeToast(e.getMessage());
                 }
             });
+            if (provider.equalsIgnoreCase("email")) {
+                user.setId(firebaseAuth.getCurrentUser().getUid());
+                user.updateDB(LinkAccountsFragment.this);
+            }
         } else {
             firebaseAuth.signOut();
         }
     }
-
 
     /**
      * Trennt die Verbindung zum angegebenen Provider zum Acc.
@@ -316,7 +320,6 @@ public class LinkAccountsFragment extends Fragment
         });
     }
 
-
     /**
      * Prueft, ob der im Paramenter angegebene Provider mit dem Acc verbunden ist.
      * @param providerId enthaelt den zu pruefenden Provider.
@@ -333,7 +336,6 @@ public class LinkAccountsFragment extends Fragment
         //}
         return false;
     }
-
 
     /**
      * Ueberprueft, ob der letzte Provider EmailAuth ist
@@ -356,22 +358,37 @@ public class LinkAccountsFragment extends Fragment
     }
 
 
-    private void makeToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-    }
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         makeToast(connectionResult.getErrorMessage());
     }
 
+    /*
+    public void openAlertDialog(int inputType, int titleId, int descriptionId, int hintId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View dialogView = (LayoutInflater.from(getContext())).inflate(R.layout.input_pw, null);
+        final TextView description = (TextView)dialogView.findViewById(R.id.tvDescription);
+        description.setText(descriptionId);
+        final EditText input = (EditText)dialogView.findViewById(R.id.etInput);
+        input.setHint(hintId);
+        input.setInputType(inputType);
+        builder.setTitle(titleId).setView(dialogView);
+        Dialog dialog = builder.create();
+        dialog.show();
+    } */
 
-    public void openAlertDialog(int inputType) {
-        /*
-        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);    */
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        User u = dataSnapshot.getValue(User.class);
+        tvName.setText(u.getName());
+        tvEmail.setText(u.getEmail());
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) { }
+
+    private void makeToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 }

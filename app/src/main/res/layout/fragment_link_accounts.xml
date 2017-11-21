@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
+            android:hint="Name"
             android:visibility="gone" />
 
         <TextView
@@ -43,8 +43,8 @@
             android:id="@+id/tvEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="E-Mail-Adresse"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:text="E-Mail-Adresse"
             android:visibility="visible" />
 
         <EditText
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="E-Mail-Adresse"
+            android:hint="E-Mail-Adresse"
             android:visibility="gone" />
 
         <TextView
