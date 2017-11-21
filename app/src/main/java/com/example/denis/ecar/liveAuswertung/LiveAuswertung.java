@@ -2,6 +2,8 @@ package com.example.denis.ecar.liveAuswertung;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -15,9 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.denis.ecar.MapsActivity;
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarData;
+import com.example.denis.ecar.datenbank.EcarSession;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.snapshot.DetectedActivityResult;
 import com.google.android.gms.awareness.snapshot.LocationResult;
@@ -29,6 +34,7 @@ import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Denis on 09.11.2017.
@@ -41,6 +47,8 @@ public class LiveAuswertung extends Activity
     ListView lvAusgabe;
     FloatingActionButton fabStartStop;
     String[] values;
+    private List<EcarSession> ecarSessionList;
+    private List<EcarData> ecarLatList, ecarLongList;
     public String strActivity;
     public String strWeather;
     public String strHeadphones;
@@ -60,7 +68,6 @@ public class LiveAuswertung extends Activity
         setContentView(R.layout.activity_live_auswertung);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Landscape erzwingen
         init();
-        initAwareness();
     }
 
     @Override
@@ -83,6 +90,18 @@ public class LiveAuswertung extends Activity
                 "CO2 Einsparung: ",
                 "Wetter: ",
         };
+        initListView(values);
+        //Nicht plausible Startwerte
+        setBatterie(-1);
+        setCO2Einsparung(-1);
+        setDurchschnittGeschwindigkeit(-1);
+        setWetter("-1");
+        setStrecke(-1);
+        //initAwareness();
+        initFab();
+    }
+
+    private void initListView(String[] values) {
 
         // Adapterdefinition
         // Erster  Parameter - Context
@@ -96,12 +115,14 @@ public class LiveAuswertung extends Activity
 
         // Zuweisung des Adapters
         lvAusgabe.setAdapter(adapter);
-        //Nicht plausible Startwerte
-        setBatterie(-1);
-        setCO2Einsparung(-1);
-        setDurchschnittGeschwindigkeit(-1);
-        setWetter("-1");
-        setStrecke(-1);
+    }
+
+    private void startAwareness() {
+        activity();
+        location();
+        weather();
+        Toast toast = Toast.makeText(getApplicationContext(),"StartAwareness geladen", Toast.LENGTH_SHORT);
+        toast.show();
     }
     private void initAwareness()
     {
@@ -109,7 +130,9 @@ public class LiveAuswertung extends Activity
                 .addApi(Awareness.API) // Gewünschte Api hinzufügen.
                 .build(); //Erstellung des Objekts.
         mGoogleApiClient.connect();
-        location();
+        Toast toast = Toast.makeText(getApplicationContext(),"Awareness geladen", Toast.LENGTH_SHORT);
+        toast.show();
+        startAwareness();
     }
 
     private void weather() {
@@ -130,12 +153,19 @@ public class LiveAuswertung extends Activity
             {
                 if (!weatherResult.getStatus().isSuccess()) {
                     setStrWeather("Wetter: Wetter konnte nicht geladen werden.");
+                    setWetter("Wetter konnte nicht geladen werden");
+                    Toast toast = Toast.makeText(getApplicationContext(),"Wetter lädt nicht", Toast.LENGTH_SHORT);
+                    toast.show();
+                    initListView(values);
                     //AUSGABE
                     return;
                 }
                 Weather weather = weatherResult.getWeather();
                 setStrWeather(weather.toString());
-                //AUSGABE
+                setWetter(weather.toString()); // Änderung von values
+                Toast toast = Toast.makeText(getApplicationContext(), weather.toString(), Toast.LENGTH_SHORT);
+                toast.show();
+                initListView(values); //Anzeige ListView! String[] values ändern und Methode aufrufen, um text zu aktualisieren.
             }
         });
     }//Methode, welche durch die AwarenessAPI das aktuelle Wetter ermittelt.
@@ -146,17 +176,19 @@ public class LiveAuswertung extends Activity
             public void onResult(@NonNull DetectedActivityResult detectedActivityResult) {
                 if (!detectedActivityResult.getStatus().isSuccess()) {
                     setStrActivity("Konnte noch nicht ermittelt werden.");//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                    //AUSGABE
+                    Toast toast = Toast.makeText(getApplicationContext(),"Activity lädt nicht", Toast.LENGTH_SHORT);
+                    toast.show();
                     return;
                 }
                 ActivityRecognitionResult ar = detectedActivityResult.getActivityRecognitionResult();
                 DetectedActivity probableActivity = ar.getMostProbableActivity();
                 setStrActivity(probableActivity.toString());//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                //AUSGABE
+                Toast toast = Toast.makeText(getApplicationContext(),probableActivity.toString(), Toast.LENGTH_SHORT);
+                toast.show();
+
             }
         });
     }
-
 
     private void location() {
         //Automatisch generierter Permissioncheck.
@@ -175,6 +207,8 @@ public class LiveAuswertung extends Activity
             public void onResult(@NonNull LocationResult locationResult) {
                 if (!locationResult.getStatus().isSuccess()) {
                     setStrLocation("Locationstatus nicht verfügbar");
+                    Toast toast = Toast.makeText(getApplicationContext(),"Location noch nicht verfügbar", Toast.LENGTH_SHORT);
+                    toast.show();
                     //AUSGABE
                     return;
                 }
@@ -183,9 +217,35 @@ public class LiveAuswertung extends Activity
                 setStrLocation("Latitude: " + locationResult.getLocation().getLatitude() + "//Longitude:" + locationResult.getLocation().getLongitude());
                 locationList.add(locationResult.getLocation());// Für spätere Verwendung werden die Locations in einer Liste temporär gespeichert.
                 setLocation(locationResult.getLocation());
+                Toast toast = Toast.makeText(getApplicationContext(),locationResult.getLocation().toString(), Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }//Methode, welche durch die AwarenessAPI die aktuelle Location ermittelt.
+
+    private void initFab() {
+        fabStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
+                builder.setMessage("Eine neue Strecke starten?")
+                        .setTitle("Neue Strecke")
+                        .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User bricht ab
+                            }
+                        })
+                        .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                initAwareness();
+                            }
+                        });
+                // Erstellt AlertDialogobjekt und zeigt es an
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }//Listener
 
     //GETTER SETTER
     public String getStrActivity() {
