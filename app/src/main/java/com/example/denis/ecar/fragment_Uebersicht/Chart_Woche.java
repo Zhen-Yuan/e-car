@@ -78,8 +78,9 @@ public class Chart_Woche extends Fragment
 
     public void chartBeispiel(ArrayList<Double> yVals, EcarCar car) {
         this.car = car;
+        double cap = (car.getRange()/100)*car.getConsumption();
         tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
-                car.getName()+"\nVerbrauch:"+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: ????kWh\nReichweite ~ ????km");
+                car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km");
 
 
         chart.setPinchZoom(false);

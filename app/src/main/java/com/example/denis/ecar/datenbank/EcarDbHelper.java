@@ -9,7 +9,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "snesy.db";
+    public static final String DB_NAME = "snesy2.db";
     public static final int DB_VERSION = 1;
 
     public static final String TABLE_USER = "nutzer";
@@ -156,12 +156,12 @@ public class EcarDbHelper extends SQLiteOpenHelper{
                     "VALUES (3, 'Elektro');");
 
             Log.d(LOG_TAG, "Datensätze werden zum Testen in " + TABLE_CAR + " angelegt.");
-            db.execSQL("INSERT INTO "+TABLE_CAR+" ("+COLUMN_CAR_ID+","+COLUMN_CAR_NAME+","+COLUMN_CAR_MANUFACTURER+","+COLUMN_CAR_DESC+","+COLUMN_CAR_EMISSIONS+","+COLUMN_CAR_CONSUMPTION+","+COLUMN_FUEL_ID+")\n" +
+            db.execSQL("INSERT INTO "+TABLE_CAR+" ("+COLUMN_CAR_ID+","+COLUMN_CAR_NAME+","+COLUMN_CAR_MANUFACTURER+","+COLUMN_CAR_DESC+","+COLUMN_CAR_EMISSIONS+","+COLUMN_CAR_CONSUMPTION+","+COLUMN_CAR_RANGE+","+COLUMN_FUEL_ID+")\n" +
                     "VALUES (1, " +
                     "'Model S 75', " +
                     "'Tesla', " +
                     "'Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \\\"Schuko\\\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum', " +
-                    "3, 185, 3);");
+                    "3, 20.5,415, 3);");
         }
         catch (Exception ex) {
             Log.e(LOG_TAG, "Fehler beim Befehl: " + ex.getMessage());
