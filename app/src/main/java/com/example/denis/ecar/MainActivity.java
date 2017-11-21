@@ -1,6 +1,8 @@
 package com.example.denis.ecar;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -18,12 +20,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
 import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
+import com.example.denis.ecar.fragmente_Auto.CreateCarFragment;
 import com.example.denis.ecar.fragmente_Auto.DataGenerator;
 import com.example.denis.ecar.fragmente_Auto.InfoFragment;
+import com.example.denis.ecar.fragmente_Auto.SelectedIdVariable;
 import com.example.denis.ecar.fuellmethoden.DataCollector;
 import com.example.denis.ecar.liveAuswertung.LiveAuswertung;
 import com.example.denis.ecar.login.LoginActivity;
@@ -31,7 +36,6 @@ import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserInfo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -40,12 +44,12 @@ public class MainActivity extends AppCompatActivity
     DataGenerator dataGenerator;
     DataCollector dataCollector;
     private ImageView ivProfileImage;
-
-    int images[] = {R.drawable.tesla3,R.drawable.tesla4};
-    //TODO: Bilder besorgen, Modellen zuordnen, aus der DB erhalten.
-    private ArrayList<Integer> arr_images = new ArrayList<>();
-    private static ViewPager vPager;
+    public static ViewPager vPager;
     private static int currentPage = 0;
+    private Bitmap BmNewcar;
+    public InfoFragment ifragment;
+    public static SelectedIdVariable selectedCarId;
+    public SwipeAdapter swad;
     int k=0;
     private FirebaseAuth firebaseAuth;
 
@@ -61,6 +65,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        selectedCarId = new SelectedIdVariable();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -70,19 +76,43 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         init();
-        initImageView();
     }
     //Methoden
     private void init()
     {//Initalisierung
+        BmNewcar = BitmapFactory.decodeResource(getResources(), R.drawable.newhidden);
+        dataSource = new EcarDataSource(this);
+        InitTestValues();
+
+        /*int width = eclist.get(0).getCarpic().getWidth();
+        int height = eclist.get(0).getCarpic().getHeight();
+        images = new int[width * height];
+        eclist.get(0).getCarpic().getPixels(images, 0, width, 0, 0, width, height);*/
+
         dataGenerator = new DataGenerator();
         dataCollector = new DataCollector();
         uebersichtFragment();
         initImageView();
+
         firebaseAuth = FirebaseAuth.getInstance();
         //firebaseDB = UserPref.getFirebaseDB();
         //((TextView)findViewById(R.id.tvUsername)).setText(updateUsername());
         //tvUsername.setText(firebaseAuth.getCurrentUser().getDisplayName());
+    }
+    private void InitTestValues(){
+        dataSource.open();
+        if(dataSource.checkCar("Model S 75","Tesla")==null){
+            Bitmap bitmaptesla = BitmapFactory.decodeResource(getResources(), R.drawable.tesla3);
+            dataSource.createEcarCar("Model S 75","Tesla","Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",3,185,0,bitmaptesla,3);
+            dataSource.createEcarCar("New Car","Me","Test zum anzeigen selbst angelegter autos",0,150,400,BmNewcar,3);
+        }
+        dataSource.close();
+    }
+    public void reloadswipes(){
+        dataSource.open();
+        List<EcarCar> templist = dataSource.getCarType(3);
+        dataSource.close();
+        swad.setSwipelist(templist);
     }
     private void setActivityBackgroundcolor(int color)
     {
@@ -91,11 +121,22 @@ public class MainActivity extends AppCompatActivity
     }
     private void initImageView()//In dieser Methode werden die Bilder gewechselt
     {
-        for(int i=0;i<images.length;i++)
-            arr_images.add(images[i]);
+        dataSource.open();
+        List<EcarCar> eclist = dataSource.getCarType(3);
+        dataSource.close();
 
         vPager = (ViewPager) findViewById(R.id.pager);
-        vPager.setAdapter(new SwipeAdapter(MainActivity.this,arr_images));
+        vPager.setAdapter(swad = new SwipeAdapter(MainActivity.this,eclist));
+        vPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                selectedCarId.setivar(position);
+            }
+
+            public void onPageSelected(int position) {
+                // Check if this is the page you want.
+            }
+        });
         /*                  Automatische Slideshow - NICHT LÖSCHEN! (Funktioniert) Könnte für den Welcomescreen interresant sein!
         //                  Automatische Slideshow - NICHT LÖSCHEN! (Funktioniert)
         final Handler handler = new Handler();
@@ -122,6 +163,7 @@ public class MainActivity extends AppCompatActivity
             }
         }); */
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -165,6 +207,14 @@ public class MainActivity extends AppCompatActivity
             shopFragment();
         } else if (id == R.id.nav_Activity4) {
             infoFragment();
+            dataSource.open();
+            List<EcarCar> ectemp = dataSource.getCarType(3);
+            swad.setSwipelist(ectemp);
+            swad.notifyDataSetChanged();
+            dataSource.close();
+
+        } else if (id == R.id.nav_newcar) {
+            newcarFragment();
         } else if (id == R.id.nav_dbtest) {
 
             Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
@@ -237,9 +287,9 @@ public class MainActivity extends AppCompatActivity
     private void infoFragment()//Wechselt das relativeLayout zum InfoFragment
     {
         setTitle("Info");
-        InfoFragment fragment = new InfoFragment();//Erstellung des Infofragments
+        ifragment = new InfoFragment();//Erstellung des Infofragments
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.rl_Anzeige, fragment).commit();//Wechsel des Fragments in der Mainklasse(rl-> Relativelayout)
+        fragmentTransaction.replace(R.id.rl_Anzeige, ifragment).commit();//Wechsel des Fragments in der Mainklasse(rl-> Relativelayout)
     }
     private void uebersichtFragment()
     {
@@ -265,6 +315,12 @@ public class MainActivity extends AppCompatActivity
         startActivity(intSet);
     }
 
+    private void newcarFragment(){
+        setTitle("Neues Auto anlegen");
+        CreateCarFragment fragment = new CreateCarFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.rl_Anzeige, fragment).commit();//Wechsel des Fragments in der Mainklasse(rl-> Relativelayout)
+    }
 
     private void updateUsername() {
         //TODO

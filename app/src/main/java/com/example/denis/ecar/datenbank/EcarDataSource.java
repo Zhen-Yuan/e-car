@@ -650,6 +650,27 @@ public class EcarDataSource {
 
         return ecarCarList;
     }
+    public EcarCar checkCar(String name, String hersteller){
+        String whereClause = null;
+        String[] whereArgs = null;
+        whereClause = EcarDbHelper.COLUMN_CAR_NAME + " = ? AND "+ EcarDbHelper.COLUMN_CAR_MANUFACTURER+" = ?";
+        whereArgs = new String[]{
+                "" + name,
+                "" + hersteller
+        };
+        Cursor cursor = database.query(EcarDbHelper.TABLE_CAR,
+                columnscar, whereClause, whereArgs, null, null, null);
+        if (cursor.getCount() == 0){
+            return null;
+        }
+        cursor.moveToFirst();
+        EcarCar ecarcar;
+        ecarcar = cursorToEcarCar(cursor);
+        Log.d(LOG_TAG, ecarcar.toString());
+        cursor.close();
+
+        return ecarcar;
+    }
 
     public Cursor SqlQuarry(String com, String[] vars){
         // Anwendungs beispiel: rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});

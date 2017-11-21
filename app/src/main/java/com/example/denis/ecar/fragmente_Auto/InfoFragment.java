@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.denis.ecar.MainActivity;
 import com.example.denis.ecar.R;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarDataSource;
@@ -24,7 +26,6 @@ public class InfoFragment extends Fragment {
     private TextView tv_info;
     private EcarDataSource dS;
     private List<EcarCar> infolist;
-    public static int carinfoID = 0;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -33,8 +34,14 @@ public class InfoFragment extends Fragment {
         init();
         //TODO: Globale ID variable um passende Info für ein Bild auszugeben.
 
-        tv_info.setText(infolist.get(carinfoID).toString());
-
+        tv_info.setText(infolist.get(MainActivity.selectedCarId.getivar()).toString());
+        MainActivity.selectedCarId.setListener(new SelectedIdVariable.ChangeListener() {
+            @Override
+            public void onChange() {
+                tv_info.setText(infolist.get(MainActivity.selectedCarId.getivar()).toString());
+                Log.d("Testlog",""+MainActivity.selectedCarId.getivar());
+            }
+        });
         return v;
     }
 
@@ -48,7 +55,8 @@ public class InfoFragment extends Fragment {
         tv_info.setMovementMethod(new ScrollingMovementMethod());//Macht tv_info scrollable
         dS = new EcarDataSource(getActivity());
         dS.open();
-        infolist = dS.getAllCar();
+        infolist = dS.getCarType(3);
         dS.close();
+
     }
 }
