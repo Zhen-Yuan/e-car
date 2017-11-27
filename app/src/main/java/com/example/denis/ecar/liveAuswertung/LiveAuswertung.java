@@ -3,15 +3,20 @@ package com.example.denis.ecar.liveAuswertung;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,6 +27,7 @@ import android.widget.Toast;
 import com.example.denis.ecar.MapsActivity;
 import com.example.denis.ecar.R;
 import com.example.denis.ecar.datenbank.EcarData;
+import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.snapshot.DetectedActivityResult;
@@ -54,9 +60,15 @@ public class LiveAuswertung extends Activity
     public String strHeadphones;
     public String strLocation;
     private Location location;
+    private boolean bAufnahme;
+    private EcarSession ecarsession;
+    private EcarDataSource dataSource = new EcarDataSource(this);
     public Activity activity; // Für die Initalisierung der Ggl-AwarenessAPI benötigt -> siehe initAwareness
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
     private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
+    private int intervall;
+    SharedPreferences sharedPreferences;
+
     public LiveAuswertung()
     {
 
@@ -67,7 +79,9 @@ public class LiveAuswertung extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_auswertung);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Landscape erzwingen
+        sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
         init();
+
     }
 
     @Override
@@ -83,7 +97,7 @@ public class LiveAuswertung extends Activity
         fabStartStop = (FloatingActionButton) findViewById(R.id.fabStartStop);
         lvAusgabe = (ListView) findViewById(R.id.lvDaten);
         // Anzeigearray
-        values = new String[]{
+        values = new String[]{ //TODO: ZEIT!!!
                 "Geschwindigkeit(⌀): ",
                 "Batterie: ",
                 "Strecke: ",
@@ -99,6 +113,9 @@ public class LiveAuswertung extends Activity
         setStrecke(-1);
         //initAwareness();
         initFab();
+        intervall = sharedPreferences.getInt("interval", 30); //Aufnahme Intervall einstellen über sharedpreferences
+        bAufnahme = false;
+        Log.d("Aufnahmeintervall ", intervall+"");
     }
 
     private void initListView(String[] values) {
@@ -152,8 +169,8 @@ public class LiveAuswertung extends Activity
             public void onResult(@NonNull WeatherResult weatherResult)
             {
                 if (!weatherResult.getStatus().isSuccess()) {
-                    setStrWeather("Wetter: Wetter konnte nicht geladen werden.");
-                    setWetter("Wetter konnte nicht geladen werden");
+                    setStrWeather("Wetter wird ermittelt...");
+                    setWetter("Wetter wird ermittelt...");
                     Toast toast = Toast.makeText(getApplicationContext(),"Wetter lädt nicht", Toast.LENGTH_SHORT);
                     toast.show();
                     initListView(values);
@@ -175,8 +192,8 @@ public class LiveAuswertung extends Activity
             @Override
             public void onResult(@NonNull DetectedActivityResult detectedActivityResult) {
                 if (!detectedActivityResult.getStatus().isSuccess()) {
-                    setStrActivity("Konnte noch nicht ermittelt werden.");//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                    Toast toast = Toast.makeText(getApplicationContext(),"Activity lädt nicht", Toast.LENGTH_SHORT);
+                    setStrActivity("Aktuelle Aktivität wird ermittelt...");//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
+                    Toast toast = Toast.makeText(getApplicationContext(),"Aktuelle Aktivität wird ermittelt...", Toast.LENGTH_SHORT);
                     toast.show();
                     return;
                 }
@@ -188,6 +205,54 @@ public class LiveAuswertung extends Activity
 
             }
         });
+    }
+    private void handler(final int i) // Methode, welche alle n Sekunden einen bestimmten Quelltext ausführt. (1000 = 1s)
+    {
+        final Handler ha = new Handler();
+        ha.postDelayed(new Runnable() {
+
+            //Hier werden die Berechnungen zur Strecke und Geschwindigkeit aufgerufen
+            @Override
+            public void run() {
+                //TODO: abspeichern der Daten in die Datenbank
+                if (bAufnahme) {
+                    ha.postDelayed(this, i); //1000 = 1s
+                    location();
+                    tvGeschwindigkeit.setText(calcDist(locationList.get(0).getLatitude(), locationList.get(0).getLongitude(), locationList.get(locationList.size() - 1).getLatitude(), locationList.get(locationList.size() - 1).getLongitude()) + " m");
+
+                    if (locationList.size() > 1) {
+                        tvGeschwindigkeit.setText(calcVelocity(locationList.get(locationList.size() - 1), locationList.get(locationList.size() - 2)) + " km/h");
+                        //setStrSpeed(locationList.get(locationList.size() - 1).getTime()+"-"+locationList.get(locationList.size() - 2).getTime());
+                    }
+
+                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLatitude(),ecarsession.getSesid(),1);
+                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLongitude(),ecarsession.getSesid(),2);
+                    Log.d("DB insert: ", locationList.get(locationList.size()-1).getLatitude() + " , " + ecarsession.getSesid() + " , " + 1);
+                }
+            }
+        }, i);
+    }
+    private double calcDist(double lat1, double lon1, double lat2, double lon2) {
+        double dist = 0.0;
+        double earth = 6371000;
+        double lat = Math.toRadians(lat1 - lat2);
+        double lng = Math.toRadians(lon1 - lon2);
+        double a = Math.sin(lat/2) * Math.sin(lat/2) +
+                Math.cos(Math.toRadians(lat2))
+                        *Math.cos(Math.toRadians(lat1))
+                        *Math.sin(lng/2)
+                        *Math.sin(lng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        dist = earth * c;
+        return (dist);
+    }
+    //Berechnung der Geschwindigkeit
+    private double calcVelocity(Location p1, Location p2){
+        double dist = calcDist(p1.getLatitude(), p1.getLongitude(), p2.getLatitude(), p2.getLongitude());
+        double time_s = intervall;//(p2.getTime() - p1.getTime()) / 1000.0;
+        double speed_mps = dist / time_s;
+        double speed_kph = (speed_mps * 3600.0) / 1000.0;
+        return speed_kph;
     }
 
     private void location() {
@@ -206,8 +271,8 @@ public class LiveAuswertung extends Activity
             @Override
             public void onResult(@NonNull LocationResult locationResult) {
                 if (!locationResult.getStatus().isSuccess()) {
-                    setStrLocation("Locationstatus nicht verfügbar");
-                    Toast toast = Toast.makeText(getApplicationContext(),"Location noch nicht verfügbar", Toast.LENGTH_SHORT);
+                    setStrLocation("Suche nach GPS-Signal...");
+                    Toast toast = Toast.makeText(getApplicationContext(),"Suche nach GPS-Signal...", Toast.LENGTH_SHORT);
                     toast.show();
                     //AUSGABE
                     return;
@@ -227,22 +292,36 @@ public class LiveAuswertung extends Activity
         fabStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
-                builder.setMessage("Eine neue Strecke starten?")
-                        .setTitle("Neue Strecke")
-                        .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User bricht ab
-                            }
-                        })
-                        .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                initAwareness();
-                            }
-                        });
-                // Erstellt AlertDialogobjekt und zeigt es an
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                if (bAufnahme == false) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
+                    builder.setMessage("Eine neue Strecke starten?")
+                            .setTitle("Neue Strecke")
+                            .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User bricht ab
+                                    bAufnahme = false;
+                                    dataSource.close();
+                                }
+                            })
+                            .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    bAufnahme = true;
+                                    fabStartStop.setImageResource(android.R.drawable.ic_media_pause); // Ändert FabIcon TODO: STOP-Button, nicht PAUSE.
+                                    initAwareness();
+                                    //getNewSID();
+                                    dataSource.open();
+                                    ecarsession = dataSource.createEcarSession(1, String.valueOf(System.currentTimeMillis())); // TODO: Eigener Streckenname
+                                    handler(intervall*1000);
+                                }
+                            });
+                    // Erstellt AlertDialogobjekt und zeigt es an
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else
+                {
+                    dataSource.close(); // Für Testzwecke, damit die DB nicht unnötig genutzt wird. (Falls ein Fehler in der Logik vorhanden ist)
+                    fabStartStop.setImageResource(android.R.drawable.ic_media_play); // Ändert FabIcon
+                }
             }
         });
     }//Listener
@@ -313,5 +392,19 @@ public class LiveAuswertung extends Activity
     private void setWetter(String strWetter)
     {
         values[4] = "Wetter: " + strWetter;
+    }
+
+    // Neue SessionID
+    //Neue Session ID generieren
+    private int getNewSID(){
+        List<EcarSession> ecarSessionList;
+        try {
+            ecarSessionList = dataSource.getAllEcarSession();
+            Log.d("getNewSID: ", "try");
+            return ecarSessionList.get(ecarSessionList.size() - 1).getSesid() + 1;
+        }catch(Exception e){
+            Log.d("getNewSID: ", "catch");
+            return 1;
+        }
     }
 }

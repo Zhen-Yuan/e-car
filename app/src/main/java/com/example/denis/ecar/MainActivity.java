@@ -358,7 +358,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        ((TextView)findViewById(R.id.tvUsername)).setText(u.getName());
+
+        if(u.getName()!=null)
+        {
+            ((TextView) findViewById(R.id.tvUsername)).setText(u.getName());
+        }
     }
 
     @Override

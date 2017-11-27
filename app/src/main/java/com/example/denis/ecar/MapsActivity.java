@@ -118,7 +118,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tv_disp = (TextView) findViewById(R.id.tv_disp);
         tv_disp.setText("Bitte warten");
         onclick();
-        Toast toast = Toast.makeText(getApplicationContext(), "Zum fokussieren der akuellen Position den Button unten rechts betätigen!", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Zum Fokussieren der akuellen Position den Button unten rechts betätigen!", Toast.LENGTH_LONG);
         toast.show();
         mGoogleApiClient = new GoogleApiClient.Builder(MapsActivity.this) //Erstellung eines GoogleApiClients, um die AwarenessAPI verwenden zu können.
                 .addApi(Awareness.API) // Gewünschte Api hinzufügen.
@@ -251,7 +251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     final String[] m_Text = {"Strecke_" + SID};
                     AlertDialog.Builder builder = new AlertDialog.Builder(con);
-                    builder.setTitle("Streckenname:");
+                    builder.setTitle("Streckenname: ");
 
                     final EditText input = new EditText(con);
                     input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
