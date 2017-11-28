@@ -1,9 +1,12 @@
 package com.example.denis.ecar;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -46,14 +49,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements ValueEventListener, NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataGenerator dataGenerator;
     DataCollector dataCollector;
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference firebaseDB;
-    private ImageView ivProfileImage;
     public static ViewPager vPager;
     private static int currentPage = 0;
     private Bitmap BmNewcar;
@@ -64,6 +64,11 @@ public class MainActivity extends AppCompatActivity
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     // Einfache Ausgabe über LogTag zum testen ermöglichen
     private EcarDataSource dataSource; // Datenbank
+
+    private FirebaseAuth firebaseAuth;
+    private ImageView ivProfileImage;
+    private TextView tvName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // nav_header
+        tvName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvUsername);
+        ivProfileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfileImage);
+
         init();
         initImageView();
     }
@@ -102,10 +112,9 @@ public class MainActivity extends AppCompatActivity
         dataCollector = new DataCollector();
         uebersichtFragment();
         initImageView();
+
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users")
-                .child(firebaseAuth.getCurrentUser().getUid());
-        firebaseDB.addListenerForSingleValueEvent(this);
+        displayUsername();
     }
     private void InitTestValues(){
         dataSource.open();
@@ -270,12 +279,11 @@ public class MainActivity extends AppCompatActivity
             oeffneLiveAuswertung();
         }
 
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
     private void oeffneLiveAuswertung()
     {
@@ -334,17 +342,14 @@ public class MainActivity extends AppCompatActivity
     private void updateImage() {
         //TODO
     }
- /*
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        User u = dataSnapshot.getValue(User.class);
-        etName.setText(u.getName());
+
+
+    private void displayUsername() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String name = sharedPref.getString("username", "");
+        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+        tvName.setText(name);
     }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
-
-    }   */
 
 
     /**
@@ -353,19 +358,5 @@ public class MainActivity extends AppCompatActivity
     private void signOut() {
         firebaseAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
-    }
-
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        User u = dataSnapshot.getValue(User.class);
-
-        if(u.getName()!=null)
-        {
-            ((TextView) findViewById(R.id.tvUsername)).setText(u.getName());
-        }
-    }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
     }
 }

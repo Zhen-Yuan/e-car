@@ -172,7 +172,6 @@ public class LoginActivity extends BaseActivity {
      * Passwort via firebase an.
      */
     private void signIn() {
-        user.saveProviderSP(LoginActivity.this, "");
         firebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -251,7 +250,6 @@ public class LoginActivity extends BaseActivity {
             credential = provider.equalsIgnoreCase("google") ?
                     GoogleAuthProvider.getCredential(token[0], null) : credential;
 
-            user.saveProviderSP(LoginActivity.this, provider);
             firebaseAuth.signInWithCredential(credential)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override

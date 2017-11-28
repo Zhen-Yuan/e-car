@@ -1,7 +1,10 @@
 package com.example.denis.ecar.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -21,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Login oder Registrierung mit E-Mail-Adresse und Passwort.
@@ -31,7 +35,6 @@ import com.google.firebase.database.DatabaseReference;
 public class SignUpActivity extends BaseActivity implements DatabaseReference.CompletionListener {
 
     private User user;
-
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseListener;
 
@@ -44,24 +47,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-
         init();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        firebaseAuth.addAuthStateListener(firebaseListener);
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (firebaseListener != null) {
-            firebaseAuth.removeAuthStateListener(firebaseListener);
-        }
     }
 
 
@@ -78,6 +64,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
                 }
                 user.setId(firebaseUser.getUid());
                 user.saveDB(SignUpActivity.this);
+                saveInfo();
             }
         };
 
@@ -211,4 +198,28 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         return valid;
     }
 
+
+    private void saveInfo() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("username", user.getName());
+        editor.commit();
+        editor.putString("email", user.getEmail());
+        editor.commit();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(firebaseListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (firebaseListener != null) {
+            firebaseAuth.removeAuthStateListener(firebaseListener);
+        }
+    }
 }

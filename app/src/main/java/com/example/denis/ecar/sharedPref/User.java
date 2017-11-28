@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -37,12 +38,6 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-
-    public boolean isSocialNetworkLogged(Context context){
-        String token = getProviderSP(context);
-        return(token.contains("facebook") || token.contains("google"));
     }
 
 
@@ -115,28 +110,9 @@ public class User {
     }
 
 
-    public String getImage() {
-        return this.image;
-    }
-
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-
-    public void saveProviderSP(Context context, String token){
-        UserPref.saveSP(context, PROVIDER, token);
-    }
-
-
-    public String getProviderSP(Context context){
-        return(UserPref.getSP(context, PROVIDER));
-    }
-
-
     public void saveDB(DatabaseReference.CompletionListener... completionListener){
-        DatabaseReference firebaseDB = UserPref.getFirebaseDB().child("users").child(getId());
+        DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(getId());
 
         if(completionListener.length == 0){
             firebaseDB.setValue(this);
@@ -147,7 +123,8 @@ public class User {
     }
 
     public void updateDB(DatabaseReference.CompletionListener... completionListener){
-        DatabaseReference firebase = UserPref.getFirebaseDB().child("users").child(getId());
+        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(getId());
 
         Map<String, Object> map = new HashMap<>();
         setNameInMap(map);
@@ -167,13 +144,15 @@ public class User {
 
 
     public void removeDB(DatabaseReference.CompletionListener completionListener){
-        DatabaseReference firebase = UserPref.getFirebaseDB().child("users").child(getId());
+        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(getId());
         firebase.setValue(null, completionListener);
     }
 
 
     public void contextDataDB(Context context){
-        DatabaseReference firebase = UserPref.getFirebaseDB().child("users").child(getId());
+        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(getId());
         firebase.addListenerForSingleValueEvent((ValueEventListener) context);
     }
 }
