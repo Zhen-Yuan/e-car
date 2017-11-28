@@ -185,8 +185,10 @@ public class Settings extends AppCompatActivity implements DatabaseReference.Com
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        LinkAccountsFragment fragment = (LinkAccountsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentLinkAcc);
-        fragment.onActivityResult(requestCode, resultCode, data);
+        LinkAccountsFragment linkFragment = (LinkAccountsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentLinkAcc);
+        linkFragment.onActivityResult(requestCode, resultCode, data);
+        ProfileFragment profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentProfile);
+        profileFragment.onActivityResult(requestCode, resultCode, data);
 /*       if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_GALLERY) {
                 Uri selectImage = data.getData();
                 ivProfile.setImageURI(selectImage);

@@ -1,11 +1,10 @@
 package com.example.denis.ecar.sharedPref;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -115,6 +114,7 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         bttnSubmit = (Button)view.findViewById(R.id.bttnSubmit);
         updateUI();
         changeBttnLabels();
+        displayUserInfo();
     }
 
     protected void initUser() {
@@ -367,11 +367,30 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         dialog.show();
     } */
 
+    private void saveInfo(String name, String email) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("username", name);
+        editor.commit();
+        editor.putString("email", email);
+        editor.commit();
+    }
+
+    private void displayUserInfo() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String name = sharedPref.getString("username", "username");
+        String email = sharedPref.getString("email", "email");
+        tvName.setText(name);
+        tvEmail.setText(email);
+    }
+
+
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        tvName.setText(u.getName());
-        tvEmail.setText(u.getEmail());
+        saveInfo(u.getName(), u.getEmail());
+        //tvName.setText(u.getName());
+        //tvEmail.setText(u.getEmail());
     }
 
     @Override

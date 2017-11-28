@@ -1,6 +1,5 @@
 package com.example.denis.ecar;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -20,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,16 +35,12 @@ import com.example.denis.ecar.fuellmethoden.DataCollector;
 import com.example.denis.ecar.liveAuswertung.LiveAuswertung;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.sharedPref.Settings;
-import com.example.denis.ecar.sharedPref.User;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -66,8 +60,8 @@ public class MainActivity extends AppCompatActivity
     private EcarDataSource dataSource; // Datenbank
 
     private FirebaseAuth firebaseAuth;
-    private ImageView ivProfileImage;
-    private TextView tvName;
+    private CircleImageView ivProfileImage;
+    private TextView username;
 
 
     @Override
@@ -90,8 +84,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // nav_header
-        tvName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvUsername);
-        ivProfileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfileImage);
+        username = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvUsername);
+        ivProfileImage = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfileImage);
 
         init();
         initImageView();
@@ -347,8 +341,7 @@ public class MainActivity extends AppCompatActivity
     private void displayUsername() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String name = sharedPref.getString("username", "");
-        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
-        tvName.setText(name);
+        username.setText(name);
     }
 
 

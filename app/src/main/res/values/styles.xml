@@ -60,5 +60,4 @@
         <item name="android:textColor">@color/colorTextSecondary</item>
         <item name="android:textSize">18sp</item>
     </style>
-
 </resources>

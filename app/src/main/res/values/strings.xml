@@ -12,16 +12,23 @@
     <string name="bttnFBLogin">Weiter mit Facebook</string>
     <string name="bttnGoogleLogin">Weiter mit Google</string>
 
+    <string name="cancel">Abbrechen</string>
     <string name="chckBx_pw">Passwort anzeigen</string>
+
+    <string name="deleteImage">Bild entfernen</string>
 
     <string name="facebook_app_id">1707068016267697</string>
     <string name="fb_login_protocol_scheme">fb1707068016267697</string>
 
     <string name="imgLogo">Logo Image</string>
 
+    <string name="Gallerie">Gallerie</string>
+
     <string name="hint_mail">E-Mail-Adresse</string>
     <string name="hint_name">Benutzername</string>
     <string name="hint_pw">Passwort</string>
+
+    <string name="Kamera">Kamera</string>
 
     <string name="linkFB">Facebook - Verbinden</string>
     <string name="linkGoogle">Google+ - Verbinden</string>
@@ -31,6 +38,7 @@
     <string name="PasswortAendern">Passwort ändern</string>
     <string name="PasswortVorgabe">Das Passwort muss mindestens 6 Zeichen umfassen.</string>
     <string name="PasswortReset">Passwort zurücksetzen</string>
+    <string name="Profilbild">Profilbild</string>
 
     <string name="rechtliches">AGB und Datenschutzrichtlinien</string>
     <string name="Registrieren">Registrieren</string>

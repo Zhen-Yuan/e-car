@@ -104,6 +104,7 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
 
         <activity
             android:name=".MapsEval"
