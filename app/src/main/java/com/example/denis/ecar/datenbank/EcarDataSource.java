@@ -38,10 +38,8 @@ public class EcarDataSource {
     };
     private String[] columnsuser = {
             EcarDbHelper.COLUMN_USER_ID,
-            EcarDbHelper.COLUMN_USER_NAME,
-            EcarDbHelper.COLUMN_USER_EMAIL,
-            EcarDbHelper.COLUMN_USER_PICTURE,
-            EcarDbHelper.COLUMN_SETTINGS_ID
+            EcarDbHelper.COLUMN_SETTINGS_ID,
+            EcarDbHelper.COLUMN_USER_FIREBASE
     };
     private String[] columnssettings = {
             EcarDbHelper.COLUMN_SETTINGS_ID
@@ -74,11 +72,10 @@ public class EcarDataSource {
         Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
     }
 
-    public EcarUser createEcarUser(String name, String mail, int settingid){
+    public EcarUser createEcarUser(String fbase, int settingid){
         ContentValues values = new ContentValues();
-        values.put(EcarDbHelper.COLUMN_USER_NAME, name);
-        values.put(EcarDbHelper.COLUMN_USER_EMAIL, mail);
         values.put(EcarDbHelper.COLUMN_SETTINGS_ID, settingid);
+        values.put(EcarDbHelper.COLUMN_USER_FIREBASE, fbase);
 
         long insertId = database.insert(EcarDbHelper.TABLE_USER, null, values);
 
@@ -93,53 +90,29 @@ public class EcarDataSource {
     }
     private EcarUser cursorToEcarUser(Cursor cursor){
         int idIndex = cursor.getColumnIndex(EcarDbHelper.COLUMN_USER_ID);
-        int idName = cursor.getColumnIndex(EcarDbHelper.COLUMN_USER_NAME);
-        int idMail = cursor.getColumnIndex(EcarDbHelper.COLUMN_USER_EMAIL);
-        int idBild = cursor.getColumnIndex(EcarDbHelper.COLUMN_USER_PICTURE);
         int idSettingsIndex = cursor.getColumnIndex(EcarDbHelper.COLUMN_SETTINGS_ID);
+        int idFirebase = cursor.getColumnIndex(EcarDbHelper.COLUMN_USER_FIREBASE);
 
         long id = cursor.getLong(idIndex);
         int settingsid = cursor.getInt(idSettingsIndex);
-        String name = cursor.getString(idName);
-        String mail = cursor.getString(idMail);
-        byte[] picture = cursor.getBlob(idBild);
+        String firebase = cursor.getString(idFirebase);
 
-        EcarUser ecaruser = new EcarUser(name, mail,settingsid);
+        EcarUser ecaruser = new EcarUser(firebase, settingsid);
         ecaruser.setUid((int)id);
-        if(picture != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
-            ecaruser.setPic(bitmap);
-        }
         return ecaruser;
     }
     public void deleteEcarUser(EcarUser usr){
         List<EcarSession> ecarSessionList;
         ecarSessionList = getUsersSession(usr);
-        for(int i=0;i < ecarSessionList.size();i++){
-            deleteEcarSession(ecarSessionList.get(i));
+        if (ecarSessionList != null) {
+            for (int i = 0; i < ecarSessionList.size(); i++) {
+                deleteEcarSession(ecarSessionList.get(i));
+            }
         }
         database.delete(EcarDbHelper.TABLE_USER,
                 EcarDbHelper.COLUMN_USER_ID + "=" + usr.getUid(),
                 null);
         Log.d(LOG_TAG, "Eintrag gelöscht! Inhalt: " + usr.toString());
-    }
-    public EcarUser addUserPic(EcarUser usr, Bitmap bild){
-        ByteArrayOutputStream blob = new ByteArrayOutputStream();
-        bild.compress(Bitmap.CompressFormat.PNG, 0 /* Ignored for PNGs */, blob);
-        byte[] barry = blob.toByteArray();
-
-        ContentValues values = new ContentValues();
-        values.put(EcarDbHelper.COLUMN_USER_PICTURE, barry);
-        database.update(EcarDbHelper.TABLE_USER,values, EcarDbHelper.COLUMN_USER_ID+"="+usr.getUid(), null);
-
-        Cursor cursor = database.query(EcarDbHelper.TABLE_USER,
-                columnsuser, EcarDbHelper.COLUMN_USER_ID + "=" + usr.getUid(),
-                null, null, null, null);
-
-        cursor.moveToFirst();
-        EcarUser ecaruser = cursorToEcarUser(cursor);
-        cursor.close();
-        return ecaruser;
     }
     public List<EcarUser> getAllUser(){
         List<EcarUser> ecarUserList = new ArrayList<>();
@@ -184,13 +157,12 @@ public class EcarDataSource {
 
         return ecarUser;
     }
-    public EcarUser checkUser(String name, String email){
+    public EcarUser checkUser(String firebase){
         String whereClause = null;
         String[] whereArgs = null;
-        whereClause = EcarDbHelper.COLUMN_USER_NAME + " = ? AND "+ EcarDbHelper.COLUMN_USER_EMAIL+" = ?";
+        whereClause = EcarDbHelper.COLUMN_USER_FIREBASE + " = ?";
         whereArgs = new String[]{
-                "" + name,
-                "" + email
+                "" + firebase
         };
         Cursor cursor = database.query(EcarDbHelper.TABLE_USER,
                 columnsuser, whereClause, whereArgs, null, null, null);
@@ -207,9 +179,8 @@ public class EcarDataSource {
     }
     public void updateUser(EcarUser euser){
         ContentValues values = new ContentValues();
-        values.put(EcarDbHelper.COLUMN_USER_NAME, euser.getName());
-        values.put(EcarDbHelper.COLUMN_USER_EMAIL, euser.getEmail());
         values.put(EcarDbHelper.COLUMN_SETTINGS_ID, euser.getSid());
+        values.put(EcarDbHelper.COLUMN_USER_FIREBASE, euser.getFirebaseid());
         try {
             database.update(EcarDbHelper.TABLE_USER, values, "_id=" + euser.getUid(), null);
         }

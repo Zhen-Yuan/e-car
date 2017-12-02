@@ -1,7 +1,5 @@
 package com.example.denis.ecar.datenbank;
 
-import android.graphics.Bitmap;
-
 /**
  * Created by Raja on 04.10.2017..
  */
@@ -9,30 +7,14 @@ import android.graphics.Bitmap;
 public class EcarUser {
 
 
-    private String name;
-    private String email;
+    private String firebaseid;
     private int uid;
     private int sid;
-    private Bitmap pic;
 
-    public EcarUser(String name, String mail, int setid) {
-        this.name = name;
-        this.email = mail;
+
+    public EcarUser(String fbase, int setid) {
+        this.firebaseid = fbase;
         this.sid = setid;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public int getUid() {
@@ -42,6 +24,13 @@ public class EcarUser {
         this.uid = uid;
     }
 
+    public String getFirebaseid() {
+        return firebaseid;
+    }
+    public void setFirebaseid(String firebaseid) {
+        this.firebaseid = firebaseid;
+    }
+
     public int getSid() {
         return sid;
     }
@@ -49,16 +38,9 @@ public class EcarUser {
         this.sid = sid;
     }
 
-    public Bitmap getPic() {
-        return pic;
-    }
-    public void setPic(Bitmap pic) {
-        this.pic = pic;
-    }
-
     @Override
     public String toString() {
-        String output = "Id: "+uid+"\nName: "+name+"\nEmail: "+email+"\nSettingID: "+sid+"\nBild: "+pic+"\n";
+        String output = "Id: "+uid+"\nFirebaseId: "+firebaseid+"\nSettingID: "+sid;
         return output;
     }
 }

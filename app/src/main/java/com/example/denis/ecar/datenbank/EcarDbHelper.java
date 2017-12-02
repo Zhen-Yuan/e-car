@@ -9,7 +9,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "Petw.db";
+    public static final String DB_NAME = "nr43.db";
     public static final int DB_VERSION = 1;
 
     public static final String TABLE_USER = "nutzer";
@@ -21,9 +21,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
     public static final String TABLE_CAR = "autos";
 
     public static final String COLUMN_USER_ID = "uid";
-    public static final String COLUMN_USER_NAME = "name";
-    public static final String COLUMN_USER_EMAIL = "email";
-    public static final String COLUMN_USER_PICTURE = "profilbild";
+    public static final String COLUMN_USER_FIREBASE = "firebaseid";
 
     public static final String COLUMN_SETTINGS_ID = "setid";
     public static final String COLUMN_SETTINGS_CONSUMPTION = "verbrauch";
@@ -55,9 +53,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
             "CREATE TABLE " + TABLE_USER +
                     "(" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 					COLUMN_SETTINGS_ID + " INTEGER, " +
-                    COLUMN_USER_NAME + " TEXT NOT NULL, " +
-                    COLUMN_USER_EMAIL + " TEXT NOT NULL, " +
-                    COLUMN_USER_PICTURE + " BLOB, " +
+                    COLUMN_USER_FIREBASE + " TEXT NOT NULL, " +
 					"FOREIGN KEY("+COLUMN_SETTINGS_ID+") REFERENCES "+TABLE_SETTINGS+"("+COLUMN_SETTINGS_ID+"));";
 
     public static final String SQL_CREATE_SETTINGS =
@@ -139,8 +135,8 @@ public class EcarDbHelper extends SQLiteOpenHelper{
             db.execSQL("INSERT INTO "+TABLE_SETTINGS+" ("+COLUMN_SETTINGS_ID+","+COLUMN_SETTINGS_CONSUMPTION+")\n" +
                     "VALUES (1, 5);");
             Log.d(LOG_TAG, "Datensatz wird zum Testen in " + TABLE_USER + " angelegt.");
-            db.execSQL("INSERT INTO "+TABLE_USER+" ("+COLUMN_USER_ID+","+COLUMN_USER_NAME+","+COLUMN_USER_EMAIL+","+COLUMN_SETTINGS_ID+")\n" +
-                    "VALUES (1, 'RandomName','test@test.com', 1);");
+            db.execSQL("INSERT INTO "+TABLE_USER+" ("+COLUMN_USER_ID+","+COLUMN_SESSION_ID+","+COLUMN_USER_FIREBASE+")\n" +
+                    "VALUES (1, 1,'Platzhalter');");
 
             Log.d(LOG_TAG, "Datensätze werden zum Testen in " + TABLE_VALUES + " angelegt.");
             db.execSQL("INSERT INTO "+TABLE_VALUES+" ("+COLUMN_VALUES_ID+","+COLUMN_VALUES_NAME+")\n" +
