@@ -89,11 +89,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        sp = getSharedPreferences("bla", Context.MODE_PRIVATE);
+        sp = getSharedPreferences("interv", Context.MODE_PRIVATE);
 
         //Todo UserID
         fUser = mAuth.getCurrentUser();
-        int bla = fUser.getUid().hashCode();
+        int uid = fUser.getUid().hashCode();
         Log.d("UserID", fUser.getUid());
 
 

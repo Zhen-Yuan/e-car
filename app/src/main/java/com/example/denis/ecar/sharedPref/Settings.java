@@ -89,7 +89,7 @@ public class Settings extends AppCompatActivity implements DatabaseReference.Com
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        sp = getSharedPreferences("bla", Context.MODE_PRIVATE);
+        sp = getSharedPreferences("interv", Context.MODE_PRIVATE);
         spe = sp.edit();
 
         init();//Aufruf der Initalisierungsmethode

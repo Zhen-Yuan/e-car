@@ -73,7 +73,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         tv_disp.setText("Bitte legen Sie erst\neine Strecke an...");
         dataSource = new EcarDataSource(this);
         dataSource.open();
-        List<EcarSession> bla = dataSource.getAllEcarSession(); //TODO: Sinnige Variablenbezeichnung...
+        ecarSessionList = dataSource.getAllEcarSession();
         dataSource.close();
 
         //auswertungFragment();
@@ -83,7 +83,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         auswertWoche.getView().setVisibility(View.GONE);
 
 
-        if(bla!=null) {
+        if(ecarSessionList!=null) {
 
             mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -96,17 +96,17 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
                     dataSource.open();
-                    List<EcarSession> bla = dataSource.getAllEcarSession();//TODO: Sinnige Variablenbezeichnung...
-                    String blub = ddmenu.getSelectedItem().toString();//TODO: Sinnige Variablenbezeichnung...
-                    Log.d("Selected Item", blub);//TODO: Sinnige Variablenbezeichnung...
+                    ecarSessionList = dataSource.getAllEcarSession();
+                    String carname = ddmenu.getSelectedItem().toString();
 
 
-                    for (int u = 0; u < bla.size(); u++) {
-                        if (bla.get(u).getName().equals(blub)) {//TODO: Sinnige Variablenbezeichnung...
-                            Log.d("SesID", "" + bla.get(u).getSesid());//TODO: Sinnige Variablenbezeichnung...
-                            session_strecke = bla.get(u);//TODO: Sinnige Variablenbezeichnung...
-                            ecarLatList = dataSource.getSpecificEcarData((bla.get(u).getSesid()), 1);//TODO: Sinnige Variablenbezeichnung...
-                            ecarLongList = dataSource.getSpecificEcarData((bla.get(u).getSesid()), 2);//TODO: Sinnige Variablenbezeichnung...
+
+                    for (int u = 0; u < ecarSessionList.size(); u++) {
+                        if (ecarSessionList.get(u).getName().equals(carname)) {
+                            Log.d("SesID", "" + ecarSessionList.get(u).getSesid());
+                            session_strecke = ecarSessionList.get(u);
+                            ecarLatList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 1);
+                            ecarLongList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 2);
                         }
                     }
                     dataSource.close();
