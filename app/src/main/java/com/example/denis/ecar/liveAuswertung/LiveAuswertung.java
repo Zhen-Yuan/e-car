@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.example.denis.ecar.MapsActivity;
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.auswertung.AuswertungCO2;
+import com.example.denis.ecar.auswertung.AuswertungElektro;
 import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarSession;
@@ -38,6 +40,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +60,7 @@ public class LiveAuswertung extends Activity
     String[] values;
     private List<EcarSession> ecarSessionList;
     private List<EcarData> ecarLatList, ecarLongList;
+    private double dStrecke;
     public String strActivity;
     public String strWeather;
     public String strHeadphones;
@@ -67,6 +73,8 @@ public class LiveAuswertung extends Activity
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
     private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
     private int intervall;
+    private AuswertungCO2 auswertungCO2;
+    private AuswertungElektro auswertungElektro;
     SharedPreferences sharedPreferences;
 
     public LiveAuswertung()
@@ -81,7 +89,6 @@ public class LiveAuswertung extends Activity
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Landscape erzwingen
         sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
         init();
-
     }
 
     @Override
@@ -92,6 +99,7 @@ public class LiveAuswertung extends Activity
 
     private void init()
     {
+        auswertungCO2 = new AuswertungCO2();
         tvGeschwindigkeit = (TextView) findViewById(R.id.tvGeschwindigkeit);
         tvGeschwindigkeit.setText("0"+" km/h");
         fabStartStop = (FloatingActionButton) findViewById(R.id.fabStartStop);
@@ -113,7 +121,7 @@ public class LiveAuswertung extends Activity
         setStrecke(-1);
         //initAwareness();
         initFab();
-        intervall = sharedPreferences.getInt("interval", 30); //Aufnahme Intervall einstellen über sharedpreferences
+        intervall = sharedPreferences.getInt("intervall", 30); //Aufnahme Intervall einstellen über sharedpreferences
         bAufnahme = false;
         Log.d("Aufnahmeintervall ", intervall+"");
     }
@@ -221,13 +229,16 @@ public class LiveAuswertung extends Activity
                     tvGeschwindigkeit.setText(calcDist(locationList.get(0).getLatitude(), locationList.get(0).getLongitude(), locationList.get(locationList.size() - 1).getLatitude(), locationList.get(locationList.size() - 1).getLongitude()) + " m");
 
                     if (locationList.size() > 1) {
-                        tvGeschwindigkeit.setText(calcVelocity(locationList.get(locationList.size() - 1), locationList.get(locationList.size() - 2)) + " km/h");
+                        tvGeschwindigkeit.setText(Math.round(calcVelocity(locationList.get(locationList.size() - 1), locationList.get(locationList.size() - 2))) + " km/h");
                         //setStrSpeed(locationList.get(locationList.size() - 1).getTime()+"-"+locationList.get(locationList.size() - 2).getTime());
                     }
 
                     dataSource.createEcarData(locationList.get(locationList.size()-1).getLatitude(),ecarsession.getSesid(),1);
                     dataSource.createEcarData(locationList.get(locationList.size()-1).getLongitude(),ecarsession.getSesid(),2);
                     Log.d("DB insert: ", locationList.get(locationList.size()-1).getLatitude() + " , " + ecarsession.getSesid() + " , " + 1);
+                }else
+                {
+                    ha.removeMessages(0);
                 }
             }
         }, i);
@@ -283,6 +294,11 @@ public class LiveAuswertung extends Activity
                 locationList.add(locationResult.getLocation());// Für spätere Verwendung werden die Locations in einer Liste temporär gespeichert.
                 setLocation(locationResult.getLocation());
                 Toast toast = Toast.makeText(getApplicationContext(),locationResult.getLocation().toString(), Toast.LENGTH_SHORT);
+                double dStrecke;
+                dStrecke = gesamteStrecke();
+                setStrecke(dStrecke); // Anzeige (Strecke)
+                setBatterie(auswertungElektro.getBatterieProzent(dStrecke,25,410)); // Prozentanzeige Batterie
+                setCO2Einsparung(auswertungCO2.getCO2CO2AusstossElektro(25));
                 toast.show();
             }
         });
@@ -367,6 +383,16 @@ public class LiveAuswertung extends Activity
         this.location = location;
     }
 
+    public double gesamteStrecke()
+    {
+        double dStrecke = 0;
+        if (locationList.size() >1)
+            for(int i= 1; i < locationList.size();i++)
+            {
+                dStrecke += calcDist(locationList.get(i-1).getLatitude(),locationList.get(i-1).getLongitude(),locationList.get(i).getLatitude(),locationList.get(i).getLongitude());
+            }
+            return dStrecke;
+    }
     //Setter für value
     /*
     Beispiel:
