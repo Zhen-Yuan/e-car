@@ -9,7 +9,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "nr43.db";
+    public static final String DB_NAME = "nr49.db";
     public static final int DB_VERSION = 1;
 
     public static final String TABLE_USER = "nutzer";
@@ -44,6 +44,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
     public static final String COLUMN_CAR_EMISSIONS = "emissionen";
     public static final String COLUMN_CAR_CONSUMPTION = "verbrauch";
     public static final String COLUMN_CAR_RANGE = "reichweite";
+    public static final String COLUMN_CAR_POWERSTOREAGE = "batterie";
     public static final String COLUMN_CAR_PICTURE = "autobild";
 
     public static final String COLUMN_FUEL_ID = "fid";
@@ -98,6 +99,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
                     COLUMN_CAR_EMISSIONS + " REAL, " +
                     COLUMN_CAR_CONSUMPTION + " REAL, " +
                     COLUMN_CAR_RANGE + " REAL, " +
+                    COLUMN_CAR_POWERSTOREAGE + " REAL, "+
                     COLUMN_CAR_PICTURE + " BLOB, " +
                     COLUMN_FUEL_ID + " INTEGER, " +
                     "FOREIGN KEY("+COLUMN_FUEL_ID+") REFERENCES "+TABLE_FUEL+"("+COLUMN_FUEL_ID+"));";

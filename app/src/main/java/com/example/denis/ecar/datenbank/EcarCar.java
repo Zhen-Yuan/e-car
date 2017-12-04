@@ -15,16 +15,18 @@ public class EcarCar {
     private double emission;
     private double consumption;
     private double range;
+    private double powerstore;
     private Bitmap carpic;
     private int fid;
 
-    public EcarCar(String name, String hersteller, String beschreibung, double emissionen, double verbrauch, double reichweite, Bitmap bild, int treibstoff) {
+    public EcarCar(String name, String hersteller, String beschreibung, double emissionen, double verbrauch, double reichweite,double batterie, Bitmap bild, int treibstoff) {
         this.name = name;
         this.manufacturer = hersteller;
         this.description = beschreibung;
         this.emission = emissionen;
         this.consumption = verbrauch;
         this.range = reichweite;
+        this.powerstore = batterie;
         this.carpic = bild;
         this.fid = treibstoff; // ausgelagert in FUEL. Bestimmt die Art von Wert, welcher in der Tabelle verbrauch(z.B kw/h).
     }
@@ -78,6 +80,13 @@ public class EcarCar {
         this.range = range;
     }
 
+    public double getPowerstore() {
+        return powerstore;
+    }
+    public void setPowerstore(double powerstore) {
+        this.powerstore = powerstore;
+    }
+
     public Bitmap getCarpic() {
         return carpic;
     }
@@ -101,9 +110,8 @@ public class EcarCar {
                 "\nEmissionen: "+emission+
                 "\nVerbrauch: "+consumption+
                 "\nReichweite: "+range+
+                "\nBatterie: "+powerstore+
                 "\nTreibstoffID: "+fid;
         return output;
     }
-
-
 }
