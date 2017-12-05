@@ -27,7 +27,6 @@ import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarUser;
 import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
 import com.example.denis.ecar.fragmente_Auto.CreateCarFragment;
-import com.example.denis.ecar.fragmente_Auto.DataGenerator;
 import com.example.denis.ecar.fragmente_Auto.InfoFragment;
 import com.example.denis.ecar.fragmente_Auto.SelectedIdVariable;
 import com.example.denis.ecar.fuellmethoden.DataCollector;
@@ -52,11 +51,8 @@ public class MainActivity extends AppCompatActivity
         implements ValueEventListener, NavigationView.OnNavigationItemSelectedListener {
 
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
-    DataGenerator dataGenerator;
     DataCollector dataCollector;
     public static ViewPager vPager;
-    private static int currentPage = 0;
-    private Bitmap BmNewcar;
     public InfoFragment ifragment;
     public static SelectedIdVariable selectedCarId;
     public SwipeAdapter swad;
@@ -100,7 +96,6 @@ public class MainActivity extends AppCompatActivity
     //Methoden
     private void init()
     {//Initalisierung
-        BmNewcar = BitmapFactory.decodeResource(getResources(), R.drawable.newhidden);
         dataSource = new EcarDataSource(this);
         InitTestValues();
 
@@ -109,7 +104,6 @@ public class MainActivity extends AppCompatActivity
         images = new int[width * height];
         eclist.get(0).getCarpic().getPixels(images, 0, width, 0, 0, width, height);*/
 
-        dataGenerator = new DataGenerator();
         dataCollector = new DataCollector();
         uebersichtFragment();
         initImageView();
@@ -124,8 +118,27 @@ public class MainActivity extends AppCompatActivity
         dataSource.open();
         if(dataSource.checkCar("Model S 75","Tesla")==null){
             Bitmap bitmaptesla = BitmapFactory.decodeResource(getResources(), R.drawable.tesla3);
-            dataSource.createEcarCar("Model S 75","Tesla","Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",3,185,0,bitmaptesla,3);
-            dataSource.createEcarCar("New Car","Me","Test zum anzeigen selbst angelegter autos",0,150,400,BmNewcar,3);
+            dataSource.createEcarCar(
+                    "Model S 75",
+                    "Tesla",
+                    "Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",
+                    3,
+                    185,
+                    430,
+                    500,
+                    bitmaptesla,
+                    3);
+            Bitmap bmnewcar = BitmapFactory.decodeResource(getResources(),R.drawable.newhidden);
+            dataSource.createEcarCar(
+                    "New Car",
+                    "Me",
+                    "Test zum anzeigen selbst angelegter autos",
+                    0,
+                    150,
+                    400,
+                    300,
+                    bmnewcar,
+                    3);
         }
         dataSource.close();
     }

@@ -96,7 +96,15 @@ public class CreateCarFragment extends Fragment {
                 else{
                     try {
                         dS.open();
-                        EcarCar car = dS.createEcarCar(output, eTHersteller.getText() + "", eTBeschreibung.getText() + "", 0, sbVerbrauch.getProgress(), 0, BmNewcar, FuelId);
+                        EcarCar car = dS.createEcarCar(
+                                output,
+                                eTHersteller.getText() + "",
+                                eTBeschreibung.getText() + "",
+                                0, sbVerbrauch.getProgress(),
+                                0,
+                                0,
+                                BmNewcar,
+                                FuelId);
                         dS.close();
                         Toast toast = Toast.makeText(getActivity(), "Das Auto '"+output+"' wurde angelegt!", Toast.LENGTH_LONG);
                         toast.show();
