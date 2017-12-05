@@ -13,6 +13,8 @@
     <string name="bttnGoogleLogin">Weiter mit Google</string>
 
     <string name="cancel">Abbrechen</string>
+    <string name="changeEmail">E-Mail-Adresse ändern</string>
+    <string name="changeName">Benutzernamen ändern</string>
     <string name="chckBx_pw">Passwort anzeigen</string>
 
     <string name="deleteImage">Bild entfernen</string>

@@ -56,8 +56,8 @@ public class ProfileFragment extends Fragment {
     private View view;
     private Dialog dialog;
     private CircleImageView profileImage;
-    //private String mCurrentPhotoPath;
     private Uri filePath;
+    private String dir;
 
     private FirebaseAuth firebaseAuth;
     private StorageReference firebaseStorage;
@@ -82,7 +82,7 @@ public class ProfileFragment extends Fragment {
     private void init() {
         firebaseAuth = FirebaseAuth.getInstance();
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
             firebaseStorage = FirebaseStorage.getInstance().getReference().child(user.getUid());
@@ -138,21 +138,21 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent takePhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            /*    if (takePhoto.resolveActivity(getActivity().getPackageManager()) != null) {
-                    // Create the File where the photo should go
+                if (takePhoto.resolveActivity(getActivity().getPackageManager()) != null) {
                     File photoFile = null;
+                    filePath = null;
                     try {
                         photoFile = createImageFile();
                     } catch (IOException ex) {
-                        // Error occurred while creating the File
-                        Toast.makeText(getContext(), ex.getMessage() , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), ex.getMessage() ,Toast.LENGTH_SHORT).show();
                     }
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {    */
-                        //takePhoto.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                    if (photoFile != null) {
+                        filePath = FileProvider.getUriForFile(getContext(),
+                                "com.example.denis.ecar.sharedPref", photoFile);
+                        takePhoto.putExtra(MediaStore.EXTRA_OUTPUT, filePath);
                         startActivityForResult(takePhoto, REQUEST_CAMERA);
-             /*       }
-                }   */
+                    }
+                }
             }
         });
         delete.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +176,7 @@ public class ProfileFragment extends Fragment {
             firebaseStorage.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getContext(), "upload erfolgreich", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Profilbild aktualisiert", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -209,9 +209,8 @@ public class ProfileFragment extends Fragment {
     }   */
 
 
-    /*
+
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
@@ -221,11 +220,9 @@ public class ProfileFragment extends Fragment {
                 ".jpg",         // suffix
                 storageDir      // directory
         );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        dir = "file:" + image.getAbsolutePath();
         return image;
-    }   */
+    }
 
 
     private void beginCrop(Uri source) {

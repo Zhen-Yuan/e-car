@@ -34,8 +34,14 @@ import com.example.denis.ecar.fuellmethoden.DataCollector;
 import com.example.denis.ecar.liveAuswertung.LiveAuswertung;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.sharedPref.Settings;
+import com.example.denis.ecar.sharedPref.User;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -43,7 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements ValueEventListener, NavigationView.OnNavigationItemSelectedListener {
 
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataGenerator dataGenerator;
@@ -60,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     private EcarDataSource dataSource; // Datenbank
 
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference firebaseDB;
     private CircleImageView ivProfileImage;
     private TextView username;
 
@@ -108,7 +115,10 @@ public class MainActivity extends AppCompatActivity
         initImageView();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        displayUsername();
+        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users")
+                .child(firebaseAuth.getCurrentUser().getUid());
+        firebaseDB.addListenerForSingleValueEvent(this);
+        //displayUsername();
     }
     private void InitTestValues(){
         dataSource.open();
@@ -347,7 +357,7 @@ public class MainActivity extends AppCompatActivity
         //TODO
     }
 
-
+/*
     private void displayUsername() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String name = sharedPref.getString("username", "");
@@ -361,5 +371,16 @@ public class MainActivity extends AppCompatActivity
     private void signOut() {
         firebaseAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
+
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        User u = dataSnapshot.getValue(User.class);
+        username.setText(u.getName());
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
     }
 }
