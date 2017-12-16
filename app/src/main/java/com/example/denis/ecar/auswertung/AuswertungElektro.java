@@ -18,6 +18,10 @@ public class AuswertungElektro
     {//ausgabe in Euro (0.2916) 22.1kWh Tesla Model S
         return getdStrecke()/100*dVerbrauchElektro*getdStrompreis();
     }
+    public double getBatterieProzent(double dStrecke, double dVerbrauch, double dReichweite)
+    {
+        return (dStrecke*100)/dReichweite;
+    }
 
     public double getKostenElektroProKm(double dVerbrauchElektro)
     {
