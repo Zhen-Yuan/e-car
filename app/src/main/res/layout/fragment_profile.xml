@@ -15,7 +15,7 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/profileImage"
         app:civ_border_width="2dp"
-        app:civ_border_color="#000000"/>
+        app:civ_border_color="#ffffff"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -107,7 +107,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         user.setName(etUsername.getText().toString());
         user.setEmail(etEmail.getText().toString());
         user.setPassword(etPassword.getText().toString());
-        user.setImageUrl("");
+        user.setImageUrl("https://firebasestorage.googleapis.com/v0/b/softwareprojekt-4c899.appspot.com/o/images%2Fdefault_profile.jpg?alt=media&token=24855b04-2aba-43a3-8379-de33c5a151b4");
     }
 
 

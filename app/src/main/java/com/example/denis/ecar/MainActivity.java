@@ -377,7 +377,8 @@ public class MainActivity extends AppCompatActivity
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
         username.setText(u.getName());
-        Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
+        if (u.getImageUrl() != null)
+            Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
     }
 
     @Override
