@@ -38,7 +38,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/ddmenuspinner2"
-            android:layout_marginTop="20dp"
             android:text="Streckeninfos..."
             android:textColor="@color/colorTextPrimary" />
 
@@ -90,6 +89,17 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/bttn_ausw" />
 
+        <fragment
+            android:id="@+id/auswertungWocheKosten"
+            android:name="com.example.denis.ecar.fragment_Uebersicht.Chart_Woche_Kosten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/bttn_ausw" />
+
 
     </RelativeLayout>
+
 </LinearLayout>
