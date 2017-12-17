@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
-        android:text="Bitte geben Sie ihr Passwort ein und bestätigen Sie die Löschung Ihres Kontos."
+        android:text="@string/deleteAcc"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <android.support.design.widget.TextInputLayout
@@ -30,7 +30,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPassword"
-            android:hint="Passwort"/>
+            android:hint="@string/password"/>
     </android.support.design.widget.TextInputLayout>
 
 
@@ -38,6 +38,6 @@
         android:id="@+id/bttnDelete"
         style="@style/bttnStyle"
         android:layout_marginTop="20dp"
-        android:text="löschen" />
+        android:text="@string/delete" />
 
 </LinearLayout>

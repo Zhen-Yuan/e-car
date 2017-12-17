@@ -37,7 +37,7 @@
                 android:layout_marginBottom="20dp"
                 android:ems="10"
                 android:fontFamily="sans-serif"
-                android:hint="@string/hint_name"
+                android:hint="@string/username"
                 android:inputType="textPersonName"
                 android:textSize="20sp"/>
         </android.support.design.widget.TextInputLayout>
@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:hint="@string/hint_mail"
+                android:hint="@string/mail"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/colorTextPrimary"
                 android:textSize="20sp"/>
@@ -62,7 +62,7 @@
             android:id="@+id/tvPasswordHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/PasswortVorgabe"
+            android:text="@string/passwordRequirement"
             android:textColor="@color/colorTextAccent" />
 
         <android.support.design.widget.TextInputLayout
@@ -74,7 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:hint="@string/hint_pw"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:textColor="@color/colorTextPrimary"
                 android:textSize="20sp"/>
@@ -86,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="@string/chckBx_pw" />
+            android:text="@string/showPassword" />
 
 
         <Button
@@ -94,7 +94,7 @@
             style="@style/bttnStyle"
             android:layout_width="match_parent"
             android:layout_marginTop="25dp"
-            android:text="@string/Registrieren" />
-    </LinearLayout>
+            android:text="@string/signUp" />
 
+    </LinearLayout>
 </RelativeLayout>

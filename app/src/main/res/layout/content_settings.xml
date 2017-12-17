@@ -23,7 +23,7 @@
             android:layout_weight="1"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="Profil"
+            android:text="@string/profile"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@color/colorPrimaryDark" />
 
@@ -34,7 +34,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             tools:layout="@layout/fragment_profile" />
-
 
         <fragment
             android:id="@+id/fragmentLinkAcc"
@@ -101,7 +100,6 @@
                 android:layout_below="@+id/textView6"
                 android:layout_toEndOf="@+id/seekBar"
                 android:text="TextView" />
-
         </RelativeLayout>
 
 
@@ -111,7 +109,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="15dp"
             android:paddingTop="35dp"
-            android:text="Konto schließen"
+            android:text="@string/closeAcc"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 
