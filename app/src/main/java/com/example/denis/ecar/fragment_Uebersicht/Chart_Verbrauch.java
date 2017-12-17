@@ -14,6 +14,8 @@ import com.example.denis.ecar.R;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
@@ -58,7 +60,7 @@ public class Chart_Verbrauch extends Fragment
         barWidth = 0.3f;
         barSpace = 0f;
         groupSpace = 0.4f;
-        tv_titelElektro.setText("Verbrauch");
+        tv_titelElektro.setText("\nVerbrauch");
 
 
 
@@ -69,15 +71,27 @@ public class Chart_Verbrauch extends Fragment
         this.car=car;
         double cap = (car.getRange()/100)*car.getConsumption();
         tv_beschreibungElektro.setText("Gefahrene Zeit(s) und Batteriestatus(%)\n" +
-                car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km");
+                car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km\n");
 
         LineDataSet set1 = new LineDataSet(yVals, "Ladezustand");
+
         set1.setColor(Color.RED);
+        set1.setDrawCircles(false);
+        set1.setDrawValues(false);
         LineData data = new LineData(set1);
         chart.setData(data);
         chart.getDescription().setEnabled(true);
-        chart.getDescription().setPosition(100,20);
+        chart.getDescription().setPosition(100,475);
         chart.getDescription().setText("Batterie [%]");
+        //chart.setBackgroundColor(Color.WHITE);
+        chart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        //chart.setVisibleYRange(100,0, YAxis.AxisDependency.LEFT);
+        chart.getAxisLeft().setLabelCount(5);
+        chart.getAxisLeft().setAxisMaxValue(100);
+        chart.getAxisLeft().setAxisMinValue(0);
+        chart.getAxisRight().setEnabled(false);
+        chart.getXAxis().setDrawGridLines(false);
         chart.invalidate();
 
 

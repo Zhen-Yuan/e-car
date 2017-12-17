@@ -100,6 +100,7 @@ public class LiveAuswertung extends Activity
     private void init()
     {
         auswertungCO2 = new AuswertungCO2();
+        auswertungElektro = new AuswertungElektro();
         tvGeschwindigkeit = (TextView) findViewById(R.id.tvGeschwindigkeit);
         tvGeschwindigkeit.setText("0"+" km/h");
         fabStartStop = (FloatingActionButton) findViewById(R.id.fabStartStop);

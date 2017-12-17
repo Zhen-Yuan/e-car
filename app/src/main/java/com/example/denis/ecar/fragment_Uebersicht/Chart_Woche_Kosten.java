@@ -31,7 +31,7 @@ import java.util.Calendar;
  * Created by Denis on 16.10.2017.
  */
 
-public class Chart_Woche extends Fragment
+public class Chart_Woche_Kosten extends Fragment
 {
     private View v;
     float barWidth;
@@ -76,10 +76,10 @@ public class Chart_Woche extends Fragment
 
     }
 
-    public void chartBeispiel(ArrayList<Double> yVals, EcarCar car, ArrayList<Integer> colours) {
+    public void chartBeispiel(ArrayList<Double> yVals, EcarCar car) {
         this.car = car;
         double cap = (car.getRange()/100)*car.getConsumption();
-        tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
+        tv_beschreibungElektro.setText("Kosten der Gefahrenen Strecken, der letzten 7-Tage\n" +
                 car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km\n");
 
 
@@ -119,16 +119,15 @@ public class Chart_Woche extends Fragment
         BarDataSet set2;
         set2 = new BarDataSet(yElektro, "");
         set2.setColor(Color.BLUE);
-        set2.setColors(colours);
         BarData data = new BarData(set2);
-        data.setValueFormatter(new LargeValueFormatter());
+        //data.setValueFormatter(new LargeValueFormatter());
         chart.setData(data);
         chart.getBarData().setBarWidth(barWidth);
         chart.getXAxis().setAxisMinimum(0);
         //chart.getXAxis().setAxisMaximum(0 + chart.getBarData().getGroupWidth(groupSpace, barSpace));
         chart.getData().setHighlightEnabled(false);
         chart.getDescription().setPosition(150,12);
-        chart.getDescription().setText("Strecke in Meter");
+        chart.getDescription().setText("Kosten in €");
         chart.invalidate();
 
         Legend l = chart.getLegend();
@@ -155,7 +154,7 @@ public class Chart_Woche extends Fragment
         //Y-Achse
         chart.getAxisRight().setEnabled(false);
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setValueFormatter(new LargeValueFormatter());
+        //leftAxis.setValueFormatter(new LargeValueFormatter());
         leftAxis.setDrawGridLines(true);
         leftAxis.setSpaceTop(35f);
         leftAxis.setAxisMinimum(0f);
