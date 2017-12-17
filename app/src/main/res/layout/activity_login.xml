@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.02"
             android:gravity="center"
-            android:text="@string/txtVwWillkommen"
+            android:text="@string/welcome"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
         <ImageView
@@ -48,18 +48,18 @@
 
 
         <EditText
-                android:id="@+id/etEmail"
-                style="@style/et_style"
-                android:layout_width="match_parent"
-                android:hint="@string/hint_mail"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/colorTextPrimary" />
+            android:id="@+id/etEmail"
+            style="@style/et_style"
+            android:layout_width="match_parent"
+            android:hint="@string/mail"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/colorTextPrimary" />
 
 
         <EditText
             android:id="@+id/etPassword"
             style="@style/et_style"
-            android:hint="@string/hint_pw"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:textColor="@color/colorTextPrimary" />
 
@@ -68,14 +68,14 @@
             android:id="@+id/bttnSignIn"
             style="@style/bttnStyle"
             android:layout_width="match_parent"
-            android:text="@string/Anmelden" />
+            android:text="@string/signIn" />
 
         <TextView
             android:id="@+id/tvResetPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/txtVwPasswortVergessen"
+            android:text="@string/forgotPassword"
             android:textColor="@color/colorTextAccent"
             android:visibility="visible" />
 
@@ -84,13 +84,13 @@
             style="@style/bttnFBStyle"
             android:layout_width="match_parent"
             android:layout_marginTop="20dp"
-            android:text="@string/bttnFBLogin" />
+            android:text="@string/FBLogin" />
 
         <Button
             android:id="@+id/bttnGoogleSignIn"
             style="@style/bttnGoogleStyle"
             android:layout_width="match_parent"
-            android:text="@string/bttnGoogleLogin" />
+            android:text="@string/GoogleLogin" />
 
         <!--
         <TextView
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
             android:gravity="center"
-            android:text="@string/Registrieren"
+            android:text="@string/signUp"
             android:textColor="@color/colorTextPrimary"
             android:textStyle="bold" />
     </LinearLayout>

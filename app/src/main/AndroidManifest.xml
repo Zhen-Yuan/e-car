@@ -104,26 +104,32 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~ custom pick and edit image ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-
         <activity
             android:name=".MapsEval"
-            android:label="Auswertung">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:label="Auswertung" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Update Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <activity
+            android:name=".sharedPref.UpdateLoginActivity"
+            android:label="E-Mail-Adresse ändern"
+            android:parentActivityName=".sharedPref.Settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".sharedPref.Settings" />
         </activity>
 
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Remove User ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-        <activity android:name=".sharedPref.RemoveUserActivity"
+        <activity
+            android:name=".sharedPref.RemoveUserActivity"
             android:label="Konto löschen"
             android:parentActivityName=".sharedPref.Settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".sharedPref.Settings" />
         </activity>
+
     </application>
 
 </manifest>

@@ -1,11 +1,9 @@
 package com.example.denis.ecar;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -41,6 +39,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -112,7 +111,6 @@ public class MainActivity extends AppCompatActivity
         firebaseDB = FirebaseDatabase.getInstance().getReference().child("users")
                 .child(firebaseAuth.getCurrentUser().getUid());
         firebaseDB.addListenerForSingleValueEvent(this);
-        //displayUsername();
     }
     private void InitTestValues(){
         dataSource.open();
@@ -366,18 +364,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void updateImage() {
-        //TODO
-    }
-
-/*
-    private void displayUsername() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String name = sharedPref.getString("username", "");
-        username.setText(name);
-    }
-
-
     /**
      * Logged den aktuellen User aus und wechselt dann zum Login-Screen
      */
@@ -391,6 +377,7 @@ public class MainActivity extends AppCompatActivity
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
         username.setText(u.getName());
+        Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
     }
 
     @Override

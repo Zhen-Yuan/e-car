@@ -41,13 +41,6 @@ public class ResetPWActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        init();
-    }
-
-
     /**
      * Verschickt mithilfe von firebase eine E-Mail an den User um sein Passwort zu resetten.
      */
@@ -63,10 +56,17 @@ public class ResetPWActivity extends AppCompatActivity {
                                     .show();
                         } else {
                             Toast.makeText(
-                                    ResetPWActivity.this,"Gescheitert! Versuchen Sie es erneut",
+                                    ResetPWActivity.this,"Gescheitert! Versuchen Sie es erneut.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        init();
     }
 }

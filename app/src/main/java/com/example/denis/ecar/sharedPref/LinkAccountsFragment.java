@@ -3,12 +3,9 @@ package com.example.denis.ecar.sharedPref;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +62,6 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
 
     private User user;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference firebaseDB;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
     private static final int RC_SIGN_IN_GOOGLE = 9001;
@@ -107,7 +103,8 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         firebaseAuth = FirebaseAuth.getInstance();
         user = new User();
         user.setId(firebaseAuth.getCurrentUser().getUid());
-        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users").child(user.getId());
+        DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(user.getId());
         firebaseDB.addListenerForSingleValueEvent(this);
 
         tvName = (TextView)view.findViewById(R.id.tvName);
@@ -118,14 +115,15 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         bttnSubmit = (Button)view.findViewById(R.id.bttnSubmit);
         updateUI();
         changeBttnLabels();
-        //displayUserInfo();
     }
+
 
     protected void initUser() {
         user.setName(etName.getText().toString());
         user.setEmail(etEmail.getText().toString());
         user.setPassword(etPassword.getText().toString());
     }
+
 
     protected void initOnClick() {
         tvName.setOnClickListener(new View.OnClickListener() {
@@ -234,7 +232,6 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         builder.setTitle(R.string.changeName).setView(nameView);
         final Dialog dialog = builder.create();
         final EditText name = (EditText)nameView.findViewById(R.id.etName);
-
         nameView.findViewById(R.id.bttnSubmit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,57 +257,13 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
 
 
     private void updateMail() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View mailView = (LayoutInflater.from(getContext())).inflate(R.layout.input_email, null);
-        builder.setTitle(R.string.changeEmail).setView(mailView);
-        final Dialog dialog = builder.create();
-        final EditText mail = (EditText)mailView.findViewById(R.id.etEmail);
-
-        mailView.findViewById(R.id.bttnSubmit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!(mail.getText().toString()).isEmpty()) {
-                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                    if (firebaseUser == null) {
-                        return;
-                    }
-                /*    firebaseUser.updateEmail(mail.getText().toString())
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()) {
-                                        //user.setEmail(mail.getText().toString());
-                                        //user.updateDB(LinkAccountsFragment.this);
-                                        tvEmail.setText(user.getEmail());
-                                        makeToast("E-Mail-Adresse aktualisiert.");
-                                    }
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    makeToast(e.getMessage());
-                                }
-                            }); */
-                    dialog.dismiss();
-                } else {
-                    makeToast("Bitte gib deine neue E-Mail-Adresse ein.");
-                }
-            }
-        });
-        mailView.findViewById(R.id.bttnCancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-            }
-        });
-        dialog.show();
+        startActivity(new Intent(getContext(), UpdateLoginActivity.class));
     }
 
     private void updatePW() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View pwView = (LayoutInflater.from(getContext())).inflate(R.layout.input_pw, null);
-        builder.setTitle(R.string.PasswortAendern).setView(pwView);
+        builder.setTitle(R.string.changePassword).setView(pwView);
         final Dialog dialog = builder.create();
         final EditText pw = (EditText)pwView.findViewById(R.id.etPassword);
 
@@ -352,7 +305,7 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     }
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ link provider methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ link provider methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void createAccount(String email, String pw) {
         linkProvider("email", email, pw);
     }
@@ -405,7 +358,7 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     }
 
     /**
-     * Trennt die Verbindung zum angegebenen Provider zum Acc.
+     * Trennt die Verbindung zum angegebenen Provider zum Account.
      * @param providerId enthaelt die ProviderID, von dem getrennt werden soll
      */
     private void unlinkProvider(final String providerId) {
@@ -441,11 +394,11 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
      */
     private boolean isLinked(String providerId) {
         //if(providerId != null) {
-            for (UserInfo userInfo : firebaseAuth.getCurrentUser().getProviderData()) {
-                if (userInfo.getProviderId().equals(providerId)) {
-                    return true;
-                }
+        for (UserInfo userInfo : firebaseAuth.getCurrentUser().getProviderData()) {
+            if (userInfo.getProviderId().equals(providerId)) {
+                return true;
             }
+        }
         //}
         return false;
     }
@@ -460,25 +413,13 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         return (size == 0 || (size == 1 && providerId.equals(EmailAuthProvider.PROVIDER_ID)));
     }
 
-/*
-    private void saveInfo(String name, String email) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("username", name);
-        editor.commit();
-        editor.putString("email", email);
-        editor.commit();
+
+    private void makeToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    private void displayUserInfo() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String name = sharedPref.getString("username", "username");
-        String email = sharedPref.getString("email", "email");
-        tvName.setText(name);
-        tvEmail.setText(email);
-    }   */
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ database methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ database methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
         if (databaseError != null) {
@@ -487,23 +428,20 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         firebaseAuth.getCurrentUser().delete();
         firebaseAuth.signOut();
     }
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         makeToast(connectionResult.getErrorMessage());
     }
+
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        //saveInfo(u.getName(), u.getEmail());
         tvName.setText(u.getName());
         tvEmail.setText(u.getEmail());
     }
+
     @Override
     public void onCancelled(DatabaseError databaseError) { }
-
-
-    private void makeToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-    }
 }

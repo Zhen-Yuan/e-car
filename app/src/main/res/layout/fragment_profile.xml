@@ -1,49 +1,31 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.denis.ecar.sharedPref.ProfileFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/civProfile"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/profileImage"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#000000"/>
 
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/civProfile"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:contentDescription="profie Image"
-                android:src="@drawable/default_profile"
-                app:civ_border_width="2dp"
-                app:civ_border_color="#ffffff"/>
-
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/civProfile"
-                android:layout_alignEnd="@+id/civProfile"
-                android:clickable="true"
-                app:backgroundTint="@color/colorPrimary"
-                app:elevation="0dp"
-                app:fabSize="mini"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
-
-</FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/civProfile"
+        android:layout_alignEnd="@+id/civProfile"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="0dp"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+</RelativeLayout>
