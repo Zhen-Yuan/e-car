@@ -22,6 +22,9 @@ public class User {
     private String email;
     private String imageUrl;
     private String password;
+    private String defaultImage = "https://firebasestorage.googleapis.com/v0/b/softwareprojekt" +
+            "-4c899.appspot.com/o/images%2Fdefault_profile.jpg?alt=media&token=24855b04-2aba" +
+            "-43a3-8379-de33c5a151b4";
 
 
     public User(){
@@ -88,7 +91,7 @@ public class User {
     }
 
     private void setImageUrlInMap(Map<String, Object> map) {
-        if(getImageUrl() != null){
+        if(!getImageUrl().equals(defaultImage)){
             map.put("imageUrl", getImageUrl());
         }
     }

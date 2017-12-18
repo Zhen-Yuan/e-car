@@ -244,54 +244,8 @@ public class MainActivity extends AppCompatActivity
             swad.setSwipelist(ectemp);
             swad.notifyDataSetChanged();
             dataSource.close();
-
         } else if (id == R.id.nav_newcar) {
             newcarFragment();
-        } else if (id == R.id.nav_dbtest) {
-
-            Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
-            dataSource = new EcarDataSource(this);
-            //Durch .open() wird ebenfals zum Test ein User, sowie die Einträge für das Accelerometer X,Y,Z angelegt.
-            dataSource.open();
-            dataSource.createEcarUser("NewFbase",1);
-            EcarUser euser = dataSource.checkUser("NewFbase");
-            euser.setFirebaseid("changed");
-            dataSource.updateUser(euser);
-            List<EcarUser> eul = dataSource.getAllUser();
-            Toast toast = Toast.makeText(getApplicationContext(), ""+eul.size(), Toast.LENGTH_LONG);
-            toast.show();
-            dataSource.deleteEcarUser(euser);
-            /*
-            //createEcarSession legt die Session in der Datenbank an und gibt ein Objekt 'EcarSession' mit den angelegten werten zurück.
-            // Die 1 steht für die UserID, "Testlauf" für den Namen der Session.
-                EcarSession carses = dataSource.createEcarSession(1, "Testlauf");
-                Toast toast = Toast.makeText(getApplicationContext(), "Session: "+carses.getName()+" angelegt!", Toast.LENGTH_LONG);
-                toast.show();
-            //createEcarData ist wie createSession aufgebaut.
-            //22 ist ein Testwert für einen Dateneintrag. carses.getSesid() gibt die Session vor.
-            // Als letzte stelle wird die Id der Values angegeben. Diese wurden in .open() angelegt. (z.B Latitude)
-                EcarData cardataLat = dataSource.createEcarData(22,carses.getSesid(),1);
-                EcarData cardataLong = dataSource.createEcarData(140,carses.getSesid(),2);
-                toast = Toast.makeText(getApplicationContext(), "Werte: Lat "+cardataLat.getData()+" Long "+cardataLong.getData()+" angelegt", Toast.LENGTH_LONG);
-                toast.show();
-            // getSpecificEcarData gibt alle Daten einer Session oder einer Value in einer Liste von Objekten wieder.
-            // Die Übergabewerte stehen hier für (Session, Value). Bei der Eingabe von 0 werden alle ausgegeben.
-            // (dataSource.getSpecificEcarData(0, 3); = Daten von jeder Session, jedoch nur Accelerometer Z)
-            // (dataSource.getSpecificEcarData(3, 1); = Daten der Session mit der Id = 3 , jedoch nur Accelerometer X)
-            // getAllEcarData würde alle Objekte geben.
-                List<EcarSession> ecarSessionList = dataSource.getAllEcarSession();
-                List<EcarData> ecarDataList = dataSource.getAllEcarData();
-            // getAllEcarSession hat den selben Effekt nur für Sessions.
-                Log.d(LOG_TAG, cardataLat.toString() +" "+ cardataLong.toString());
-            // löschen der Werte
-                dataSource.deleteEcarData(cardataLat);
-                dataSource.deleteEcarData(cardataLong);
-                dataSource.deleteEcarSession(carses);
-            */
-            toast = Toast.makeText(getApplicationContext(), "Einträge gelöscht!" + euser.toString(), Toast.LENGTH_LONG);
-            toast.show();
-            dataSource.close();
-
         } else if (id == R.id.nav_settings) {
             openSettings();
         } else if(id == R.id.nav_logout) {

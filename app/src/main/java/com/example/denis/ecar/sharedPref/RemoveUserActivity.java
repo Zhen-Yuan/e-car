@@ -1,13 +1,16 @@
 package com.example.denis.ecar.sharedPref;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.login.LoginActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -21,6 +24,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class RemoveUserActivity extends AppCompatActivity
         implements ValueEventListener, DatabaseReference.CompletionListener {
@@ -95,18 +100,36 @@ public class RemoveUserActivity extends AppCompatActivity
             return;
         }
         user.removeDB(RemoveUserActivity.this);
+        deleteUserImage();
         firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (!task.isSuccessful()) {
                     return;
                 }
-                finish();
+                startActivity(new Intent(RemoveUserActivity.this, LoginActivity.class));
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(RemoveUserActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void deleteUserImage() {
+        StorageReference firebaseStorage = FirebaseStorage.getInstance().getReference()
+                .child("images/").child(user.getId());
+        firebaseStorage.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Profilbild geloescht.");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.w(TAG, exception.getMessage());
             }
         });
     }

@@ -32,12 +32,15 @@ import com.google.firebase.database.DatabaseReference;
 
 public class SignUpActivity extends BaseActivity implements DatabaseReference.CompletionListener {
 
+    private String defaultImage = "https://firebasestorage.googleapis.com/v0/b/softwareprojekt" +
+            "-4c899.appspot.com/o/images%2Fdefault_profile.jpg?alt=media&token=24855b04-2aba" +
+            "-43a3-8379-de33c5a151b4";
+
     private User user;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseListener;
 
 //    private EcarDataSource dataSource;
-
     private EditText etUsername;
     private CheckBox chckBxShowPW;
 
@@ -107,7 +110,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         user.setName(etUsername.getText().toString());
         user.setEmail(etEmail.getText().toString());
         user.setPassword(etPassword.getText().toString());
-        user.setImageUrl("https://firebasestorage.googleapis.com/v0/b/softwareprojekt-4c899.appspot.com/o/images%2Fdefault_profile.jpg?alt=media&token=24855b04-2aba-43a3-8379-de33c5a151b4");
+        user.setImageUrl(defaultImage);
     }
 
 

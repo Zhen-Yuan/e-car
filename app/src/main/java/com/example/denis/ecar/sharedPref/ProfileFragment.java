@@ -28,7 +28,6 @@ import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;

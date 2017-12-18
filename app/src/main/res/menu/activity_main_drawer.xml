@@ -38,10 +38,6 @@
                 android:icon="@mipmap/ic_directions_car_black_24dp"
                 android:title="Eigenes Auto" />
             <item
-                android:id="@+id/nav_dbtest"
-                android:icon="@mipmap/ic_launcher_round"
-                android:title="dbtest" />
-            <item
                 android:id="@+id/nav_settings"
                 android:icon="@android:drawable/ic_menu_manage"
                 android:title="Settings" />

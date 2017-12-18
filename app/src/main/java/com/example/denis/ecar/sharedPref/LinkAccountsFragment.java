@@ -419,7 +419,7 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     }
 
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ database methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ database methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
         if (databaseError != null) {
