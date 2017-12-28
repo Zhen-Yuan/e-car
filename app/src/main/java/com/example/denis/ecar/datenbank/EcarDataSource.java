@@ -370,6 +370,61 @@ public class EcarDataSource {
 
         return eses;
     }
+    public EcarSession getSessionByID(int id) {
+        String whereClause = null;
+        String[] whereArgs = null;
+
+        whereClause = EcarDbHelper.COLUMN_SESSION_ID + " = ?";
+        whereArgs = new String[]{
+                "" + id
+        };
+        Cursor cursor = database.query(
+                EcarDbHelper.TABLE_SESSION,
+                columnssession,
+                whereClause,
+                whereArgs,
+                null, null, null);
+
+        if (cursor.getCount() == 0){
+            return null;
+        }
+
+        cursor.moveToFirst();
+        EcarSession eses;
+        eses = cursorToEcarSession(cursor);
+        Log.d(LOG_TAG, eses.toString());
+        cursor.close();
+
+        return eses;
+    }
+    public Cursor getSessionDay(int daystart){
+        int dayend = daystart + 86399;
+        String [] select = new String[]{
+                EcarDbHelper.COLUMN_SESSION_ID,
+                "MIN("+EcarDbHelper.COLUMN_DATA_TIME+") AS min",
+                "MAX("+EcarDbHelper.COLUMN_DATA_TIME+") AS max"
+        };
+        String whereClause = EcarDbHelper.COLUMN_DATA_TIME+ " > ? " +
+                "AND "+ EcarDbHelper.COLUMN_DATA_TIME+ " < ?";
+        String[] whereArgs = new String[]{
+                ""+daystart,
+                ""+dayend
+        };
+        Cursor cursor = database.query(
+                EcarDbHelper.TABLE_DATA,
+                select,
+                whereClause,
+                whereArgs,
+                EcarDbHelper.COLUMN_SESSION_ID,
+                null,
+                null);
+        if (cursor.getCount() == 0){
+            Log.d(LOG_TAG,"getSessionDay Cursor ist 0");
+            return null;
+        }
+
+        return  cursor;
+    }
 
     public EcarData createEcarData(double data, int session, int value) {
         ContentValues values = new ContentValues();
