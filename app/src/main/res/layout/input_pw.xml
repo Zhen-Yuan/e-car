@@ -14,7 +14,7 @@
         android:ems="10"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:hint="@string/hint_pw"
+        android:hint="@string/password"
         android:inputType="textPassword" />
 
     <LinearLayout
@@ -27,14 +27,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Ändern" />
+            android:text="@string/change" />
 
         <Button
             android:id="@+id/bttnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Abbrechen" />
+            android:text="@string/cancel" />
     </LinearLayout>
 
 </LinearLayout>

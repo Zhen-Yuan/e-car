@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.denis.ecar.auswertung.AuswertungElektro;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarData;
 import com.example.denis.ecar.datenbank.EcarDataSource;
@@ -23,6 +24,7 @@ import com.example.denis.ecar.datenbank.EcarUser;
 import com.example.denis.ecar.fragmentAnimation.MoveAnimation;
 import com.example.denis.ecar.fragment_Uebersicht.Chart_Verbrauch;
 import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche;
+import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche_Kosten;
 import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -61,6 +63,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     SupportMapFragment mapFragment;
     private Chart_Verbrauch auswertVerbrauch;
     private Chart_Woche auswertWoche;
+    private Chart_Woche_Kosten auswertWocheKosten;
     private Context con = this;
 
     @Override
@@ -73,7 +76,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         tv_disp.setText("Bitte legen Sie erst\neine Strecke an...");
         dataSource = new EcarDataSource(this);
         dataSource.open();
-        List<EcarSession> bla = dataSource.getAllEcarSession(); //TODO: Sinnige Variablenbezeichnung...
+        ecarSessionList = dataSource.getAllEcarSession();
         dataSource.close();
 
         //auswertungFragment();
@@ -81,9 +84,11 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         auswertVerbrauch.getView().setVisibility(View.GONE);
         auswertWoche = (Chart_Woche) getSupportFragmentManager().findFragmentById(R.id.auswertungWoche);
         auswertWoche.getView().setVisibility(View.GONE);
+        auswertWocheKosten = (Chart_Woche_Kosten) getSupportFragmentManager().findFragmentById(R.id.auswertungWocheKosten);
+        auswertWocheKosten.getView().setVisibility(View.GONE);
 
 
-        if(bla!=null) {
+        if(ecarSessionList!=null) {
 
             mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -96,17 +101,17 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
                     dataSource.open();
-                    List<EcarSession> bla = dataSource.getAllEcarSession();//TODO: Sinnige Variablenbezeichnung...
-                    String blub = ddmenu.getSelectedItem().toString();//TODO: Sinnige Variablenbezeichnung...
-                    Log.d("Selected Item", blub);//TODO: Sinnige Variablenbezeichnung...
+                    ecarSessionList = dataSource.getAllEcarSession();
+                    String carname = ddmenu.getSelectedItem().toString();
 
 
-                    for (int u = 0; u < bla.size(); u++) {
-                        if (bla.get(u).getName().equals(blub)) {//TODO: Sinnige Variablenbezeichnung...
-                            Log.d("SesID", "" + bla.get(u).getSesid());//TODO: Sinnige Variablenbezeichnung...
-                            session_strecke = bla.get(u);//TODO: Sinnige Variablenbezeichnung...
-                            ecarLatList = dataSource.getSpecificEcarData((bla.get(u).getSesid()), 1);//TODO: Sinnige Variablenbezeichnung...
-                            ecarLongList = dataSource.getSpecificEcarData((bla.get(u).getSesid()), 2);//TODO: Sinnige Variablenbezeichnung...
+
+                    for (int u = 0; u < ecarSessionList.size(); u++) {
+                        if (ecarSessionList.get(u).getName().equals(carname)) {
+                            Log.d("SesID", "" + ecarSessionList.get(u).getSesid());
+                            session_strecke = ecarSessionList.get(u);
+                            ecarLatList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 1);
+                            ecarLongList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 2);
                         }
                     }
                     dataSource.close();
@@ -156,8 +161,13 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                                                      auswertVerbrauch.getView().setVisibility(View.GONE);
                                                      auswertWoche.getView().setVisibility(View.VISIBLE);
                                                  } else if (auswertWoche.getView().getVisibility() == View.VISIBLE) {
+                                                     chartKosten();
                                                      auswertWoche.getView().setVisibility(View.GONE);
-                                                     mapFragment.getView().setVisibility(View.VISIBLE);
+                                                     auswertWocheKosten.getView().setVisibility(View.VISIBLE);
+                                                 } else if (auswertWocheKosten.getView().getVisibility() == View.VISIBLE) {
+                                                    auswertWocheKosten.getView().setVisibility(View.GONE);
+                                                    mapFragment.getView().setVisibility(View.VISIBLE);
+
                                                  }
                                              }
                                          }
@@ -261,15 +271,23 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     public void initDB() {
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
         dataSource.open();
-        //EcarSession carses = dataSource.createEcarSession(1, "Testlauf");
-        //EcarSession carses2 = dataSource.createEcarSession(1, "Listentest");
-        //EcarSession carses3 = dataSource.createEcarSession(1, "Listentest2");
-        //cardatalat = dataSource.createEcarData(51.488556,3,1);
-        //cardatalong = dataSource.createEcarData(7.209091,3,2);
-        //cardatalat = dataSource.createEcarData(51.476838,3,1);
-        //cardatalong = dataSource.createEcarData(7.230914,3,2);
-        //cardatalat = dataSource.createEcarData(51.487481,2,1);
-        //cardatalong = dataSource.createEcarData(7.210878,2,2);
+        /*if(dataSource.getNamedSession("Testlauf") == null) {
+            dataSource.createEcarSession(1, "Testlauf");
+            dataSource.createEcarData(51.481244,dataSource.getNamedSession("Testlauf").getSesid(),1);
+            dataSource.createEcarData(7.218018,dataSource.getNamedSession("Testlauf").getSesid(),2);
+            dataSource.createEcarData(51.636430,dataSource.getNamedSession("Testlauf").getSesid(),1);
+            dataSource.createEcarData(8.723145,dataSource.getNamedSession("Testlauf").getSesid(),2);
+            dataSource.createEcarData(51.731791,dataSource.getNamedSession("Testlauf").getSesid(),1);
+            dataSource.createEcarData(10.458984,dataSource.getNamedSession("Testlauf").getSesid(),2);
+            dataSource.createEcarData(51.745398,dataSource.getNamedSession("Testlauf").getSesid(),1);
+            dataSource.createEcarData(11.755371,dataSource.getNamedSession("Testlauf").getSesid(),2);
+            dataSource.createEcarData(51.745398,dataSource.getNamedSession("Testlauf").getSesid(),1);
+            dataSource.createEcarData(13.864746,dataSource.getNamedSession("Testlauf").getSesid(),2);
+            dataSource.createEcarData(51.949005,dataSource.getNamedSession("Testlauf").getSesid(),1);
+            dataSource.createEcarData(15.666504,dataSource.getNamedSession("Testlauf").getSesid(),2);
+        }*/
+
+
         //dataSource.createEcarCar("Panzerkampfwagen VI Tiger","Henschel", "schwerer deutscher Panzer",9001,535,null,1);
         //dataSource.createEcarCar("Panzerkampfwagen V Panther","MAN", "mittlerer deutscher Panzer",9001,365,null,1);
         //dataSource.deleteAndClean();
@@ -361,7 +379,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     private String ausgabe(){
         double verbrauch = ddist/415000*100;
 
-        return "Strecke:       " + getStrDist()+ "m\n" +
+        return "Strecke:       " + getStrDist()+ "Km\n" +
                 "Geschw.:      " + getStrSpeed()+"Kmh\n" +
                 "Akku Verbr.: " + String.format("%.2f", verbrauch)+"%";
     }
@@ -395,8 +413,142 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
         y.add(0.0);
         y.add(0.0);
         y.add(0.0);
+        ArrayList<Integer> colour = new ArrayList<Integer>();
+        colour.add(Color.GREEN);
+        colour.add(Color.GREEN);
+        colour.add(Color.GREEN);
+        colour.add(Color.GREEN);
+        colour.add(Color.GREEN);
+        colour.add(Color.GREEN);
+        colour.add(Color.GREEN);
         double dist = 0;
         List<EcarData> allData;
+        int aktSess = 0;
+        dataSource.open();
+        allData = dataSource.getAllEcarData();  //lat->long->lat->long....
+        dataSource.close();
+        Calendar calnow = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
+        for (int i = 0; i < allData.size() - 2; i = i + 2) {
+            cal.setTimeInMillis((long) allData.get(i).getTime() * 1000);
+            //calendar.add(Calendar.DAY_OF_YEAR, -90);
+            dist = 0;
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist + calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+
+                    }
+                    y.set(6, y.get(6) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(6,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(6)>ecarCar.getRange()*1000){if(colour.get(6) != Color.RED){colour.set(6,Color.YELLOW);}}
+                }
+            }
+            dist = 0;
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist+calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+                    }
+                    y.set(5, y.get(5) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(5,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(5)>ecarCar.getRange()*1000){if(colour.get(5) != Color.RED){colour.set(5,Color.YELLOW);}}
+                }
+            }
+            dist = 0;
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist+calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+                    }
+                    y.set(4, y.get(4) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(4,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(4)>ecarCar.getRange()*1000){if(colour.get(4) != Color.RED){colour.set(4,Color.YELLOW);}}
+                }
+            }
+            dist = 0;
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist+calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+                    }
+                    y.set(3, y.get(3) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(3,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(3)>ecarCar.getRange()*1000){if(colour.get(3) != Color.RED){colour.set(3,Color.YELLOW);}}
+                }
+            }
+            dist = 0;
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist+calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+                    }
+                    y.set(2, y.get(2) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(2,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(2)>ecarCar.getRange()*1000){if(colour.get(2) != Color.RED){colour.set(2,Color.YELLOW);}}
+                }//Log.d("dist",dist/1000+"");
+            }
+            dist = 0;
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist+calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+                    }
+                    y.set(1, y.get(1) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(1,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(1)>ecarCar.getRange()*1000){if(colour.get(1) != Color.RED){colour.set(1,Color.YELLOW);}}
+                }
+            }
+            dist = 0;
+            calnow.add(Calendar.DATE, -1);
+            if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
+                if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
+                    while(i < allData.size()-2 && allData.get(i).getSesid()==allData.get(i + 2).getSesid()){
+                        dist = dist+calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
+                        i = i + 2;
+                    }
+                    y.set(0, y.get(0) + dist);
+                    if(dist>ecarCar.getRange()*1000){colour.set(0,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(0)>ecarCar.getRange()*1000){if(colour.get(0) != Color.RED){colour.set(0,Color.YELLOW);}}
+                }
+            }
+            calnow.add(Calendar.DATE, 6);
+        }
+
+
+        //Log.d("Calendar",calnow.get(Calendar.DATE)+"");
+        auswertWoche.chartBeispiel(y, ecarCar, colour);
+    }
+
+
+
+
+    //Berechnet und erstellt die Auswertung zu den Kosten der gefahrenen Strecken der letzten 7-Tage
+    private void chartKosten(){
+        ArrayList<Double> y = new ArrayList<Double>();
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        y.add(0.0);
+        double dist = 0;
+        List<EcarData> allData;
+        AuswertungElektro auswE = new AuswertungElektro();
+        auswE.setdStrompreis(0.2916);
+        auswE.setdStrecke(0);
         dataSource.open();
         allData = dataSource.getAllEcarData();  //lat->long->lat->long....
         dataSource.close();
@@ -409,49 +561,56 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(6, y.get(6) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(6, y.get(6) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(5, y.get(5) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(5, y.get(5) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(4, y.get(4) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(4, y.get(4) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(3, y.get(3) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(3, y.get(3) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(2, y.get(2) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(2, y.get(2) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }//Log.d("dist",dist/1000+"");
             }
             calnow.add(Calendar.DATE, -1);
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(1, y.get(1) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(1, y.get(1) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
             if (calnow.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && calnow.get(Calendar.MONTH) == cal.get(Calendar.MONTH) && calnow.get(Calendar.DATE) == cal.get(Calendar.DATE)) {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
-                    y.set(0, y.get(0) + dist);
+                    auswE.setdStrecke(dist);
+                    y.set(0, y.get(0) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, 6);
@@ -459,7 +618,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
 
 
         //Log.d("Calendar",calnow.get(Calendar.DATE)+"");
-        auswertWoche.chartBeispiel(y, ecarCar);
+        auswertWocheKosten.chartBeispiel(y, ecarCar);
     }
 
 
@@ -467,7 +626,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
     //Getter und Setter
 
     public String getStrDist() {
-        return String.format("%.2f", ddist)+"";
+        return String.format("%.2f", ddist/1000)+"";
     }
 
 

@@ -1,9 +1,9 @@
 package com.example.denis.ecar.sharedPref;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -37,6 +37,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
@@ -61,7 +62,6 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
 
     private User user;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference firebaseDB;
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
     private static final int RC_SIGN_IN_GOOGLE = 9001;
@@ -103,7 +103,8 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         firebaseAuth = FirebaseAuth.getInstance();
         user = new User();
         user.setId(firebaseAuth.getCurrentUser().getUid());
-        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users").child(user.getId());
+        DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(user.getId());
         firebaseDB.addListenerForSingleValueEvent(this);
 
         tvName = (TextView)view.findViewById(R.id.tvName);
@@ -114,8 +115,8 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         bttnSubmit = (Button)view.findViewById(R.id.bttnSubmit);
         updateUI();
         changeBttnLabels();
-        displayUserInfo();
     }
+
 
     protected void initUser() {
         user.setName(etName.getText().toString());
@@ -123,20 +124,19 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         user.setPassword(etPassword.getText().toString());
     }
 
+
     protected void initOnClick() {
         tvName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvName.setVisibility(View.GONE);
-                etName.setVisibility(View.VISIBLE);
+                updateName();
             }
         });
 
         tvEmail.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                tvName.setVisibility(View.GONE);
-                etName.setVisibility(View.VISIBLE);
+                updateMail();
             }
         });
 
@@ -147,13 +147,10 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
                     initUser();
                     createAccount(user.getEmail(), user.getPassword());
                 }
+                updatePW();
             }
         });
 
-        /*
-        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);    */
         (view.findViewById(R.id.bttnFB)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,8 +212,8 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == RC_SIGN_IN_GOOGLE){
-            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            GoogleSignInAccount account = googleSignInResult.getSignInAccount();
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            GoogleSignInAccount account = result.getSignInAccount();
             if(account == null){
                 makeToast("Die Anmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
                 return;
@@ -229,6 +226,86 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     }
 
 
+    private void updateName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View nameView = (LayoutInflater.from(getContext())).inflate(R.layout.input_name, null);
+        builder.setTitle(R.string.changeName).setView(nameView);
+        final Dialog dialog = builder.create();
+        final EditText name = (EditText)nameView.findViewById(R.id.etName);
+        nameView.findViewById(R.id.bttnSubmit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!(name.getText().toString()).isEmpty() && name.getText().toString().length() > 1) {
+                    user.setName(name.getText().toString());
+                    user.updateDB(LinkAccountsFragment.this);
+                    tvName.setText(user.getName());
+                    makeToast("Benutzername erfolgreich geändert.");
+                    dialog.dismiss();
+                } else {
+                    makeToast("Bitte gib deinen neuen Namen ein.");
+                }
+            }
+        });
+        nameView.findViewById(R.id.bttnCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+
+
+    private void updateMail() {
+        startActivity(new Intent(getContext(), UpdateLoginActivity.class));
+    }
+
+    private void updatePW() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View pwView = (LayoutInflater.from(getContext())).inflate(R.layout.input_pw, null);
+        builder.setTitle(R.string.changePassword).setView(pwView);
+        final Dialog dialog = builder.create();
+        final EditText pw = (EditText)pwView.findViewById(R.id.etPassword);
+
+        pwView.findViewById(R.id.bttnSubmit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!(pw.getText().toString()).isEmpty() && pw.getText().toString().length() > 5) {
+                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                    if (firebaseUser == null) {
+                        return;
+                    }
+                    firebaseUser.updatePassword(pw.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful())
+                                        makeToast("Passwort aktualisiert.");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    makeToast(e.getMessage());
+                                }
+                            });
+                    dialog.dismiss();
+                } else {
+                    makeToast("Bitte gib dein neues Passwort ein.");
+                }
+            }
+        });
+        pwView.findViewById(R.id.bttnCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ link provider methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void createAccount(String email, String pw) {
         linkProvider("email", email, pw);
     }
@@ -281,7 +358,7 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     }
 
     /**
-     * Trennt die Verbindung zum angegebenen Provider zum Acc.
+     * Trennt die Verbindung zum angegebenen Provider zum Account.
      * @param providerId enthaelt die ProviderID, von dem getrennt werden soll
      */
     private void unlinkProvider(final String providerId) {
@@ -317,12 +394,11 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
      */
     private boolean isLinked(String providerId) {
         //if(providerId != null) {
-            // Um Crash bei nicht vorhandener Verlinkung zu unterbinden
-            for (UserInfo userInfo : firebaseAuth.getCurrentUser().getProviderData()) {
-                if (userInfo.getProviderId().equals(providerId)) {
-                    return true;
-                }
+        for (UserInfo userInfo : firebaseAuth.getCurrentUser().getProviderData()) {
+            if (userInfo.getProviderId().equals(providerId)) {
+                return true;
             }
+        }
         //}
         return false;
     }
@@ -338,6 +414,12 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     }
 
 
+    private void makeToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ database methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
         if (databaseError != null) {
@@ -353,50 +435,13 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
         makeToast(connectionResult.getErrorMessage());
     }
 
-    /*
-    public void openAlertDialog(int inputType, int titleId, int descriptionId, int hintId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View dialogView = (LayoutInflater.from(getContext())).inflate(R.layout.input_pw, null);
-        final TextView description = (TextView)dialogView.findViewById(R.id.tvDescription);
-        description.setText(descriptionId);
-        final EditText input = (EditText)dialogView.findViewById(R.id.etInput);
-        input.setHint(hintId);
-        input.setInputType(inputType);
-        builder.setTitle(titleId).setView(dialogView);
-        Dialog dialog = builder.create();
-        dialog.show();
-    } */
-
-    private void saveInfo(String name, String email) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("username", name);
-        editor.commit();
-        editor.putString("email", email);
-        editor.commit();
-    }
-
-    private void displayUserInfo() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String name = sharedPref.getString("username", "username");
-        String email = sharedPref.getString("email", "email");
-        tvName.setText(name);
-        tvEmail.setText(email);
-    }
-
-
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        saveInfo(u.getName(), u.getEmail());
-        //tvName.setText(u.getName());
-        //tvEmail.setText(u.getEmail());
+        tvName.setText(u.getName());
+        tvEmail.setText(u.getEmail());
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError) { }
-
-    private void makeToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-    }
 }

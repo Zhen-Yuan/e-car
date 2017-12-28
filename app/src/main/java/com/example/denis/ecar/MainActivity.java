@@ -1,11 +1,9 @@
 package com.example.denis.ecar;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.auswertungTab.AuswertungMain;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarUser;
@@ -33,8 +32,15 @@ import com.example.denis.ecar.fuellmethoden.DataCollector;
 import com.example.denis.ecar.liveAuswertung.LiveAuswertung;
 import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.sharedPref.Settings;
+import com.example.denis.ecar.sharedPref.User;
 import com.example.denis.ecar.swipes.SwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,7 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements ValueEventListener, NavigationView.OnNavigationItemSelectedListener {
 
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataCollector dataCollector;
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     private EcarDataSource dataSource; // Datenbank
 
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference firebaseDB;
     private CircleImageView ivProfileImage;
     private TextView username;
 
@@ -102,7 +109,9 @@ public class MainActivity extends AppCompatActivity
         initImageView();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        displayUsername();
+        firebaseDB = FirebaseDatabase.getInstance().getReference().child("users")
+                .child(firebaseAuth.getCurrentUser().getUid());
+        firebaseDB.addListenerForSingleValueEvent(this);
     }
     private void InitTestValues(){
         dataSource.open();
@@ -236,54 +245,8 @@ public class MainActivity extends AppCompatActivity
             swad.setSwipelist(ectemp);
             swad.notifyDataSetChanged();
             dataSource.close();
-
         } else if (id == R.id.nav_newcar) {
             newcarFragment();
-        } else if (id == R.id.nav_dbtest) {
-
-            Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
-            dataSource = new EcarDataSource(this);
-            //Durch .open() wird ebenfals zum Test ein User, sowie die Einträge für das Accelerometer X,Y,Z angelegt.
-            dataSource.open();
-            dataSource.createEcarUser("NewFbase",1);
-            EcarUser euser = dataSource.checkUser("NewFbase");
-            euser.setFirebaseid("changed");
-            dataSource.updateUser(euser);
-            List<EcarUser> eul = dataSource.getAllUser();
-            Toast toast = Toast.makeText(getApplicationContext(), ""+eul.size(), Toast.LENGTH_LONG);
-            toast.show();
-            dataSource.deleteEcarUser(euser);
-            /*
-            //createEcarSession legt die Session in der Datenbank an und gibt ein Objekt 'EcarSession' mit den angelegten werten zurück.
-            // Die 1 steht für die UserID, "Testlauf" für den Namen der Session.
-                EcarSession carses = dataSource.createEcarSession(1, "Testlauf");
-                Toast toast = Toast.makeText(getApplicationContext(), "Session: "+carses.getName()+" angelegt!", Toast.LENGTH_LONG);
-                toast.show();
-            //createEcarData ist wie createSession aufgebaut.
-            //22 ist ein Testwert für einen Dateneintrag. carses.getSesid() gibt die Session vor.
-            // Als letzte stelle wird die Id der Values angegeben. Diese wurden in .open() angelegt. (z.B Latitude)
-                EcarData cardataLat = dataSource.createEcarData(22,carses.getSesid(),1);
-                EcarData cardataLong = dataSource.createEcarData(140,carses.getSesid(),2);
-                toast = Toast.makeText(getApplicationContext(), "Werte: Lat "+cardataLat.getData()+" Long "+cardataLong.getData()+" angelegt", Toast.LENGTH_LONG);
-                toast.show();
-            // getSpecificEcarData gibt alle Daten einer Session oder einer Value in einer Liste von Objekten wieder.
-            // Die Übergabewerte stehen hier für (Session, Value). Bei der Eingabe von 0 werden alle ausgegeben.
-            // (dataSource.getSpecificEcarData(0, 3); = Daten von jeder Session, jedoch nur Accelerometer Z)
-            // (dataSource.getSpecificEcarData(3, 1); = Daten der Session mit der Id = 3 , jedoch nur Accelerometer X)
-            // getAllEcarData würde alle Objekte geben.
-                List<EcarSession> ecarSessionList = dataSource.getAllEcarSession();
-                List<EcarData> ecarDataList = dataSource.getAllEcarData();
-            // getAllEcarSession hat den selben Effekt nur für Sessions.
-                Log.d(LOG_TAG, cardataLat.toString() +" "+ cardataLong.toString());
-            // löschen der Werte
-                dataSource.deleteEcarData(cardataLat);
-                dataSource.deleteEcarData(cardataLong);
-                dataSource.deleteEcarSession(carses);
-            */
-            toast = Toast.makeText(getApplicationContext(), "Einträge gelöscht!" + euser.toString(), Toast.LENGTH_LONG);
-            toast.show();
-            dataSource.close();
-
         } else if (id == R.id.nav_settings) {
             openSettings();
         } else if(id == R.id.nav_logout) {
@@ -301,11 +264,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
+    private void oeffneTabAuswertung()
+    {
+        Intent intent = new Intent(MainActivity.this, AuswertungMain.class);
+        startActivity(intent);
+    }
     private void oeffneLiveAuswertung()
     {
         Intent intentAuswertung = new Intent(MainActivity.this, LiveAuswertung.class);
         startActivity(intentAuswertung);
+
     }
     private void oeffneMain()
     {
@@ -356,23 +324,23 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void updateImage() {
-        //TODO
-    }
-
-
-    private void displayUsername() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String name = sharedPref.getString("username", "");
-        username.setText(name);
-    }
-
-
     /**
      * Logged den aktuellen User aus und wechselt dann zum Login-Screen
      */
     private void signOut() {
         firebaseAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
+
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        User u = dataSnapshot.getValue(User.class);
+        username.setText(u.getName());
+        Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
     }
 }

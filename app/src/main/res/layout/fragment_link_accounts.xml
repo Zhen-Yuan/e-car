@@ -1,101 +1,98 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.denis.ecar.sharedPref.LinkAccountsFragment">
 
-    <LinearLayout
+
+    <TextView
+        android:id="@+id/tvChangeName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/tvChangeName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:text="Benutzername" />
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:text="@string/username" />
 
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:visibility="visible" />
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:visibility="visible" />
 
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Name"
-            android:visibility="gone" />
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/name"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvChangeEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:text="E-Mail-Adresse" />
+    <TextView
+        android:id="@+id/tvChangeEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:text="@string/mail" />
 
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:text="E-Mail-Adresse"
-            android:visibility="visible" />
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/mail"
+        android:visibility="visible" />
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="E-Mail-Adresse"
-            android:visibility="gone" />
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:hint="@string/mail"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:text="Passwort" />
+    <TextView
+        android:id="@+id/tvPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
+        android:text="@string/password" />
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Passwort"
-            android:inputType="textPassword"
-            android:visibility="gone" />
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:visibility="gone" />
 
-        <Button
-            android:id="@+id/bttnSubmit"
-            style="@style/bttnStyle"
-            android:text="Passwort ändern" />
+    <Button
+        android:id="@+id/bttnSubmit"
+        style="@style/bttnStyle"
+        android:text="@string/changePassword" />
 
 
-        <TextView
-            android:id="@+id/tvSocialNetwork"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Soziale Netzwerke"
-            android:paddingBottom="5dp"
-            android:paddingTop="10dp"/>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ link provider ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <TextView
+        android:id="@+id/tvSocialNetwork"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/socialNetwork"
+        android:paddingBottom="5dp"
+        android:paddingTop="10dp"/>
 
+    <Button
+        android:id="@+id/bttnFB"
+        style="@style/bttnFBStyle"
+        android:text="@string/linkFB"/>
 
-        <Button
-            android:id="@+id/bttnFB"
-            style="@style/bttnFBStyle"
-            android:text="Facebook - Verbinden"/>
+    <Button
+        android:id="@+id/bttnGoogle"
+        style="@style/bttnGoogleStyle"
+        android:text="@string/linkGoogle"/>
 
-        <Button
-            android:id="@+id/bttnGoogle"
-            style="@style/bttnGoogleStyle"
-            android:text="Google+ - Verbinden"/>
-    </LinearLayout>
-
-</FrameLayout>
+</LinearLayout>

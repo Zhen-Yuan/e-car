@@ -1,10 +1,7 @@
 package com.example.denis.ecar.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -15,6 +12,8 @@ import android.widget.ProgressBar;
 
 import com.example.denis.ecar.MainActivity;
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarDataSource;
+import com.example.denis.ecar.datenbank.EcarSettings;
 import com.example.denis.ecar.sharedPref.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Login oder Registrierung mit E-Mail-Adresse und Passwort.
@@ -34,10 +32,15 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends BaseActivity implements DatabaseReference.CompletionListener {
 
+    private String defaultImage = "https://firebasestorage.googleapis.com/v0/b/softwareprojekt" +
+            "-4c899.appspot.com/o/images%2Fdefault_profile.jpg?alt=media&token=24855b04-2aba" +
+            "-43a3-8379-de33c5a151b4";
+
     private User user;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseListener;
 
+//    private EcarDataSource dataSource;
     private EditText etUsername;
     private CheckBox chckBxShowPW;
 
@@ -58,15 +61,17 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
                 if( firebaseUser == null || user.getId() != null ){
                     return;
                 }
                 user.setId(firebaseUser.getUid());
                 user.saveDB(SignUpActivity.this);
-                saveInfo();
+                //saveUserData(firebaseUser.getUid());
             }
         };
+
+        // SQLLite-Database
+        //       dataSource = new EcarDataSource(this);
 
         // View-Elemente
         etUsername = (EditText) findViewById(R.id.etName);
@@ -75,7 +80,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         progressBar = (ProgressBar) findViewById(R.id.sign_up_progress);
         chckBxShowPW = (CheckBox) findViewById(R.id.chckBxShowPW);
 
-        // leitet weiter zur Home-View, sofern die Anmeldung erfolgreich war
+        // Weiterleitung zur Home-View bei erfolgreicher Anmeldung
         findViewById(R.id.bttnSignUp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,8 +90,8 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
             }
         });
 
-        // je nachdem, ob die Checkbox ausgewaehlt wurde, wird das Passwort angezeigt
-         findViewById(R.id.chckBxShowPW).setOnClickListener(new View.OnClickListener() {
+        // anzeigen/ausblenden des Passwortes
+        findViewById(R.id.chckBxShowPW).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (chckBxShowPW.isChecked()) {
@@ -105,27 +110,18 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
         user.setName(etUsername.getText().toString());
         user.setEmail(etEmail.getText().toString());
         user.setPassword(etPassword.getText().toString());
-    }
-
-
-    @Override
-    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-        firebaseAuth.signOut();
-
-        showToast("Konto wurde erfolgreich erstellt!");
-        closeProgressBar();
-        finish();
+        user.setImageUrl(defaultImage);
     }
 
 
     /**
-     * Erstellt einen User mit E-Mail-Adresse und dem Passwort.
+     * Erstellt einen Account mit E-Mail-Adresse und dem Passwort.
      */
     private void createAccount() {
         if (!checkForm()) {
             return;
         }
-        // User mit Email und Passwort erstellen
+        // Account erstellen
         firebaseAuth.createUserWithEmailAndPassword(user.getEmail(), etPassword.getText().toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -155,7 +151,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
     private boolean checkForm() {
         boolean valid = true;
 
-        // Benutzernamen pruefen
+        // Benutzernamen
         String userName = etUsername.getText().toString();
         if (TextUtils.isEmpty(userName)) {
             etUsername.setError("Gib deinen Benutzernamen ein.");
@@ -164,7 +160,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
             etUsername.setError(null);
         }
 
-        // E-Mail-Adresse ueberpruefen
+        // E-Mail-Adresse
         String email = etEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
             etEmail.setError("Gib deine E-Mail-Adresse ein.");
@@ -185,7 +181,7 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
             }
         }
 
-        // Passwort pruefen
+        // Passwort
         String password = etPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
             etPassword.setError("Gib dein Passwort ein.");
@@ -199,13 +195,13 @@ public class SignUpActivity extends BaseActivity implements DatabaseReference.Co
     }
 
 
-    private void saveInfo() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("username", user.getName());
-        editor.commit();
-        editor.putString("email", user.getEmail());
-        editor.commit();
+    @Override
+    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        firebaseAuth.signOut();
+
+        showToast("Konto wurde erfolgreich erstellt!");
+        closeProgressBar();
+        finish();
     }
 
 

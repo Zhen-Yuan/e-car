@@ -1,7 +1,9 @@
 package com.example.denis.ecar.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
@@ -33,6 +35,11 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
@@ -109,7 +116,7 @@ public class LoginActivity extends BaseActivity {
         etPassword = (EditText)findViewById(R.id.etPassword);
         progressBar = (ProgressBar) findViewById(R.id.login_progress);
 
-        // leitet weiter zur Passwort-Eingabe-View
+        // Weiterleitung zur Home-View
         findViewById(R.id.bttnSignIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,7 +155,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-        // leitet weiter zur Registrieren-View
+        // Weiterleitung zur Registrieren-View
         findViewById(R.id.tvSignUp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,40 +171,6 @@ public class LoginActivity extends BaseActivity {
         user = new User();
         user.setEmail(etEmail.getText().toString());
         user.setPassword(etPassword.getText().toString());
-    }
-
-
-    /**
-     * Meldet den User mit seiner E-Mailadresse von der Login-View zusammen mit dem eingegebenen
-     * Passwort via firebase an.
-     */
-    private void signIn() {
-        firebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
-                            showSnackbar("Login fehlgeschlagen.");
-                            return;
-                        }
-                    }
-                });
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        verifyLogged();
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (firebaseListener != null) {
-            firebaseAuth.removeAuthStateListener(firebaseListener);
-        }
     }
 
 
@@ -217,6 +190,25 @@ public class LoginActivity extends BaseActivity {
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+
+    /**
+     * Meldet den User mit seiner E-Mailadresse von der Login-View zusammen mit dem eingegebenen
+     * Passwort via firebase an.
+     */
+    private void signIn() {
+        firebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(!task.isSuccessful()){
+                            showSnackbar("Login fehlgeschlagen.");
+                            closeProgressBar();
+                            return;
+                        }
+                    }
+                });
     }
 
 
@@ -255,7 +247,7 @@ public class LoginActivity extends BaseActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
-                                showSnackbar("Social Network Anmeldung fehltgeschlagen.");
+                                showSnackbar("Anmeldung mit " + provider +"fehltgeschlagen.");
                             }
                         }
                     });
@@ -265,6 +257,11 @@ public class LoginActivity extends BaseActivity {
     }
 
 
+    /**
+     * Auslagerung des AuthStateListener, in dem die Userdaten geprueft werden und dann in der
+     * Firebase DB gespeichert werden.
+     * @return Firebase AuthStateListener
+     */
     private FirebaseAuth.AuthStateListener getFirebaseAuthResultHandler() {
         FirebaseAuth.AuthStateListener callback = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -287,11 +284,20 @@ public class LoginActivity extends BaseActivity {
     }
 
 
+    /**
+     * Prueft, ob ein Name vorhanden ist.
+     * @param user uebergibt den user um den Namen pruefen zu koennen
+     * @param firebaseUser uebergibt den firebase user um den displaynamen zu ueberpruefen
+     * @return true, falls ein Name vorhanden ist
+     */
     private boolean isNameOk( User user, FirebaseUser firebaseUser ){
         return(user.getName() != null || firebaseUser.getDisplayName() != null);
     }
 
 
+    /**
+     * Prueft, ob momentan ein User eingeloggt ist.
+     */
     private void verifyLogged(){
         if( firebaseAuth.getCurrentUser() != null ){
             nextActivity();
@@ -337,4 +343,18 @@ public class LoginActivity extends BaseActivity {
         finish();
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        verifyLogged();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (firebaseListener != null) {
+            firebaseAuth.removeAuthStateListener(firebaseListener);
+        }
+    }
 }
