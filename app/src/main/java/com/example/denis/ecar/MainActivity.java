@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.denis.ecar.auswertungTab.AuswertungMain;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarUser;
@@ -263,11 +264,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
+    private void oeffneTabAuswertung()
+    {
+        Intent intent = new Intent(MainActivity.this, AuswertungMain.class);
+        startActivity(intent);
+    }
     private void oeffneLiveAuswertung()
     {
         Intent intentAuswertung = new Intent(MainActivity.this, LiveAuswertung.class);
         startActivity(intentAuswertung);
+
     }
     private void oeffneMain()
     {

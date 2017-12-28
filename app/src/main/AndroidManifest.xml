@@ -26,6 +26,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Tabbed Auswertung -->
+        <activity android:name=".auswertungTab.AuswertungMain"></activity>
+
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ custom fb stuff ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
