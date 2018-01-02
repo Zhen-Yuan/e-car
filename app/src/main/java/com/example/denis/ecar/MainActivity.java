@@ -12,18 +12,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.denis.ecar.StreckenView.ViewStrecken;
 import com.example.denis.ecar.auswertungTab.AuswertungMain;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarDataSource;
-import com.example.denis.ecar.datenbank.EcarUser;
 import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
 import com.example.denis.ecar.fragmente_Auto.CreateCarFragment;
 import com.example.denis.ecar.fragmente_Auto.InfoFragment;
@@ -245,6 +243,8 @@ public class MainActivity extends AppCompatActivity
             swad.setSwipelist(ectemp);
             swad.notifyDataSetChanged();
             dataSource.close();
+        } else if (id == R.id.nav_dayses) {
+            openDaySessions();
         } else if (id == R.id.nav_newcar) {
             newcarFragment();
         } else if (id == R.id.nav_settings) {
@@ -314,6 +314,11 @@ public class MainActivity extends AppCompatActivity
     private void openSettings(){
         Intent intSet = new Intent(MainActivity.this,Settings.class);
         startActivity(intSet);
+    }
+
+    private void openDaySessions(){
+        Intent intDay = new Intent(MainActivity.this, ViewStrecken.class);
+        startActivity(intDay);
     }
 
     private void newcarFragment(){
