@@ -21,6 +21,7 @@ import com.example.denis.ecar.datenbank.EcarDbHelper;
  */
 public class PageFragment extends Fragment {
     TextView textView;
+    double gesTime = 0;
     private EcarDataSource dataSource;
 
     public PageFragment() {
@@ -39,8 +40,6 @@ public class PageFragment extends Fragment {
         LinearLayout lmsplit = (LinearLayout) view.findViewById(R.id.splitlay);
         final LinearLayout lm = (LinearLayout) view.findViewById(R.id.linlay);
         lm.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         dataSource.open();
         Cursor cur = dataSource.getSessionDay(bund.getInt("day"));
@@ -57,8 +56,16 @@ public class PageFragment extends Fragment {
         int idIndex = cur.getColumnIndex(EcarDbHelper.COLUMN_SESSION_ID);
         int idmin = cur.getColumnIndex("min");
         int idmax = cur.getColumnIndex("max");
-
-        for(int i=0; i<cur.getCount();i++){
+        gesTime = 0;
+        for(int i=0; i<cur.getCount();i++) {
+            double min = cur.getInt(idmin);
+            double max = cur.getInt(idmax);
+            double zeitspanne = max - min;
+            gesTime = gesTime + zeitspanne;
+            cur.moveToNext();
+        }
+        cur.moveToFirst();
+        for(int i2=0; i2<cur.getCount();i2++){
             int sessionID = cur.getInt(idIndex);
             int min = cur.getInt(idmin);
             int max = cur.getInt(idmax);
@@ -68,17 +75,26 @@ public class PageFragment extends Fragment {
             ll.setOrientation(LinearLayout.HORIZONTAL);
 
 
-            final Button btn = new Button(getContext());
-            btn.setId(i+1);
+            Button btn = new Button(getContext());
+            btn.setId(i2+1);
             btn.setText("SessionID: "+sessionID+" - Min: "+min+" - Max: "+max);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
             params.width = (getResources().getDisplayMetrics().widthPixels*1/3);
             double dispmax = getResources().getDisplayMetrics().heightPixels - 150;
-            //double height = dispmax/100*(100/maxall*zeitspanne);
-            params.height = (int)(300);
+            Log.d("zahl",sessionID+" ID --------------------");
+            Log.d("zahl", dispmax+" dispmax");
+            Log.d("zahl", gesTime+" gesTime -- zeitstpanne "+zeitspanne);
+            double perc = 100/gesTime*zeitspanne;
+            double height = dispmax/100*perc;
+            Log.d("zahl", height+" height - %"+ perc);
+            params.height = (int)(height);
+            Log.d("zahl",params.height+" params hight");
 
             btn.setLayoutParams(params);
-
-            final int index = i;
+            final int index = i2;
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Log.d("Button","Clicked Button Index: "+index);
