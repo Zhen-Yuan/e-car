@@ -88,10 +88,10 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCKNxZcMQ5msLHTyKy3In1Wav_qCh7pDz4" />
+            android:value="AIzaSyBgPKXj-ZyFcMDR1vl2icYkef2wHqnN7M4" />
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyCKNxZcMQ5msLHTyKy3In1Wav_qCh7pDz4" />
+            android:value="AIzaSyBgPKXj-ZyFcMDR1vl2icYkef2wHqnN7M4" />
 
         <activity
             android:name=".MapsActivity"

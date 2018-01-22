@@ -1,7 +1,6 @@
 package com.example.denis.ecar.sharedPref;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
@@ -142,24 +141,6 @@ public class User {
         else{
             firebase.updateChildren(map);
         }
-    }
-
-
-    public void updateImage(DatabaseReference.CompletionListener... completionListener) {
-        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference()
-                .child("users").child(getId());
-        Map<String, Object> map = new HashMap<>();
-        map.put("imageUrl", imageUrl);
-        if(map.isEmpty()){
-            return;
-        }
-        if(completionListener.length > 0){
-            firebase.updateChildren(map, completionListener[0]);
-        }
-        else{
-            firebase.updateChildren(map);
-        }
-
     }
 
 

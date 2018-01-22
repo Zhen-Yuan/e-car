@@ -102,11 +102,14 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = new User();
-        user.setId(firebaseAuth.getCurrentUser().getUid());
-        DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
-                .child("users").child(user.getId());
-        firebaseDB.addListenerForSingleValueEvent(this);
-
+        try {
+            user.setId(firebaseAuth.getCurrentUser().getUid());
+            DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
+                    .child("users").child(user.getId());
+            firebaseDB.addListenerForSingleValueEvent(this);
+        }catch (Exception ex) {
+            Toast.makeText(getContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
         tvName = (TextView)view.findViewById(R.id.tvName);
         tvEmail = (TextView)view.findViewById(R.id.tvEmail);
         etName = (EditText)view.findViewById(R.id.etName);

@@ -16,6 +16,7 @@ import com.example.denis.ecar.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -63,13 +64,17 @@ public class ProfileFragment extends Fragment
 
     private void init() {
         firebaseAuth = FirebaseAuth.getInstance();
-         user = new User();
-         user.setId(firebaseAuth.getCurrentUser().getUid());
-        DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
-                .child("users").child(user.getId());
-        firebaseDB.addListenerForSingleValueEvent(this);
-
-        firebaseStorage = FirebaseStorage.getInstance().getReference().child("images/").child(user.getId());
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        user = new User();
+        try {
+            user.setId(firebaseUser.getUid());
+            DatabaseReference firebaseDB = FirebaseDatabase.getInstance().getReference()
+                    .child("users").child(user.getId());
+            firebaseDB.addListenerForSingleValueEvent(this);
+            firebaseStorage = FirebaseStorage.getInstance().getReference().child("images/").child(user.getId());
+        } catch(Exception ex) {
+            Toast.makeText(getContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
         profileImage = (CircleImageView)view.findViewById(R.id.civProfile);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);

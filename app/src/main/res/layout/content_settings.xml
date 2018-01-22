@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="15dp"
             android:paddingTop="35dp"
-            android:text="@string/closeAcc"
+            android:text="@string/deleteAcc"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 

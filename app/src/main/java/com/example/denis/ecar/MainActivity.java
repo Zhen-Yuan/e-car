@@ -251,14 +251,12 @@ public class MainActivity extends AppCompatActivity
             openSettings();
         } else if(id == R.id.nav_logout) {
             signOut();
-        } else if(id == R.id.nav_ActivityAuswertung)
-        {
+        } else if(id == R.id.nav_ActivityAuswertung) {
             evalMaps();
         }else if(id == R.id.nav_ActivityLiveAuswertung)
         {
             oeffneLiveAuswertung();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

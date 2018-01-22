@@ -1,11 +1,18 @@
 package com.example.denis.ecar.StreckenView;
 
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +30,8 @@ public class PageFragment extends Fragment {
     TextView textView;
     double gesTime = 0;
     private EcarDataSource dataSource;
+
+    private FloatingActionButton fab;
 
     public PageFragment() {
         // Required empty public constructor
@@ -51,7 +60,7 @@ public class PageFragment extends Fragment {
         textView.setText("Strecken für den "+date.toString()+"\n");
         if(cur == null){
             return view;
-        };
+        }
         cur.moveToFirst();
         int idIndex = cur.getColumnIndex(EcarDbHelper.COLUMN_SESSION_ID);
         int idmin = cur.getColumnIndex("min");
@@ -75,8 +84,9 @@ public class PageFragment extends Fragment {
             ll.setOrientation(LinearLayout.HORIZONTAL);
 
 
-            Button btn = new Button(getContext());
+            final Button btn = new Button(getContext());
             btn.setId(i2+1);
+            btn.setBackgroundColor(getResources().getColor(R.color.colorGoogle));
             btn.setText("SessionID: "+sessionID+" - Min: "+min+" - Max: "+max);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -100,7 +110,29 @@ public class PageFragment extends Fragment {
                     Log.d("Button","Clicked Button Index: "+index);
                 }
             });
+            btn.setOnDragListener(new View.OnDragListener() {
+                @Override
+                public boolean onDrag(View v, DragEvent event) {
+                    int dragEvent = event.getAction();
+                    final View view = (View) event.getLocalState();
 
+                    switch (dragEvent) {
+                        case DragEvent.ACTION_DRAG_ENTERED:
+                            // change color of the button
+                            btn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                            break;
+                        case DragEvent.ACTION_DRAG_EXITED:
+                            // return to usual color
+                            btn.setBackgroundColor(getResources().getColor(R.color.colorGoogle));
+                            break;
+                        case DragEvent.ACTION_DROP:
+                            // open new window for change stuff
+                            // TODO: Dialog fragment
+                            break;
+                    }
+                    return false;
+                }
+            });
             ll.addView(btn);
             lm.addView(ll);
 
@@ -108,7 +140,38 @@ public class PageFragment extends Fragment {
             cur.moveToNext();
             if(cur.isAfterLast()){return view;}
         }
+
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnLongClickListener(longClickListener);
+        fab.setOnTouchListener(onTouchListener);
         return view;
     }
 
+
+    View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
+            String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+
+            ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
+            View.DragShadowBuilder myShadow = new View.DragShadowBuilder(fab);
+            fab.setVisibility(View.INVISIBLE);
+            v.startDrag(dragData,myShadow,null,0);
+            return true;
+        }
+    };
+
+    View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
+                fab.setVisibility(View.INVISIBLE);
+                return true;
+            } else {
+                fab.setVisibility(View.VISIBLE);
+                return false;
+            }
+        }
+    };
 }
