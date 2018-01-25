@@ -23,7 +23,7 @@ import java.util.List;
 
 public class InfoFragment extends Fragment {
     private View v;
-    private TextView tv_info;
+    private TextView tv_head, tv_verb, tv_reich, tv_bat, tv_besch;
     private EcarDataSource dS;
     private List<EcarCar> infolist;
     @Nullable
@@ -33,12 +33,21 @@ public class InfoFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_info,container,false);
         init();
         //TODO: Globale ID variable um passende Info für ein Bild auszugeben.
+        tv_head.setText(infolist.get(MainActivity.selectedCarId.getivar()).getManufacturer()+" "+infolist.get(MainActivity.selectedCarId.getivar()).getName());
+        tv_verb.setText("Verbrauch: "+infolist.get(MainActivity.selectedCarId.getivar()).getConsumption()+" KW/h");
+        tv_reich.setText("Reichweite: "+infolist.get(MainActivity.selectedCarId.getivar()).getRange()+" KM");
+        tv_bat.setText("Batterie: "+infolist.get(MainActivity.selectedCarId.getivar()).getPowerstore()+" KW");
+        tv_besch.setText(infolist.get(MainActivity.selectedCarId.getivar()).getDescription());
 
-        tv_info.setText(infolist.get(MainActivity.selectedCarId.getivar()).toString());
         MainActivity.selectedCarId.setListener(new SelectedIdVariable.ChangeListener() {
             @Override
             public void onChange() {
-                tv_info.setText(infolist.get(MainActivity.selectedCarId.getivar()).toString());
+
+                tv_head.setText(infolist.get(MainActivity.selectedCarId.getivar()).getManufacturer()+" "+infolist.get(MainActivity.selectedCarId.getivar()).getName());
+                tv_verb.setText("Verbrauch: "+infolist.get(MainActivity.selectedCarId.getivar()).getConsumption()+" KW/h");
+                tv_reich.setText("Reichweite: "+infolist.get(MainActivity.selectedCarId.getivar()).getRange()+" KM");
+                tv_bat.setText("Batterie: "+infolist.get(MainActivity.selectedCarId.getivar()).getPowerstore()+" KW");
+                tv_besch.setText(infolist.get(MainActivity.selectedCarId.getivar()).getDescription());
                 Log.d("Testlog",""+MainActivity.selectedCarId.getivar());
             }
         });
@@ -51,8 +60,12 @@ public class InfoFragment extends Fragment {
     }
     private void init()
     {
-        tv_info = (TextView)v.findViewById(R.id.tv_Info);
-        tv_info.setMovementMethod(new ScrollingMovementMethod());//Macht tv_info scrollable
+        tv_head = (TextView)v.findViewById(R.id.tvh);
+        tv_verb = (TextView)v.findViewById(R.id.tvVerbrauch);
+        tv_reich = (TextView)v.findViewById(R.id.tvReichweite);
+        tv_bat = (TextView)v.findViewById(R.id.tvBatt);
+        tv_besch = (TextView)v.findViewById(R.id.tvdesc);
+        tv_besch.setMovementMethod(new ScrollingMovementMethod());//Macht tv_info scrollable
         dS = new EcarDataSource(getActivity());
         dS.open();
         infolist = dS.getCarType(3);

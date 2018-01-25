@@ -5,14 +5,70 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="388dp"
+        android:layout_height="57dp">
 
         <TextView
-            android:id="@+id/tv_Info"
+            android:id="@+id/tvh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:text="tv_info" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="Name"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="67dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvVerbrauch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="Verbrauch" />
+
+            <TextView
+                android:id="@+id/tvReichweite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reichweite" />
+
+            <TextView
+                android:id="@+id/tvBatt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Batterie" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="362dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvdesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beschreibung" />
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
