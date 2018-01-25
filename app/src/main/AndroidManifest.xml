@@ -25,6 +25,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- Streckenview -->
+        <activity android:name=".StreckenView.ViewStrecken"
+            android:label="@string/activity_view_string"/>
 
         <!-- Tabbed Auswertung -->
         <activity android:name=".auswertungTab.AuswertungMain"></activity>

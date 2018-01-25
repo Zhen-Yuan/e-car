@@ -37,8 +37,7 @@ public class UebersichtFragment extends Fragment
     float barWidth;
     float barSpace;
     float groupSpace;
-
-    private TextView tv_titelBenzin, tv_titelElektro, tv_beschreibungBenzin, tv_beschreibungElektro, tv_PrognoseAuswertung;
+    private TextView tv_TitelWIllkommen, tv_Uebersicht;
     BarChart chart;
     @Nullable
     @Override
@@ -58,41 +57,20 @@ public class UebersichtFragment extends Fragment
     }
     private void init()
     {
-        tv_titelBenzin = (TextView) v.findViewById(R.id.tv_benzinautoTitel);
-        tv_titelElektro = (TextView) v.findViewById(R.id.tv_ecarTitel);
-        tv_beschreibungBenzin = (TextView) v.findViewById(R.id.tv_BeschreibungBenziner);
-        tv_beschreibungElektro = (TextView) v.findViewById(R.id.tv_BeschreibungEcar);
+        tv_Uebersicht = (TextView) v.findViewById(R.id.tv_Uebersicht);
+        tv_TitelWIllkommen = (TextView) v.findViewById(R.id.tv_TitelWIllkommen);
         chart = (BarChart) v.findViewById(R.id.chart);
         barWidth = 0.3f;
         barSpace = 0f;
         groupSpace = 0.4f;
-        chartBeispiel();
-        tv_titelElektro.setText("Tesla Model S");
+        //chartBeispiel();
+        /*tv_titelElektro.setText("Tesla Model S");
         tv_beschreibungElektro.setText("Verbrauch 20.5 kWh/100km (ADAC)\nAkkukapazität: 85kWh\nReichweite ~ 415km");
         tv_titelBenzin.setText("BMW 750i xDrive");
-        tv_beschreibungBenzin.setText("Verbrauch 11.9 l/100km (ADAC)\nTankkapazität: 78l\nReichweite ~ 655km");
+        tv_beschreibungBenzin.setText("Verbrauch 11.9 l/100km (ADAC)\nTankkapazität: 78l\nReichweite ~ 655km");*/
 
     }
 
-    public void setTv_titelBenzin(TextView tv_titelBenzin) {
-        this.tv_titelBenzin = tv_titelBenzin;
-    }
-
-    public void setTv_titelElektro(TextView tv_titelElektro) {
-        this.tv_titelElektro = tv_titelElektro;
-    }
-
-    public void setTv_beschreibungBenzin(TextView tv_beschreibungBenzin) {
-        this.tv_beschreibungBenzin = tv_beschreibungBenzin;
-    }
-
-    public void setTv_beschreibungElektro(TextView tv_beschreibungElektro) {
-        this.tv_beschreibungElektro = tv_beschreibungElektro;
-    }
-
-    public void setTv_PrognoseAuswertung(TextView tv_PrognoseAuswertung) {
-        this.tv_PrognoseAuswertung = tv_PrognoseAuswertung;
-    }
 
     private void chartBeispiel() {
         int groupCount = 6;

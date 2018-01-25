@@ -16,10 +16,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +65,7 @@ public class LiveAuswertung extends Activity
     private double dStrecke;
     public String strActivity;
     public String strWeather;
+    private Context con;
     public String strHeadphones;
     public String strLocation;
     private Location location;
@@ -99,6 +102,7 @@ public class LiveAuswertung extends Activity
 
     private void init()
     {
+        con = this;
         auswertungCO2 = new AuswertungCO2();
         auswertungElektro = new AuswertungElektro();
         tvGeschwindigkeit = (TextView) findViewById(R.id.tvGeschwindigkeit);
@@ -310,9 +314,12 @@ public class LiveAuswertung extends Activity
             @Override
             public void onClick(View view) {
                 if (bAufnahme == false) {
+                    final EditText input = new EditText(con);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
                     AlertDialog.Builder builder = new AlertDialog.Builder(LiveAuswertung.this);
                     builder.setMessage("Eine neue Strecke starten?")
                             .setTitle("Neue Strecke")
+                            .setView(input)
                             .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // User bricht ab
@@ -327,7 +334,10 @@ public class LiveAuswertung extends Activity
                                     initAwareness();
                                     //getNewSID();
                                     dataSource.open();
-                                    ecarsession = dataSource.createEcarSession(1, String.valueOf(System.currentTimeMillis())); // TODO: Eigener Streckenname
+                                    if(input != null)//Leere Streckennamen sind nicht erlaubt
+                                    {
+                                        ecarsession = dataSource.createEcarSession(1, input.toString());
+                                    }
                                     handler(intervall*1000);
                                 }
                             });
