@@ -130,7 +130,7 @@ public class CreateCarFragment extends Fragment {
 
     private void init()
     {
-        BmNewcar = BitmapFactory.decodeResource(getResources(), R.drawable.newhidden);
+        BmNewcar = BitmapFactory.decodeResource(getResources(), R.drawable.cover2);
         tvVerbrauch = (TextView)v.findViewById(R.id.tv_consumption);
         eTName = (EditText) v.findViewById(R.id.eT_name);
         eTHersteller = (EditText) v.findViewById(R.id.eT_manu);
