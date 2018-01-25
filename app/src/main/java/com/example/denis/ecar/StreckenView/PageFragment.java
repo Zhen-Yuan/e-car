@@ -3,16 +3,16 @@ package com.example.denis.ecar.StreckenView;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.content.Intent;
+import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,6 +32,7 @@ public class PageFragment extends Fragment {
     private EcarDataSource dataSource;
 
     private FloatingActionButton fab;
+    private PassData passData;
 
     public PageFragment() {
         // Required empty public constructor
@@ -75,9 +76,9 @@ public class PageFragment extends Fragment {
         }
         cur.moveToFirst();
         for(int i2=0; i2<cur.getCount();i2++){
-            int sessionID = cur.getInt(idIndex);
-            int min = cur.getInt(idmin);
-            int max = cur.getInt(idmax);
+            final int sessionID = cur.getInt(idIndex);
+            final int min = cur.getInt(idmin);
+            final int max = cur.getInt(idmax);
             int zeitspanne = max - min;
             // Create LinearLayout
             LinearLayout ll = new LinearLayout(getContext());
@@ -89,7 +90,7 @@ public class PageFragment extends Fragment {
             btn.setBackgroundColor(getResources().getColor(R.color.colorGoogle));
             btn.setText("SessionID: "+sessionID+" - Min: "+min+" - Max: "+max);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
             params.width = (getResources().getDisplayMetrics().widthPixels*1/3);
@@ -98,7 +99,7 @@ public class PageFragment extends Fragment {
             Log.d("zahl", dispmax+" dispmax");
             Log.d("zahl", gesTime+" gesTime -- zeitstpanne "+zeitspanne);
             double perc = 100/gesTime*zeitspanne;
-            double height = dispmax/100*perc;
+            final double height = dispmax/100*perc;
             Log.d("zahl", height+" height - %"+ perc);
             params.height = (int)(height);
             Log.d("zahl",params.height+" params hight");
@@ -114,7 +115,7 @@ public class PageFragment extends Fragment {
                 @Override
                 public boolean onDrag(View v, DragEvent event) {
                     int dragEvent = event.getAction();
-                    final View view = (View) event.getLocalState();
+                    //final View view = (View) event.getLocalState();
 
                     switch (dragEvent) {
                         case DragEvent.ACTION_DRAG_ENTERED:
@@ -126,11 +127,11 @@ public class PageFragment extends Fragment {
                             btn.setBackgroundColor(getResources().getColor(R.color.colorGoogle));
                             break;
                         case DragEvent.ACTION_DROP:
-                            // open new window for change stuff
-                            // TODO: Dialog fragment
+                            passData.sendData(sessionID, min, max);
+                            showDialog();
                             break;
                     }
-                    return false;
+                    return true;
                 }
             });
             ll.addView(btn);
@@ -143,7 +144,6 @@ public class PageFragment extends Fragment {
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnLongClickListener(longClickListener);
-        fab.setOnTouchListener(onTouchListener);
         return view;
     }
 
@@ -162,16 +162,31 @@ public class PageFragment extends Fragment {
         }
     };
 
-    View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-                fab.setVisibility(View.INVISIBLE);
-                return true;
-            } else {
-                fab.setVisibility(View.VISIBLE);
-                return false;
-            }
+
+    public void showDialog() {
+        FragmentManager fragmentManager = getFragmentManager();
+        EditFragment editDialog = new EditFragment();
+        editDialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen);
+        editDialog.show(fragmentManager, "editFragement");
+    /*  FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, editDialog).addToBackStack(null).commit();    */
+    }
+
+
+    interface PassData {
+        void sendData(int sid, int min, int max);
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // to prevent NullPointerException
+        try {
+            passData = (PassData) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Fehler beim Abrufen der Daten. Bitte versuchen Sie es erneut.");
         }
-    };
+    }
 }

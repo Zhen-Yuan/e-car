@@ -13,7 +13,7 @@ import java.util.Date;
  * Created by Raja on 17.12.2017.
  */
 
-public class StreckenSwipeAdapter extends FragmentStatePagerAdapter {
+public class StreckenSwipeAdapter extends FragmentStatePagerAdapter  {
     public StreckenSwipeAdapter(FragmentManager fm) {
         super(fm);
     }
