@@ -275,6 +275,9 @@ public class MainActivity extends AppCompatActivity
             signOut();
         } else if(id == R.id.nav_ActivityAuswertung) {
             evalMaps();
+        } else if(id == R.id.nav_ActivityAuswertungNeu)
+        {
+            evalMapsNeu();
         }else if(id == R.id.nav_ActivityLiveAuswertung)
         {
             oeffneLiveAuswertung();
@@ -330,6 +333,10 @@ public class MainActivity extends AppCompatActivity
         Intent intMapsEval = new Intent(MainActivity.this,MapsEval.class);
         startActivity(intMapsEval);
     }
+    private void evalMapsNeu(){
+        Intent intMapsEvalNew = new Intent(MainActivity.this,AuswertungMain.class);
+        startActivity(intMapsEvalNew);
+    }
 
     private void openSettings(){
         Intent intSet = new Intent(MainActivity.this,Settings.class);
@@ -361,8 +368,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        username.setText(u.getName());
-        Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
+        //username.setText(u.getName());
+        //Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
     }
 
     @Override

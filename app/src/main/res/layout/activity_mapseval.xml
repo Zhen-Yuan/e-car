@@ -71,7 +71,7 @@
 
         <fragment
             android:id="@+id/auswertung"
-            android:name="com.example.denis.ecar.fragment_Uebersicht.Chart_Verbrauch"
+            android:name="com.example.denis.ecar.auswertungTab.Chart_Verbrauch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -81,7 +81,7 @@
 
         <fragment
             android:id="@+id/auswertungWoche"
-            android:name="com.example.denis.ecar.fragment_Uebersicht.Chart_Woche"
+            android:name="com.example.denis.ecar.auswertungTab.Chart_Woche"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -91,7 +91,7 @@
 
         <fragment
             android:id="@+id/auswertungWocheKosten"
-            android:name="com.example.denis.ecar.fragment_Uebersicht.Chart_Woche_Kosten"
+            android:name="com.example.denis.ecar.auswertungTab.Chart_Woche_Kosten"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

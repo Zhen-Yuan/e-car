@@ -1,9 +1,10 @@
-package com.example.denis.ecar.fragment_Uebersicht;
+package com.example.denis.ecar.auswertungTab;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class Chart_Verbrauch extends Fragment
     float groupSpace;
     private EcarCar car;
 
+
     private TextView tv_titelElektro, tv_beschreibungElektro;
     LineChart chart;
     @Nullable
@@ -40,6 +42,7 @@ public class Chart_Verbrauch extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.chart_verbrauch,container,false);
         init();
+
         //TODO: Infoausgabe
         return v;
     }
@@ -93,6 +96,7 @@ public class Chart_Verbrauch extends Fragment
         chart.getAxisRight().setEnabled(false);
         chart.getXAxis().setDrawGridLines(false);
         chart.invalidate();
+
 
 
 

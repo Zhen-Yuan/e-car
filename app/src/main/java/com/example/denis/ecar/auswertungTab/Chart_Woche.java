@@ -1,9 +1,10 @@
-package com.example.denis.ecar.fragment_Uebersicht;
+package com.example.denis.ecar.auswertungTab;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ import java.util.Calendar;
  * Created by Denis on 16.10.2017.
  */
 
-public class Chart_Woche_Kosten extends Fragment
+public class Chart_Woche extends Fragment
 {
     private View v;
     float barWidth;
@@ -42,14 +43,24 @@ public class Chart_Woche_Kosten extends Fragment
 
     private TextView tv_titelElektro, tv_beschreibungElektro;
     BarChart chart;
+
+    public Chart_Woche(){
+
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.chart_woche,container,false);
         init();
+
         //TODO: Infoausgabe
         return v;
     }
+
+
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -65,6 +76,7 @@ public class Chart_Woche_Kosten extends Fragment
     {
         tv_titelElektro = (TextView) v.findViewById(R.id.tv_ecarTitel);
         tv_beschreibungElektro = (TextView) v.findViewById(R.id.tv_BeschreibungEcar);
+
         chart = (BarChart) v.findViewById(R.id.chart);
         barWidth = 0.3f;
         barSpace = 0f;
@@ -76,10 +88,10 @@ public class Chart_Woche_Kosten extends Fragment
 
     }
 
-    public void chartBeispiel(ArrayList<Double> yVals, EcarCar car) {
+    public void chartBeispiel(ArrayList<Double> yVals, EcarCar car, ArrayList<Integer> colours) {
         this.car = car;
         double cap = (car.getRange()/100)*car.getConsumption();
-        tv_beschreibungElektro.setText("Kosten der Gefahrenen Strecken, der letzten 7-Tage\n" +
+        tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
                 car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km\n");
 
 
@@ -119,15 +131,16 @@ public class Chart_Woche_Kosten extends Fragment
         BarDataSet set2;
         set2 = new BarDataSet(yElektro, "");
         set2.setColor(Color.BLUE);
+        set2.setColors(colours);
         BarData data = new BarData(set2);
-        //data.setValueFormatter(new LargeValueFormatter());
+        data.setValueFormatter(new LargeValueFormatter());
         chart.setData(data);
         chart.getBarData().setBarWidth(barWidth);
         chart.getXAxis().setAxisMinimum(0);
         //chart.getXAxis().setAxisMaximum(0 + chart.getBarData().getGroupWidth(groupSpace, barSpace));
         chart.getData().setHighlightEnabled(false);
         chart.getDescription().setPosition(150,12);
-        chart.getDescription().setText("Kosten in €");
+        chart.getDescription().setText("Strecke in Meter");
         chart.invalidate();
 
         Legend l = chart.getLegend();
@@ -154,7 +167,7 @@ public class Chart_Woche_Kosten extends Fragment
         //Y-Achse
         chart.getAxisRight().setEnabled(false);
         YAxis leftAxis = chart.getAxisLeft();
-        //leftAxis.setValueFormatter(new LargeValueFormatter());
+        leftAxis.setValueFormatter(new LargeValueFormatter());
         leftAxis.setDrawGridLines(true);
         leftAxis.setSpaceTop(35f);
         leftAxis.setAxisMinimum(0f);

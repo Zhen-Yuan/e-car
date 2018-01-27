@@ -5,9 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.denis.ecar.MapsEval;
-import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche;
-import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche_Kosten;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Denis on 19.12.2017.
@@ -16,48 +15,60 @@ import com.example.denis.ecar.fragment_Uebersicht.Chart_Woche_Kosten;
 public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
     private Context mContext;
+    private Tab_Map tabMap;
+    private Chart_Verbrauch chart_verbrauch;
+    private Chart_Woche chart_woche;
+    private Chart_Woche_Kosten chart_woche_kosten;
+    private Tab_Uebersicht tabUebersicht;
+
+    private final List<Fragment> mFragmentList = new ArrayList<>();
+    private final List<String> mFragmentTitleList = new ArrayList<>();
 
     public TabFragmentPagerAdapter(Context context, FragmentManager fm) {
+
         super(fm);
         mContext = context;
+
+        tabMap = new Tab_Map();
+        chart_verbrauch = new Chart_Verbrauch();
+        chart_woche = new Chart_Woche();
+        chart_woche_kosten = new Chart_Woche_Kosten();
+        tabUebersicht = new Tab_Uebersicht();
+
+        mFragmentList.add(tabUebersicht);
+        mFragmentList.add(tabMap);
+        mFragmentList.add(chart_verbrauch);
+        mFragmentList.add(chart_woche);
+        mFragmentList.add(chart_woche_kosten);
+
+        mFragmentTitleList.add("Übersicht");
+        mFragmentTitleList.add("Karte");
+        mFragmentTitleList.add("Verbrauch");
+        mFragmentTitleList.add("Woche");
+        mFragmentTitleList.add("Kosten");
     }
 
-    // Fragment für jedes Tab
+
+
     @Override
     public Fragment getItem(int position) {
-        if (position == 0) {
-            return new Chart_Woche();
-        } else if (position == 1){
-            return new Chart_Woche_Kosten();
-        } else if (position == 2){
-            return new FragmentTab4();
-        } else {
-            return new FragmentTab4();
-        }
+        return mFragmentList.get(position);
     }
 
-    // Anzahl der Tabs
     @Override
     public int getCount() {
-        return 4;
+        return mFragmentList.size();
     }
 
-    // Titel für die jeweiligen Tabs
+    public void addFragment(Fragment fragment, String title) {
+        mFragmentList.add(fragment);
+        mFragmentTitleList.add(title);
+    }
+
     @Override
     public CharSequence getPageTitle(int position) {
-        // Generate title based on item position
-        switch (position) {
-            case 0:
-                return "Tab1";
-            case 1:
-                return "Tab2";
-            case 2:
-                return "Tab3";
-            case 3:
-                return "Tab4";
-            default:
-                return null;
-        }
+        return mFragmentTitleList.get(position);
     }
-
 }
+
+
