@@ -25,6 +25,8 @@
     <string name="deleteAcc">Account löschen</string>
     <string name="deleteAccDescription">Bitte geben Sie ihr Passwort ein und bestätigen Sie die
         Löschung Ihres Kontos.</string>
+    <string name="description">Bitte den Teil markieren, der entfernt werden soll.</string>
+    <string name="done">Fertig</string>
 
     <string name="enterPassword">Gib dein Passwort ein.</string>
 
@@ -70,6 +72,8 @@
     <string name="unlinkFB">Facebook - Trennen</string>
     <string name="unlinkGoogle">Google+ - Trennen</string>
     <string name="username">Benutzername</string>
+
+    <string name="verwerfen">Verwerfen</string>
 
     <string name="welcome">Willkommen bei ECar</string>
 
