@@ -51,8 +51,10 @@ public class MainActivity extends AppCompatActivity
     Button bttn_shop,bttn_socialmedia,bttn_info,bttn_maps;
     DataCollector dataCollector;
     public static ViewPager vPager;
+    private static List<EcarCar> eclist;
     public InfoFragment ifragment;
     public static SelectedIdVariable selectedCarId;
+    public static boolean bswitch = false;
     public SwipeAdapter swad;
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -112,54 +114,57 @@ public class MainActivity extends AppCompatActivity
         firebaseDB.addListenerForSingleValueEvent(this);
     }
     private void InitTestValues(){
-        dataSource.open();
-        if(dataSource.checkCar("Model S 75","Tesla")==null){
-            Bitmap bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.tesla_s75);
-            dataSource.createEcarCar(
-                    "Model S 75",
-                    "Tesla",
-                    "Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",
-                    0,
-                    158,
-                    510,
-                    100,
-                    bitmapvar,
-                    3);
-            bitmapvar = BitmapFactory.decodeResource(getResources(),R.drawable.renault_zoe);
-            dataSource.createEcarCar(
-                    "ZOE",
-                    "Renault",
-                    "Der französische Autohersteller Renault verkauft den Renault Zoe seit 2013, 2017 gab es ein wichtiges Update. Der fünftürige Kleinwagen kommt mit seinem 65 kW Motor auf eine Höchstgeschwindigkeit von 135 km/h. Wie die meisten Elektroautos hat der Renault Zoe mit seiner „Z.E. 40 Batterie“ genannten 41-kWh-Batterie (Vormodell: 22 kWh) eine anständige Reichweite: Etwa 400 km schafft das Elektroauto auf dem Papier (NEFZ), Renault gibt die realistische Reichweite mit 300 km an. Ein kompaktes Stadtauto, das auch Landpartien schafft.",
-                    0,
-                    65,
-                    400,
-                    41,
-                    bitmapvar,
-                    3);
-            bitmapvar = BitmapFactory.decodeResource(getResources(),R.drawable.bmw_i3);
-            dataSource.createEcarCar(
-                    "i3",
-                    "BMW",
-                    "Der Kleinwagen BMW i3 wurde von vornherein als reines Elektroauto konzipiert. Kein deutscher Wettbewerber ging dabei so konsequent und durchdacht vor wie BMW. So wiegt der BMW i3 mit 1.195 Kilogramm rund 400 kg weniger als etwa ein Nissan Leaf oder ein Volkswagen e-Golf. Dazu ist er mit 125 kW (170 PS) sauschnell und schafft je nach Akku eine Reichweite 190 bis 300 Kilometer. Ein ideales Stadtauto.",
-                    0,
-                    125,
-                    290,
-                    33,
-                    bitmapvar,
-                    3);
-            bitmapvar = BitmapFactory.decodeResource(getResources(),R.drawable.nissan_leaf);
-            dataSource.createEcarCar(
-                    "Leaf",
-                    "Nissan",
-                    "Der Nissan Leaf gilt als das Elektroauto mit der besten CO2-Bilanz. Ab einem Preis von 23.365 Euro zuzüglich einer monatlichen Batteriemiete ab 79 Euro kann man ihn kaufen. Dabei sichert man sich die Elektroautoprämie: Nissan legt 1000 Euro extra drauf, dadurch gibt es insgesamt 5000 Euro Elektro-Bonus.",
-                    0,
-                    80,
-                    200,
-                    40,
-                    bitmapvar,
-                    3);
+        if(bswitch == false) {
+            dataSource.open();
+            if (dataSource.checkCar("Model S 75", "Tesla") == null) {
+                Bitmap bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.tesla_s75);
+                dataSource.createEcarCar(
+                        "Model S 75",
+                        "Tesla",
+                        "Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",
+                        0,
+                        158,
+                        510,
+                        100,
+                        bitmapvar,
+                        3);
+                bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.renault_zoe);
+                dataSource.createEcarCar(
+                        "ZOE",
+                        "Renault",
+                        "Der französische Autohersteller Renault verkauft den Renault Zoe seit 2013, 2017 gab es ein wichtiges Update. Der fünftürige Kleinwagen kommt mit seinem 65 kW Motor auf eine Höchstgeschwindigkeit von 135 km/h. Wie die meisten Elektroautos hat der Renault Zoe mit seiner „Z.E. 40 Batterie“ genannten 41-kWh-Batterie (Vormodell: 22 kWh) eine anständige Reichweite: Etwa 400 km schafft das Elektroauto auf dem Papier (NEFZ), Renault gibt die realistische Reichweite mit 300 km an. Ein kompaktes Stadtauto, das auch Landpartien schafft.",
+                        0,
+                        65,
+                        400,
+                        41,
+                        bitmapvar,
+                        3);
+                bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.bmw_i3);
+                dataSource.createEcarCar(
+                        "i3",
+                        "BMW",
+                        "Der Kleinwagen BMW i3 wurde von vornherein als reines Elektroauto konzipiert. Kein deutscher Wettbewerber ging dabei so konsequent und durchdacht vor wie BMW. So wiegt der BMW i3 mit 1.195 Kilogramm rund 400 kg weniger als etwa ein Nissan Leaf oder ein Volkswagen e-Golf. Dazu ist er mit 125 kW (170 PS) sauschnell und schafft je nach Akku eine Reichweite 190 bis 300 Kilometer. Ein ideales Stadtauto.",
+                        0,
+                        125,
+                        290,
+                        33,
+                        bitmapvar,
+                        3);
+                bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.nissan_leaf);
+                dataSource.createEcarCar(
+                        "Leaf",
+                        "Nissan",
+                        "Der Nissan Leaf gilt als das Elektroauto mit der besten CO2-Bilanz. Ab einem Preis von 23.365 Euro zuzüglich einer monatlichen Batteriemiete ab 79 Euro kann man ihn kaufen. Dabei sichert man sich die Elektroautoprämie: Nissan legt 1000 Euro extra drauf, dadurch gibt es insgesamt 5000 Euro Elektro-Bonus.",
+                        0,
+                        80,
+                        200,
+                        40,
+                        bitmapvar,
+                        3);
+            }
+            dataSource.close();
+            bswitch = true;
         }
-        dataSource.close();
     }
     public void reloadswipes(){
         dataSource.open();
@@ -175,7 +180,7 @@ public class MainActivity extends AppCompatActivity
     private void initImageView()//In dieser Methode werden die Bilder gewechselt
     {
         dataSource.open();
-        List<EcarCar> eclist = dataSource.getCarType(3);
+        eclist = dataSource.getCarType(3);
         dataSource.close();
 
         vPager = (ViewPager) findViewById(R.id.pager);
