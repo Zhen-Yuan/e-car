@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -16,20 +17,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
 import com.example.denis.ecar.R;
+import com.example.denis.ecar.datenbank.EcarDataSource;
+import com.example.denis.ecar.datenbank.EcarSession;
+
+import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class EditFragment extends DialogFragment {
 
-    private TextView tvMin, tvMax, tvResult;
-    private SeekBar sb;
+    private EcarDataSource dataSource;
+    private RangeSeekBar<Integer> rsBar = new RangeSeekBar<>(getContext());
     private FloatingActionButton fabDelete; //, fabSave, fabCancel;
-    private int sessionID, p, minValue, maxValue;
+    private int sessionID, minV, maxV;
+    private int[] args = new int[2];
+    private Dialog dialogFragment;
 
     public EditFragment() {
         // Required empty public constructor
@@ -38,9 +42,8 @@ public class EditFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        dialogFragment = super.onCreateDialog(savedInstanceState);
+        dialogFragment.requestWindowFeature(Window.FEATURE_NO_TITLE);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -48,35 +51,29 @@ public class EditFragment extends DialogFragment {
         init(view);
         builder.setView(view);
 
-        tvMin.setText(minValue);
-        tvMax.setText(maxValue);
-        tvResult.setText(minValue + (sb.getProgress()));
-        sb.setMax(maxValue-minValue);
-        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        rsBar.setOnRangeSeekBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangeListener<Integer>() {
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                p = minValue + progress;
-                tvResult.setText(p);
+            public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Integer minValue, Integer maxValue) {
+                args[0] = minValue;
+                args[1] = maxValue;
             }
         });
-        sb.setOnDragListener(new View.OnDragListener() {
+        rsBar.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 int dragEvent = event.getAction();
                 //final View view = (View) event.getLocalState();
-                if (dragEvent == DragEvent.ACTION_DROP) {
-                    // TODO: Check above or beneath progress
+                switch (dragEvent) {
+                    case DragEvent.ACTION_DROP:
+                        fabDelete.setClickable(false);
+                        fabDelete.setBackgroundTintMode(PorterDuff.Mode.DARKEN);
+                        break;
                 }
                 return true;
             }
         });
 
+        fabDelete.setOnLongClickListener(longClickListener);
         builder.setNegativeButton("Verwerfen", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
@@ -84,25 +81,26 @@ public class EditFragment extends DialogFragment {
         })
         .setPositiveButton("Fertig", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                //TODO: Aenderungen speichern
+                changeData(dialogFragment);
             }
         });
         //int width = getResources().getDisplayMetrics().widthPixels;
         //int height = getResources().getDisplayMetrics().heightPixels;
         //dialog.getWindow().setLayout(width, height);
-        dialog = builder.create();
-        return dialog;
+        dialogFragment = builder.create();
+        return dialogFragment;
     }
 
-    private void init(View view) {
-        tvMin = (TextView) view.findViewById(R.id.tvMinTime);
-        tvMax = (TextView) view.findViewById(R.id.tvMaxTime);
-        tvResult = (TextView) view.findViewById(R.id.tvResult);
 
+    private void init(View view) {
         fabDelete = (FloatingActionButton) view.findViewById(R.id.fabDelete);
         fabDelete.setOnLongClickListener(longClickListener);
 
-        sb = (SeekBar) view.findViewById(R.id.sb_distance);
+        // Add to layout
+        rsBar = (RangeSeekBar) view.findViewById(R.id.rangeSeekBar);
+        rsBar.setRangeValues(minV, maxV);
+        rsBar.setSelectedMinValue(minV);
+        rsBar.setSelectedMaxValue(maxV);
     }
 
 
@@ -111,7 +109,6 @@ public class EditFragment extends DialogFragment {
         public boolean onLongClick(View v) {
             ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
             String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-
             ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
             View.DragShadowBuilder myShadow = new View.DragShadowBuilder(fabDelete);
             fabDelete.setVisibility(View.INVISIBLE);
@@ -121,9 +118,37 @@ public class EditFragment extends DialogFragment {
     };
 
 
+    private void changeData(Dialog dialog) {
+        dataSource = new EcarDataSource(getContext());
+        dataSource.open();
+        dataSource.getSessionByID(sessionID);
+        EcarSession ecarSession = dataSource.getSessionByID(sessionID);
+
+        if (minV == args[0] && maxV == args[1]) {
+            // case 1: [min,max]
+            // delete whole track
+            dataSource.deleteEcarSession(ecarSession);
+        } else if (minV == args[0] && maxV == args[1]) {
+            // case 2: [min,x[
+            // delete x-max
+        } else if (minV == args[0] && maxV != args[1]) {
+            // case 3: ]y,max]
+            // delete y-min
+        } else if (minV != args[0] && maxV == args[1]) {
+            // case 4: [min,x[ u ]y,max]
+            // update current session: [min,x[
+            // add new session: ]y,max]
+            String name = dataSource.getSessionByID(sessionID).getName();
+        }
+        dataSource.close();
+        dialog.dismiss();
+    }
+
+
+
     protected void displayReceivedData(int sid, int min, int max) {
-        minValue = min;
-        maxValue = max;
+        minV = min;
+        maxV = max;
         sessionID = sid;
     }
 
