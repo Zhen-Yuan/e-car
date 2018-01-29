@@ -1,8 +1,12 @@
 package com.example.denis.ecar;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -12,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +27,7 @@ import com.example.denis.ecar.StreckenView.ViewStrecken;
 import com.example.denis.ecar.auswertungTab.AuswertungMain;
 import com.example.denis.ecar.datenbank.EcarCar;
 import com.example.denis.ecar.datenbank.EcarDataSource;
+import com.example.denis.ecar.datenbank.EcarSession;
 import com.example.denis.ecar.fragment_Uebersicht.UebersichtFragment;
 import com.example.denis.ecar.fragmente_Auto.CreateCarFragment;
 import com.example.denis.ecar.fragmente_Auto.InfoFragment;
@@ -32,6 +38,7 @@ import com.example.denis.ecar.login.LoginActivity;
 import com.example.denis.ecar.sharedPref.Settings;
 import com.example.denis.ecar.sharedPref.User;
 import com.example.denis.ecar.swipes.SwipeAdapter;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,7 +47,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,6 +67,9 @@ public class MainActivity extends AppCompatActivity
     public static SelectedIdVariable selectedCarId;
     public static boolean bswitch = false;
     public SwipeAdapter swad;
+    public static final double Rworld = 6372.8;
+    public static int newTime;
+
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     // Einfache Ausgabe über LogTag zum testen ermöglichen
@@ -283,6 +297,54 @@ public class MainActivity extends AppCompatActivity
         }else if(id == R.id.nav_ActivityLiveAuswertung)
         {
             oeffneLiveAuswertung();
+        }else if(id == R.id.nav_testdata){
+            int day = 0;
+            //Beginn des Tages wird als Epoch in day gespeichert
+            try {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd 00:00:00 zzz");
+                Date date = new Date();
+                date = dateFormat.parse(dateFormat.format(date));
+                long epoch = date.getTime()/1000;
+                day = (int)epoch;
+            }catch (Exception ex){}
+            //Wenn keine Strecken am heutigen Tag vorhanden sind wird day nicht verändert
+            dataSource.open();
+            Cursor cur = dataSource.getSessionDay(day);;
+            while(cur!= null){
+                day = day -86400;
+                cur = dataSource.getSessionDay(day);
+            }
+            newTime = day;
+            //Geht solange zurück bis keine Strecken am Tag vorhanden sind.
+            dataSource.close();
+            long epoch= day;
+            String date = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date (epoch*1000));
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(MainActivity.this);
+            }
+            builder.setTitle("Daten einfügen?")
+                    .setMessage("Sind Sie sich sicher am "+date+" neue Testwerte zu generieren?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            LatLng ll = new LatLng(51.447996164091094,7.270647883415222);
+                            newTime = newTime + 3600; //Start der Strecken um 1 Uhr morgens
+                            dataSource.open();
+                            Random r = new Random();
+                            //Zwischen 3 und 6 Strecken werden generiert mit dem Startpunkt ll
+                            createSessions((r.nextInt(6-3)+3),ll);
+                            dataSource.close();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -372,5 +434,73 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
+    }
+
+    public static LatLng travel(LatLng start, double initialBearing, double distance) {
+        double bR = Math.toRadians(initialBearing);
+        double lat1R = Math.toRadians(start.latitude);
+        double lon1R = Math.toRadians(start.longitude);
+        double dR = distance / Rworld;
+
+        double a = Math.sin(dR) * Math.cos(lat1R);
+        double lat2 = Math.asin(Math.sin(lat1R) * Math.cos(dR) + a * Math.cos(bR));
+        double lon2 = lon1R
+                + Math.atan2(Math.sin(bR) * a, Math.cos(dR) - Math.sin(lat1R) * Math.sin(lat2));
+        return new LatLng(Math.toDegrees(lat2), Math.toDegrees(lon2));
+    }
+    public static int timeDist(int dist, int speed){
+        double speedms = speed *1000 /3600;
+        double time = dist/speedms;
+        return (int)time;
+    }
+    public LatLng createData(int sid, LatLng llStart, int points){
+        //Startpunkt wird angelegt
+        dataSource.createAndUpdateData(llStart.latitude,llStart.longitude,newTime,sid);
+        Random r = new Random();
+        LatLng llNew = llStart;
+        int initbearing = r.nextInt(360);
+        for (int i = 0; i<points;i++){
+            // Die neuen Punkte liegen immer zwischen 500m-1500m
+            // Die Geschwindigkeit wechselt zwischen 30km/h-100km/h
+            int dist = r.nextInt(1500-500+1)+500;
+            int speed = r.nextInt(100-30+1)+30;
+            double ddist = (double)dist;
+            llNew = travel(llNew,initbearing,(ddist/1000));
+            newTime = newTime + timeDist(dist,speed);
+            // Die Zeit zwischen den Punkten wird anhand der Geschwindigkeit und Entfernung ermittelt und aufaddiert.
+            // Somit können wir eine Strecke über die Timestamps in der DB simulieren.
+            // Damit nicht immer wieder eine 180 Grad drehung volzogen passiert, wird die Richtung geprüft
+            // Wenn wir über 180 Grad liegen besteht beim nächsten Wert nur die Chance auf einen Wechsel wenn 100 - 180 generiert wird. (Gleich bei < 180)
+            // Somit besteht eine 44,44444% chance einen starken Richtungswechsel zu haben.
+            if (initbearing > 180) {
+                initbearing = r.nextInt(360 - 100) + 100;
+            }else{
+                initbearing = r.nextInt(260);
+            }
+
+            Log.d("random","NewPos: "+llNew.latitude+","+llNew.longitude);
+            Log.d("random","DoubleDist: "+ddist);
+            Log.d("random","Random initialBearing: "+initbearing);
+            Log.d("random","Random speed: "+speed);
+            Log.d("random","Random dist: "+dist);
+            Log.d("random","NewTime: "+newTime);
+            Log.d("random","---------------------------------------");
+
+            dataSource.createAndUpdateData(llNew.latitude,llNew.longitude,newTime,sid);
+        }
+        return llNew;
+    }
+    public void createSessions(int anz, LatLng llstartday){
+        EcarSession tempses;
+        Random r = new Random();
+        int rndmponits;
+        LatLng llnewStart = llstartday;
+        // Es wird zwischen 30 und 110 Punkten gewählt
+        for (int i = 0; i<anz;i++){
+            tempses = dataSource.createEcarSession(1,"GenerierteStrecke"+i);
+            rndmponits = r.nextInt(110-30+1)+30;
+            llnewStart = createData(tempses.getSesid(),llnewStart, rndmponits); // Ende der letzten Strecke als Start der nächsten Strecke
+            newTime = newTime + 120; //Zeit zwischen den Strecken 2 min
+        }
     }
 }

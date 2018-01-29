@@ -9,7 +9,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
 
     private static final String LOG_TAG = EcarDbHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "nr55.db";
+    public static final String DB_NAME = "nr77.db";
     public static final int DB_VERSION = 1;
 
     public static final String TABLE_USER = "nutzer";
@@ -137,7 +137,7 @@ public class EcarDbHelper extends SQLiteOpenHelper{
             db.execSQL("INSERT INTO "+TABLE_SETTINGS+" ("+COLUMN_SETTINGS_ID+","+COLUMN_SETTINGS_CONSUMPTION+")\n" +
                     "VALUES (1, 5);");
             Log.d(LOG_TAG, "Datensatz wird zum Testen in " + TABLE_USER + " angelegt.");
-            db.execSQL("INSERT INTO "+TABLE_USER+" ("+COLUMN_USER_ID+","+COLUMN_SESSION_ID+","+COLUMN_USER_FIREBASE+")\n" +
+            db.execSQL("INSERT INTO "+TABLE_USER+" ("+COLUMN_USER_ID+","+COLUMN_SETTINGS_ID+","+COLUMN_USER_FIREBASE+")\n" +
                     "VALUES (1, 1,'Platzhalter');");
 
             Log.d(LOG_TAG, "Datensätze werden zum Testen in " + TABLE_VALUES + " angelegt.");

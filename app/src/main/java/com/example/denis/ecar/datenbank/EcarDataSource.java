@@ -476,7 +476,7 @@ public class EcarDataSource {
         ContentValues values = new ContentValues();
         values.put(EcarDbHelper.COLUMN_DATA_TIME, ed.getTime());
         try {
-            database.update(EcarDbHelper.TABLE_DATA, values, "_id=" + ed.getDid(), null);
+            database.update(EcarDbHelper.TABLE_DATA, values, EcarDbHelper.COLUMN_DATA_ID+"=" + ed.getDid(), null);
         }
         catch (Exception ex){
             Log.d(LOG_TAG, "Fehler: "+ex);
