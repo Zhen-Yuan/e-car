@@ -472,6 +472,16 @@ public class EcarDataSource {
 
         Log.d(LOG_TAG, "Eintrag gelöscht! Inhalt: " + ecarData.toString());
     }
+    public void updateEcarDataTime(EcarData ed){
+        ContentValues values = new ContentValues();
+        values.put(EcarDbHelper.COLUMN_DATA_TIME, ed.getTime());
+        try {
+            database.update(EcarDbHelper.TABLE_DATA, values, EcarDbHelper.COLUMN_DATA_ID+"=" + ed.getDid(), null);
+        }
+        catch (Exception ex){
+            Log.d(LOG_TAG, "Fehler: "+ex);
+        }
+    }
     public List<EcarData> getAllEcarData() {
         List<EcarData> ecarDataList = new ArrayList<>();
 
@@ -701,6 +711,15 @@ public class EcarDataSource {
         cursor.close();
 
         return ecarcar;
+    }
+
+    public void createAndUpdateData(double dLat, double dLong, int iTime,int iSession){
+        EcarData edLat = createEcarData(dLat,iSession,1);
+        EcarData edLong = createEcarData(dLong,iSession,2);
+        edLat.setTime(iTime);
+        edLong.setTime(iTime);
+        updateEcarDataTime(edLat);
+        updateEcarDataTime(edLong);
     }
 
     public Cursor SqlQuarry(String com, String[] vars){

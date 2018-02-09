@@ -1,12 +1,11 @@
 package com.example.denis.ecar.StreckenView;
 
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +22,8 @@ import com.example.denis.ecar.R;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarDbHelper;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -31,14 +32,18 @@ public class PageFragment extends Fragment {
     double gesTime = 0;
     private EcarDataSource dataSource;
 
-    private FloatingActionButton fab;
+    //private FloatingActionButton fab;
+    private CircleImageView imgEdit;
     private PassData passData;
+    private static final String IMAGEVIEW_TAG = "icon cut";
+
 
     public PageFragment() {
         // Required empty public constructor
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -127,9 +132,11 @@ public class PageFragment extends Fragment {
                             btn.setBackgroundColor(getResources().getColor(R.color.colorGoogle));
                             break;
                         case DragEvent.ACTION_DROP:
+                            return true;
+                        case DragEvent.ACTION_DRAG_ENDED:
                             passData.sendData(sessionID, min, max);
                             showDialog();
-                            break;
+                            return true;
                     }
                     return true;
                 }
@@ -142,25 +149,55 @@ public class PageFragment extends Fragment {
             if(cur.isAfterLast()){return view;}
         }
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnLongClickListener(longClickListener);
+        imgEdit = (CircleImageView) view.findViewById(R.id.ivEdit);
+        imgEdit.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+        imgEdit.setTag(IMAGEVIEW_TAG);
+        imgEdit.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View v) {
+                ClipData data = ClipData.newPlainText("","");
+                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(imgEdit);
+                v.startDrag(data, myShadow, null, 0);
+                return false;
+            }
+    });
+
+
+
+            //fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        //fab.performClick();
+
+                /*.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent me) {
+                if (me.getAction() == MotionEvent.ACTION_MOVE  ){
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(v.getWidth(),  v.getHeight());
+                    //set the margins. Not sure why but multiplying the height by 1.5 seems to keep my finger centered on the button while it's moving
+                    params.setMargins((int)me.getRawX() - v.getWidth()/2, (int)(me.getRawY() - v.getHeight()*1.5), (int)me.getRawX() - v.getWidth()/2, (int)(me.getRawY() - v.getHeight()*1.5));
+                    v.setLayoutParams(params);
+                }
+                return true;
+            }
+        });
+                /*.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
+                String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+
+                ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
+                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(fab);
+                fab.setVisibility(View.INVISIBLE);
+                v.startDrag(dragData,myShadow,null,0);
+                return true;
+            }
+        }); */
         return view;
     }
-
-
-    View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
-            String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-
-            ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
-            View.DragShadowBuilder myShadow = new View.DragShadowBuilder(fab);
-            fab.setVisibility(View.INVISIBLE);
-            v.startDrag(dragData,myShadow,null,0);
-            return true;
-        }
-    };
 
 
     public void showDialog() {

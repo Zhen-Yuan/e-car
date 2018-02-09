@@ -49,6 +49,10 @@
                 android:id="@+id/nav_settings"
                 android:icon="@android:drawable/ic_menu_manage"
                 android:title="Settings" />
+            <item
+                android:id="@+id/nav_testdata"
+                android:icon="@android:drawable/ic_menu_edit"
+                android:title="InsertTestData" />
         </menu>
     </item>
     <item
