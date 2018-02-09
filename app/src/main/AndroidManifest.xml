@@ -100,10 +100,10 @@
             android:name=".MapsActivity"
             android:label="activity_maps" />
 
-        <activity
+        <!--<activity
             android:name=".StreckenView.ViewStrecken"
             android:label="activity_view_strecken" />
-
+        -->
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Settings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <activity
             android:name=".sharedPref.Settings"

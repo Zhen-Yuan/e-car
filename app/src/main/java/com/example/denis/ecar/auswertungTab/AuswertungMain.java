@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.denis.ecar.auswertung.AuswertungBenzin;
 import com.example.denis.ecar.auswertung.AuswertungElektro;
@@ -56,6 +57,7 @@ public class AuswertungMain extends AppCompatActivity {
     AuswertungBenzin auswBenzin;
     public Kalkulationen kalk;
     private int fID;
+    private int lastSelected = -1;
     DecimalFormat f = new DecimalFormat("#0.00");
 
 
@@ -133,11 +135,14 @@ public class AuswertungMain extends AppCompatActivity {
                         if (ecarSessionList.get(u).getName().equals(carname)) {
                             Log.d("SesID", "" + ecarSessionList.get(u).getSesid());
                             session_strecke = ecarSessionList.get(u);
-                            ecarLatList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 1);
-                            ecarLongList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 2);
+
+                                ecarLatList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 1);
+                                ecarLongList = dataSource.getSpecificEcarData((ecarSessionList.get(u).getSesid()), 2);
+
                         }
                     }
                     dataSource.close();
+                    try {
                     if (ecarLatList.size() > 0) {
                         tabMap.setStrecke(ecarLatList,ecarLongList);
                         tabMap.setColor(true);
@@ -147,6 +152,15 @@ public class AuswertungMain extends AppCompatActivity {
                         chartKosten();
                         str_strecke = tabMap.ddist/1000;
                         tabUebersicht();
+                        lastSelected = pos;
+                    }
+                    }catch(Exception e){
+                        Log.d("Fehler", "keine Streckendaten!");
+                        Toast toast = Toast.makeText(getApplicationContext(),"Fehler, keine Streckendaten!", Toast.LENGTH_SHORT);
+                        toast.show();
+                        if(lastSelected != -1) {
+                            ddmenu.setSelection(lastSelected);
+                        }
                     }
                 }
 

@@ -101,7 +101,7 @@ public class CreateCarFragment extends Fragment {
                                 eTHersteller.getText() + "",
                                 eTBeschreibung.getText() + "",
                                 0, sbVerbrauch.getProgress(),
-                                0,
+                                800,                    //ToDo oder auch nicht
                                 0,
                                 BmNewcar,
                                 FuelId);

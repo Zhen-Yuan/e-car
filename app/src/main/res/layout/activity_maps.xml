@@ -8,12 +8,81 @@
     android:orientation="vertical"
     tools:context="com.example.denis.ecar.MapsActivity">
 
-    <TextView
-        android:id="@+id/tv_disp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="156dp"
-        android:text="Info Fenster" />
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
+        <TextView
+            android:id="@+id/txt_1"
+            android:layout_width="210dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#5536d71a"
+            android:gravity="center"
+            android:text="Strecke:"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/txt_strecke"
+            android:layout_width="183dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="#960e7b04"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txt_2"
+            android:layout_width="210dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#3b027f0d"
+            android:gravity="center"
+            android:text="Geschwindigkeit:"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/txt_geschw"
+            android:layout_width="183dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="#64016409"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txt_"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_alignBaseline="@+id/bttn_loc"
+            android:layout_alignBottom="@+id/bttn_loc"
+            android:layout_alignParentStart="true"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:gravity="center"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="24sp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -25,6 +94,8 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             tools:context="com.example.denis.ecar.MapsActivity" />
 
         <ImageButton

@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,9 +62,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String strHeadphones;
     private String strLocation;
     private String strDist = "0"; // TODO: Warum wird die Variable hier initalisiert?
-    private String strSpeed;
+    private String strSpeed = "0";
     private LatLng latLng;
-    private TextView tv_disp; //-> Infofenster.
+    private TextView txt_strecke, txt_geschw; //-> Infofenster.
     private Location location;
     private ImageButton imgbttn_focus; // Ähnlich, wie bei GoogleMaps Button zum fokussieren
     private Button bttn_loc;
@@ -76,6 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EcarSession ecs;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser fUser;
+    DecimalFormat f = new DecimalFormat("#0");
+    DecimalFormat f2 = new DecimalFormat("#0.00");
 
     GoogleApiClient mGoogleApiClient; //Wird für die Verwendung der AwarenessAPI benötigt.
     private ArrayList<Location> locationList = new ArrayList<>(); //Liste zum Speichern von Locations.
@@ -115,8 +118,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         imgbttn_focus = (ImageButton) findViewById(R.id.imgbttn_focus);
         bttn_loc = (Button) findViewById(R.id.bttn_loc);
-        tv_disp = (TextView) findViewById(R.id.tv_disp);
-        tv_disp.setText("Bitte warten");
+        txt_strecke = (TextView) findViewById(R.id.txt_strecke);
+        txt_geschw = (TextView) findViewById(R.id.txt_geschw);
         onclick();
         Toast toast = Toast.makeText(getApplicationContext(), "Zum Fokussieren der akuellen Position den Button unten rechts betätigen!", Toast.LENGTH_LONG);
         toast.show();
@@ -153,12 +156,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             {
                 if (!weatherResult.getStatus().isSuccess()) {
                     setStrWeather("Wetter: Wetter konnte nicht geladen werden.");
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
                     return;
                 }
                 Weather weather = weatherResult.getWeather();
                     setStrWeather(weather.toString());
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
             }
         });
     }//Methode, welche durch die AwarenessAPI das aktuelle Wetter ermittelt.
@@ -169,13 +172,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResult(@NonNull DetectedActivityResult detectedActivityResult) {
                 if (!detectedActivityResult.getStatus().isSuccess()) {
                     setStrActivity("Konnte noch nicht ermittelt werden.");//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
                     return;
                 }
                 ActivityRecognitionResult ar = detectedActivityResult.getActivityRecognitionResult();
                 DetectedActivity probableActivity = ar.getMostProbableActivity();
                 setStrActivity(probableActivity.toString());//Ausgabe, falls noch keine anderen Werte ausgegeben wurden.
-                tv_disp.setText(ausgabe());
+                ausgabe();
             }
         });
     }
@@ -198,13 +201,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResult(@NonNull LocationResult locationResult) {
                 if (!locationResult.getStatus().isSuccess()) {
                     setStrLocation("Locationstatus nicht verfügbar");
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
                     return;
                 }
 
                 setLocation(locationResult.getLocation()); //Aktuelle Location wird zwischengespeichert.
                 setStrLocation("Latitude: " + locationResult.getLocation().getLatitude() + "//Longitude:" + locationResult.getLocation().getLongitude());
-                tv_disp.setText(ausgabe());
+                ausgabe();
                 locationList.add(locationResult.getLocation());// Für spätere Verwendung werden die Locations in einer Liste temporär gespeichert.
                 setLocation(locationResult.getLocation());
             }
@@ -219,18 +222,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResult(@NonNull HeadphoneStateResult headphoneStateResult) {
                 if (!headphoneStateResult.getStatus().isSuccess()) {
                     setStrHeadphones("Status kann nicht abgefragt werden.");
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
                     return;
                 }
                 HeadphoneState headphoneState = headphoneStateResult.getHeadphoneState();
                 if (headphoneState.getState() == HeadphoneState.PLUGGED_IN)
                 {
                     setStrHeadphones("Eingesteckt");
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
                 }else
                 {
                     setStrHeadphones("Nicht eingesteckt");
-                    tv_disp.setText(ausgabe());
+                    ausgabe();
                 }
             }
         });
@@ -238,6 +241,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Methoden
     private String ausgabe()//Methode, welche einen String zum ausgeben erzeugt
     {
+        txt_strecke.setText(getStrDist() + " km");
+        txt_geschw.setText(getStrSpeed() + " kmh");
+
+
         return "Location: "+getStrLocation()+"\nActivity: "+getStrActivity()+"\nKopfhörer: "+getStrHeadphones()+"\nWetter: "+getStrWeather()+ "\nStrecke: " + getStrDist()+ "\nGeschw.: " + getStrSpeed();
     }
     private  void onclick()
@@ -305,16 +312,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (record) {
                     ha.postDelayed(this, i); //1000 = 1s
                     location();
-                    setStrDist(calcDist(locationList.get(0).getLatitude(), locationList.get(0).getLongitude(), locationList.get(locationList.size() - 1).getLatitude(), locationList.get(locationList.size() - 1).getLongitude()) + " m");
+
 
                     if (locationList.size() > 1) {
-                        setStrSpeed(calcVelocity(locationList.get(locationList.size() - 1), locationList.get(locationList.size() - 2)) + " km/h");
+                        setStrDist(f2.format(calcDist(locationList.get(0).getLatitude(), locationList.get(0).getLongitude(), locationList.get(locationList.size() - 1).getLatitude(), locationList.get(locationList.size() - 1).getLongitude())/1000) + "");
+                        setStrSpeed(f.format(calcVelocity(locationList.get(locationList.size() - 1), locationList.get(locationList.size() - 2))) + "");
                         //setStrSpeed(locationList.get(locationList.size() - 1).getTime()+"-"+locationList.get(locationList.size() - 2).getTime());
+
+                        dataSource.createEcarData(locationList.get(locationList.size()-1).getLatitude(),ecs.getSesid(),1);
+                        dataSource.createEcarData(locationList.get(locationList.size()-1).getLongitude(),ecs.getSesid(),2);
+                        Log.d("DB insert: ", locationList.get(locationList.size()-1).getLatitude() + " , " + ecs.getSesid() + " , " + 1);
+
+                        focus();
                     }
 
-                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLatitude(),ecs.getSesid(),1);
-                    dataSource.createEcarData(locationList.get(locationList.size()-1).getLongitude(),ecs.getSesid(),2);
-                    Log.d("DB insert: ", locationList.get(locationList.size()-1).getLatitude() + " , " + ecs.getSesid() + " , " + 1);
+
                 }
             }
         }, i);
