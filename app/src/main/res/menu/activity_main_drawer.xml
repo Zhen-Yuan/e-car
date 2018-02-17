@@ -9,7 +9,15 @@
         <item
             android:id="@+id/nav_Activity2"
             android:icon="@drawable/ic_map_black_24dp"
-            android:title="Maps+AwarenessAPI" />
+            android:title="Strecke Aufnehmen" />
+        <item
+            android:id="@+id/nav_ActivityAuswertungNeu"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Auswertung" />
+        <item
+            android:id="@+id/nav_ActivityLiveAuswertung"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="LiveAuswertung" />
         <item
             android:id="@+id/nav_Activity3"
             android:icon="@drawable/ic_euro_symbol_black_24dp"
@@ -18,18 +26,6 @@
             android:id="@+id/nav_Activity4"
             android:icon="@android:drawable/ic_menu_info_details"
             android:title="Info" />
-        <item
-            android:id="@+id/nav_ActivityAuswertungNeu"
-            android:icon="@android:drawable/ic_menu_info_details"
-            android:title="Auswertung_neu" />
-        <item
-            android:id="@+id/nav_ActivityAuswertung"
-            android:icon="@android:drawable/ic_menu_info_details"
-            android:title="Auswertung" />
-        <item
-            android:id="@+id/nav_ActivityLiveAuswertung"
-            android:icon="@android:drawable/ic_menu_info_details"
-            android:title="LiveAuswertung" />
     </group>
 
     <item

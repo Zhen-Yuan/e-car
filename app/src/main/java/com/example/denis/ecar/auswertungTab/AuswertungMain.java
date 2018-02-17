@@ -107,6 +107,7 @@ public class AuswertungMain extends AppCompatActivity {
                         if (ddmenu2.getSelectedItem().toString().equals(ecarCars.get(i).getName())) {
                             ecarCar = ecarCars.get(i);
                             fID = ecarCar.getFid();
+
                             chartVerbrauch();
                             chartWoche();
                             chartKosten();
@@ -258,25 +259,25 @@ public class AuswertungMain extends AppCompatActivity {
             time = time + ecarLatList.get(i).getTime()-ecarLatList.get(i-1).getTime();
             bat = 100 - (dist/reich*100);
             verbr = (dist/reich*100);
-            y.add(new BarEntry((float)time,(float)bat));
+            y.add(new BarEntry((float)time/60,(float)bat));
         }
         if(ecarCar.getFid() == 3) {
             auswElektro.setdStrecke(dist / 1000);
             auswElektro.setdStrompreis(0.2916);
-            str_stromkosten = auswElektro.getKostenElektro(ecarCar.getConsumption());
+            str_stromkosten = auswElektro.getKosten(ecarCar.getConsumption());
             str_co2 = (dist / 1000) * 0.12;       //ToDo gescheite Berechnung
         }
         else if (ecarCar.getFid() == 1){
             auswBenzin.setdStrecke(dist / 1000);
             auswBenzin.setdSpritpreis(1.30);
-            str_stromkosten = auswBenzin.getKostenBenzin(ecarCar.getConsumption(), 1.3);
+            str_stromkosten = auswBenzin.getKosten(ecarCar.getConsumption(), 1.3);
             str_co2 = (dist / 1000) * -0.14;
 
         }
         else if (ecarCar.getFid() == 2){
             auswBenzin.setdStrecke(dist / 1000);
             auswBenzin.setdSpritpreis(1.10);
-            str_stromkosten = auswBenzin.getKostenBenzin(ecarCar.getConsumption(), 1.1);
+            str_stromkosten = auswBenzin.getKosten(ecarCar.getConsumption(), 1.1);
             str_co2 = (dist / 1000) * -0.18;
         }
         str_stromverbrauch = ((dist / 1000) / 100) * ecarCar.getConsumption();
@@ -324,9 +325,9 @@ public class AuswertungMain extends AppCompatActivity {
                         i = i + 2;
 
                     }
-                    y.set(6, y.get(6) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(6,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(6)>ecarCar.getRange()*1000){if(colour.get(6) != Color.RED){colour.set(6,Color.YELLOW);}}
+                    y.set(6, y.get(6) + dist/1000);
+                    if(dist/1000>ecarCar.getRange()){colour.set(6,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(6)>ecarCar.getRange()){if(colour.get(6) != Color.RED){colour.set(6,Color.YELLOW);}}
                 }
             }
             dist = 0;
@@ -337,9 +338,9 @@ public class AuswertungMain extends AppCompatActivity {
                         dist = dist+kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                         i = i + 2;
                     }
-                    y.set(5, y.get(5) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(5,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(5)>ecarCar.getRange()*1000){if(colour.get(5) != Color.RED){colour.set(5,Color.YELLOW);}}
+                    y.set(5, y.get(5) + dist/1000);
+                    if(dist/1000>ecarCar.getRange()){colour.set(5,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(5)>ecarCar.getRange()){if(colour.get(5) != Color.RED){colour.set(5,Color.YELLOW);}}
                 }
             }
             dist = 0;
@@ -350,9 +351,9 @@ public class AuswertungMain extends AppCompatActivity {
                         dist = dist+kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                         i = i + 2;
                     }
-                    y.set(4, y.get(4) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(4,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(4)>ecarCar.getRange()*1000){if(colour.get(4) != Color.RED){colour.set(4,Color.YELLOW);}}
+                    y.set(4, y.get(4) + dist/1000);
+                    if(dist/1000>ecarCar.getRange()){colour.set(4,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(4)>ecarCar.getRange()){if(colour.get(4) != Color.RED){colour.set(4,Color.YELLOW);}}
                 }
             }
             dist = 0;
@@ -363,9 +364,9 @@ public class AuswertungMain extends AppCompatActivity {
                         dist = dist+kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                         i = i + 2;
                     }
-                    y.set(3, y.get(3) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(3,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(3)>ecarCar.getRange()*1000){if(colour.get(3) != Color.RED){colour.set(3,Color.YELLOW);}}
+                    y.set(3, y.get(3) + dist/1000);
+                    if(dist/1000>ecarCar.getRange()){colour.set(3,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(3)>ecarCar.getRange()){if(colour.get(3) != Color.RED){colour.set(3,Color.YELLOW);}}
                 }
             }
             dist = 0;
@@ -376,9 +377,9 @@ public class AuswertungMain extends AppCompatActivity {
                         dist = dist+kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                         i = i + 2;
                     }
-                    y.set(2, y.get(2) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(2,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(2)>ecarCar.getRange()*1000){if(colour.get(2) != Color.RED){colour.set(2,Color.YELLOW);}}
+                    y.set(2, y.get(2) + dist/1000);
+                    if(dist/1000>ecarCar.getRange()){colour.set(2,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(2)>ecarCar.getRange()){if(colour.get(2) != Color.RED){colour.set(2,Color.YELLOW);}}
                 }//Log.d("dist",dist/1000+"");
             }
             dist = 0;
@@ -389,9 +390,9 @@ public class AuswertungMain extends AppCompatActivity {
                         dist = dist+kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                         i = i + 2;
                     }
-                    y.set(1, y.get(1) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(1,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(1)>ecarCar.getRange()*1000){if(colour.get(1) != Color.RED){colour.set(1,Color.YELLOW);}}
+                    y.set(1, y.get(1) + dist/1000);
+                    if(dist/1000>ecarCar.getRange()){colour.set(1,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(1)>ecarCar.getRange()){if(colour.get(1) != Color.RED){colour.set(1,Color.YELLOW);}}
                 }
             }
             dist = 0;
@@ -402,9 +403,9 @@ public class AuswertungMain extends AppCompatActivity {
                         dist = dist+kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                         i = i + 2;
                     }
-                    y.set(0, y.get(0) + dist);
-                    if(dist>ecarCar.getRange()*1000){colour.set(0,Color.RED);}   //Balken-Farbe einstellen
-                    else if(y.get(0)>ecarCar.getRange()*1000){if(colour.get(0) != Color.RED){colour.set(0,Color.YELLOW);}}
+                    y.set(0, y.get(0) + dist/1000);
+                    if(dist>ecarCar.getRange()){colour.set(0,Color.RED);}   //Balken-Farbe einstellen
+                    else if(y.get(0)>ecarCar.getRange()){if(colour.get(0) != Color.RED){colour.set(0,Color.YELLOW);}}
                 }
             }
             calnow.add(Calendar.DATE, 6);
@@ -429,8 +430,18 @@ public class AuswertungMain extends AppCompatActivity {
         double dist = 0;
         List<EcarData> allData;
         AuswertungElektro auswE = new AuswertungElektro();
-        auswE.setdStrompreis(0.2916);
-        auswE.setdStrecke(0);
+        if(ecarCar.getFid()==3) {
+            auswE.setdStrompreis(0.2916);
+            auswE.setdStrecke(0);
+        }else if(ecarCar.getFid()==2) {
+            auswE.setdStrompreis(1.3);
+            auswE.setdStrecke(0);
+        }else{
+            auswE.setdStrompreis(1.1);
+            auswE.setdStrecke(0);
+        }
+
+
         dataSource.open();
         allData = dataSource.getAllEcarData();  //lat->long->lat->long....
         dataSource.close();
@@ -444,7 +455,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(6, y.get(6) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(6, y.get(6) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -452,7 +463,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(5, y.get(5) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(5, y.get(5) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -460,7 +471,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(4, y.get(4) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(4, y.get(4) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -468,7 +479,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(3, y.get(3) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(3, y.get(3) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -476,7 +487,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(2, y.get(2) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(2, y.get(2) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }//Log.d("dist",dist/1000+"");
             }
             calnow.add(Calendar.DATE, -1);
@@ -484,7 +495,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(1, y.get(1) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(1, y.get(1) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -492,7 +503,7 @@ public class AuswertungMain extends AppCompatActivity {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = kalk.calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(0, y.get(0) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(0, y.get(0) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, 6);

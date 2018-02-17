@@ -65,7 +65,7 @@
     <string name="signUp">Registrieren</string>
     <string name="socialNetwork">Soziale Netzwerke</string>
     <string name="anleitung">\n\n1. Über das Navigationsmenü(Eigenes Fahrzeug)\nein Benzinfahrzeug eintragen\n\n
-2. Eine Strecke über die Liveauswertung, oder "Maps+AwarenessAPI" aufnehmen\n\n
+2. Eine Strecke über die LiveAuswertung, oder "'Strecke Aufnehmen'" aufnehmen\n\n
 3. Die aufgenommenen Strecken können unter Auswertung betrachtet werden. (Kosten, CO2-Einsparung, Wöchentliche Auswertung)</string>
     <string name="activity_view_string">activity_view_string</string>
     <string name="willkommen">\nWillkommen!</string>

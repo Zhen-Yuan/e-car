@@ -17,13 +17,13 @@ public class AuswertungBenzin {
         this.dEmissionen = dEmissionen;
     }
 
-    public double getKostenBenzin(double dVerbrauchBenzin,double dBenzinpreis)//
+    public double getKosten(double dVerbrauchBenzin,double dBenzinpreis)//
     {//Ausgabe in Euro, Verbrauch BMW 750i xDrive 11.9l/100km
         return getdStrecke()/100*dVerbrauchBenzin*dBenzinpreis;
     }
     public double getKostenBenzinProKm(double dVerbrauchBenzin,double dBenzinpreis)
     {
-        return getKostenBenzin(dVerbrauchBenzin,dBenzinpreis)/getdStrecke();
+        return getKosten(dVerbrauchBenzin,dBenzinpreis)/getdStrecke();
     }
     //Getter/Setter
     public double getdStrecke() {

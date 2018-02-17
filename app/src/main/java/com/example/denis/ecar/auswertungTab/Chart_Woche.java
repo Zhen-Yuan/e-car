@@ -21,9 +21,13 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.LargeValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -91,9 +95,18 @@ public class Chart_Woche extends Fragment
     public void chartBeispiel(ArrayList<Double> yVals, EcarCar car, ArrayList<Integer> colours) {
         this.car = car;
         double cap = (car.getRange()/100)*car.getConsumption();
-        tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
-                car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km\n");
 
+
+        if(car.getFid()==3) {
+            tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
+                    car.getName()+"\nVerbrauch: "+car.getConsumption()+" kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+" kWh\nReichweite ~ "+car.getRange()+" km");
+        }else if(car.getFid()==1){
+            tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
+                    car.getName()+"\nVerbrauch: "+car.getConsumption()+" L/100km\nTankvolumen: " + car.getPowerstore()+" Liter\nReichweite ~ "+car.getRange()+" km");
+        }else {
+            tv_beschreibungElektro.setText("Gefahrene Strecken der letzten 7-Tage\n" +
+                    car.getName() + "\nVerbrauch: " + car.getConsumption() + " L/100km\nTankvolumen: " + car.getPowerstore()+ " Liter\nReichweite ~ " + car.getRange() + " km");
+        }
 
         chart.setPinchZoom(false);
         chart.setScaleEnabled(false);
@@ -133,14 +146,15 @@ public class Chart_Woche extends Fragment
         set2.setColor(Color.BLUE);
         set2.setColors(colours);
         BarData data = new BarData(set2);
-        data.setValueFormatter(new LargeValueFormatter());
+        data.setValueFormatter(new MyValueFormatter());
         chart.setData(data);
         chart.getBarData().setBarWidth(barWidth);
         chart.getXAxis().setAxisMinimum(0);
         //chart.getXAxis().setAxisMaximum(0 + chart.getBarData().getGroupWidth(groupSpace, barSpace));
         chart.getData().setHighlightEnabled(false);
-        chart.getDescription().setPosition(150,12);
-        chart.getDescription().setText("Strecke in Meter");
+        //chart.setDescription(null);
+        //chart.getDescription().setPosition(15,10);
+        chart.getDescription().setText("");
         chart.invalidate();
 
         Legend l = chart.getLegend();
@@ -176,4 +190,18 @@ public class Chart_Woche extends Fragment
 
 
     }
+
+
+    private class MyValueFormatter implements IValueFormatter {
+        private DecimalFormat mFormat;
+        public MyValueFormatter() {
+            mFormat = new DecimalFormat("###,###,##0"); // use one decimal
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return mFormat.format(value) + "km";
+        }
+    }
 }
+

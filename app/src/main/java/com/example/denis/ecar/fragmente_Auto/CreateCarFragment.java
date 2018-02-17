@@ -28,14 +28,17 @@ import com.example.denis.ecar.datenbank.EcarDataSource;
 public class CreateCarFragment extends Fragment {
     private View v;
     private TextView tvVerbrauch;
+    private TextView tvTank;
     private EditText eTName, eTHersteller, eTBeschreibung;
     private SeekBar sbVerbrauch;
+    private SeekBar tank;
     private RadioGroup rgTreibstoff;
     private RadioButton rbB, rbD, rbE;
     private Button Bsave;
     private EcarDataSource dS;
     private Bitmap BmNewcar;
     private String Verbrauchsart;
+    private String akkutank;
     private int FuelId;
     @Nullable
     @Override
@@ -48,17 +51,24 @@ public class CreateCarFragment extends Fragment {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton checkedRadioButton = (RadioButton)radioGroup.findViewById(i);
                 if (checkedRadioButton == rbE){
-                    Verbrauchsart = "KW/H";
+                    Verbrauchsart = " KWh/100km";
+                    akkutank = " KWh Akkukapazität";
                     sbVerbrauch.setMax(300);
                     sbVerbrauch.setProgress(150);
+                    tank.setProgress(50);
                     tvVerbrauch.setText(sbVerbrauch.getProgress()+""+Verbrauchsart);
+                    tvTank.setText(tank.getProgress()+""+akkutank);
                     FuelId = 3;
                 }else{
-                    Verbrauchsart = "L/100KM";
+                    Verbrauchsart = " L/100KM";
+                    akkutank = " Liter Tankvolumen";
+                    tank.setProgress(50);
+                    tvTank.setText(tank.getProgress()+""+akkutank);
                     if(sbVerbrauch.getProgress() > 15){
                         sbVerbrauch.setProgress(8);
                     }
                     sbVerbrauch.setMax(15);
+                    tank.setMax(200);
                     if (checkedRadioButton == rbD){
                         FuelId = 2;
                     }else{
@@ -72,6 +82,23 @@ public class CreateCarFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 tvVerbrauch.setText(i+" "+Verbrauchsart);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        tank.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                tvTank.setText(i+" "+akkutank);
             }
 
             @Override
@@ -101,8 +128,8 @@ public class CreateCarFragment extends Fragment {
                                 eTHersteller.getText() + "",
                                 eTBeschreibung.getText() + "",
                                 0, sbVerbrauch.getProgress(),
-                                800,                    //ToDo oder auch nicht
-                                0,
+                                100/sbVerbrauch.getProgress()*tank.getProgress(),                    //ToDo oder auch nicht
+                                tank.getProgress(),
                                 BmNewcar,
                                 FuelId);
                         dS.close();
@@ -132,6 +159,7 @@ public class CreateCarFragment extends Fragment {
     {
         BmNewcar = BitmapFactory.decodeResource(getResources(), R.drawable.cover2);
         tvVerbrauch = (TextView)v.findViewById(R.id.tv_consumption);
+        tvTank = (TextView)v.findViewById(R.id.tv_tank);
         eTName = (EditText) v.findViewById(R.id.eT_name);
         eTHersteller = (EditText) v.findViewById(R.id.eT_manu);
         eTBeschreibung = (EditText) v.findViewById(R.id.eT_desc);
@@ -140,6 +168,7 @@ public class CreateCarFragment extends Fragment {
         rbD = (RadioButton) v.findViewById(R.id.Fuel_D);
         rbE = (RadioButton) v.findViewById(R.id.Fuel_E);
         sbVerbrauch = (SeekBar) v.findViewById(R.id.Consumption_Seeker);
+        tank = (SeekBar) v.findViewById(R.id.consumption_Seeker);
         Bsave = (Button) v.findViewById(R.id.bttn_save);
         dS = new EcarDataSource(getActivity());
 
@@ -147,10 +176,15 @@ public class CreateCarFragment extends Fragment {
         rbD.setText("Diesel");
         rbE.setText("Elektro");
 
-        Verbrauchsart = "L/100KM";
+        Verbrauchsart = " L/100KM";
+        akkutank = " Liter Tankvolumen";
+        tank.setMax(200);
+        tank.setProgress(50);
+        sbVerbrauch.setProgress(50);
         sbVerbrauch.setMax(15);
         sbVerbrauch.setProgress(8);
         FuelId = 1;
         tvVerbrauch.setText(sbVerbrauch.getProgress()+" "+Verbrauchsart);
+        tvTank.setText(tank.getProgress()+" "+akkutank);
     }
 }
