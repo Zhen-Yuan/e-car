@@ -45,7 +45,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -137,8 +136,8 @@ public class MainActivity extends AppCompatActivity
                         "Tesla",
                         "Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",
                         0,
-                        15.8,
-                        510,
+                        23,
+                        420,
                         100,
                         bitmapvar,
                         3);
@@ -148,8 +147,8 @@ public class MainActivity extends AppCompatActivity
                         "Renault",
                         "Der französische Autohersteller Renault verkauft den Renault Zoe seit 2013, 2017 gab es ein wichtiges Update. Der fünftürige Kleinwagen kommt mit seinem 65 kW Motor auf eine Höchstgeschwindigkeit von 135 km/h. Wie die meisten Elektroautos hat der Renault Zoe mit seiner „Z.E. 40 Batterie“ genannten 41-kWh-Batterie (Vormodell: 22 kWh) eine anständige Reichweite: Etwa 400 km schafft das Elektroauto auf dem Papier (NEFZ), Renault gibt die realistische Reichweite mit 300 km an. Ein kompaktes Stadtauto, das auch Landpartien schafft.",
                         0,
-                        20.3,
-                        300,
+                        14,
+                        350,
                         41,
                         bitmapvar,
                         3);
@@ -159,9 +158,9 @@ public class MainActivity extends AppCompatActivity
                         "BMW",
                         "Der Kleinwagen BMW i3 wurde von vornherein als reines Elektroauto konzipiert. Kein deutscher Wettbewerber ging dabei so konsequent und durchdacht vor wie BMW. So wiegt der BMW i3 mit 1.195 Kilogramm rund 400 kg weniger als etwa ein Nissan Leaf oder ein Volkswagen e-Golf. Dazu ist er mit 125 kW (170 PS) sauschnell und schafft je nach Akku eine Reichweite 190 bis 300 Kilometer. Ein ideales Stadtauto.",
                         0,
-                        20,
+                        13,
                         290,
-                        33,
+                        27,
                         bitmapvar,
                         3);
                 bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.nissan_leaf);
@@ -170,21 +169,21 @@ public class MainActivity extends AppCompatActivity
                         "Nissan",
                         "Der Nissan Leaf gilt als das Elektroauto mit der besten CO2-Bilanz. Ab einem Preis von 23.365 Euro zuzüglich einer monatlichen Batteriemiete ab 79 Euro kann man ihn kaufen. Dabei sichert man sich die Elektroautoprämie: Nissan legt 1000 Euro extra drauf, dadurch gibt es insgesamt 5000 Euro Elektro-Bonus.",
                         0,
-                        20.4,
-                        250,
-                        30,
+                        15,
+                        200,
+                        24,
                         bitmapvar,
                         3);
 
-                bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.nissan_leaf);
+                bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.polo);
                 dataSource.createEcarCar(
-                        "Blyatmobil",
-                        "Putin",
-                        "Lada",
+                        "Polo Blue GT",
+                        "Volkswagen",
+                        "Strecken wurden mit diesem Auto aufgenommen.",
                         0,
-                        10.0,
-                        500,
-                        50,
+                        6.0,
+                        600,
+                        0,
                         bitmapvar,
                         1);
             }
@@ -336,7 +335,7 @@ public class MainActivity extends AppCompatActivity
             //Geht solange zurück bis keine Strecken am Tag vorhanden sind.
             dataSource.close();
             long epoch= day;
-            String date = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date (epoch*1000));
+            final String date = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date (epoch*1000));
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
@@ -352,7 +351,7 @@ public class MainActivity extends AppCompatActivity
                             dataSource.open();
                             Random r = new Random();
                             //Zwischen 3 und 6 Strecken werden generiert mit dem Startpunkt ll
-                            createSessions((r.nextInt(6-3)+3),ll);
+                            createSessions((r.nextInt(8-2)+2),ll, ""+date);
                             dataSource.close();
                         }
                     })
@@ -495,9 +494,9 @@ public class MainActivity extends AppCompatActivity
             // Wenn wir über 180 Grad liegen besteht beim nächsten Wert nur die Chance auf einen Wechsel wenn 100 - 180 generiert wird. (Gleich bei < 180)
             // Somit besteht eine 44,44444% chance einen starken Richtungswechsel zu haben.
             if (initbearing > 180) {
-                initbearing = r.nextInt(360 - 100) + 100;
+                initbearing = r.nextInt(360 - 150) + 150;
             }else{
-                initbearing = r.nextInt(260);
+                initbearing = r.nextInt(210);
             }
 
             Log.d("random","NewPos: "+llNew.latitude+","+llNew.longitude);
@@ -512,14 +511,14 @@ public class MainActivity extends AppCompatActivity
         }
         return llNew;
     }
-    public void createSessions(int anz, LatLng llstartday){
+    public void createSessions(int anz, LatLng llstartday, String StreckenDatum){
         EcarSession tempses;
         Random r = new Random();
         int rndmponits;
         LatLng llnewStart = llstartday;
         // Es wird zwischen 30 und 110 Punkten gewählt
-        for (int i = 0; i<anz;i++){
-            tempses = dataSource.createEcarSession(1,"GenerierteStrecke"+i);
+        for (int i = 1; i<=anz;i++){
+            tempses = dataSource.createEcarSession(1,StreckenDatum+" - GenerierteStrecke "+i);
             rndmponits = r.nextInt(110-30+1)+30;
             llnewStart = createData(tempses.getSesid(),llnewStart, rndmponits); // Ende der letzten Strecke als Start der nächsten Strecke
             newTime = newTime + 120; //Zeit zwischen den Strecken 2 min

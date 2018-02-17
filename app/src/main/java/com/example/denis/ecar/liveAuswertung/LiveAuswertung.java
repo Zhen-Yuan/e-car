@@ -6,9 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,13 +18,11 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.denis.ecar.MapsActivity;
 import com.example.denis.ecar.R;
 import com.example.denis.ecar.auswertung.AuswertungCO2;
 import com.example.denis.ecar.auswertung.AuswertungElektro;
@@ -42,9 +38,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -336,7 +329,7 @@ public class LiveAuswertung extends Activity
                                     dataSource.open();
                                     if(input != null)//Leere Streckennamen sind nicht erlaubt
                                     {
-                                        ecarsession = dataSource.createEcarSession(1, input.toString());
+                                        ecarsession = dataSource.createEcarSession(1, input.getText().toString());
                                     }
                                     handler(intervall*1000);
                                 }
@@ -346,6 +339,7 @@ public class LiveAuswertung extends Activity
                     dialog.show();
                 } else
                 {
+                    bAufnahme = false;
                     dataSource.close(); // Für Testzwecke, damit die DB nicht unnötig genutzt wird. (Falls ein Fehler in der Logik vorhanden ist)
                     fabStartStop.setImageResource(android.R.drawable.ic_media_play); // Ändert FabIcon
                 }
