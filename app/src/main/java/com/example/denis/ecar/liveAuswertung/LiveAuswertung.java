@@ -119,11 +119,11 @@ public class LiveAuswertung extends Activity
         };
         initListView(values);
         //Nicht plausible Startwerte
-        setBatterie(-1);
-        setCO2Einsparung(-1);
-        setDurchschnittGeschwindigkeit(-1);
-        setWetter("-1");
-        setStrecke(-1);
+        setBatterie(0);
+        setCO2Einsparung(0);
+        setDurchschnittGeschwindigkeit(0);
+        setWetter("Bitte warten...-");
+        setStrecke(0);
         //initAwareness();
         initFab();
         intervall = sharedPreferences.getInt("intervall", 30); //Aufnahme Intervall einstellen über sharedpreferences
