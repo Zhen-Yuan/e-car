@@ -20,9 +20,13 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.LargeValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,7 +49,7 @@ public class Chart_Woche_Kosten extends Fragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.chart_woche,container,false);
+        v = inflater.inflate(R.layout.chart_woche_kosten,container,false);
         init();
         //TODO: Infoausgabe
         return v;
@@ -69,7 +73,7 @@ public class Chart_Woche_Kosten extends Fragment
         barWidth = 0.3f;
         barSpace = 0f;
         groupSpace = 0.4f;
-        tv_titelElektro.setText("\nWochen-Statistik");
+        tv_titelElektro.setText("\nWöchentliche Kosten");
 
 
 
@@ -79,9 +83,16 @@ public class Chart_Woche_Kosten extends Fragment
     public void chartBeispiel(ArrayList<Double> yVals, EcarCar car) {
         this.car = car;
         double cap = (car.getRange()/100)*car.getConsumption();
-        tv_beschreibungElektro.setText("Kosten der Gefahrenen Strecken, der letzten 7-Tage\n" +
-                car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km\n");
-
+        if(car.getFid()==3) {
+            tv_beschreibungElektro.setText("Kosten der Gefahrenen Strecken, der letzten 7-Tage\n" +
+                    car.getName() + "\nVerbrauch: " + car.getConsumption() + " kWh/100km (ADAC)\nAkkukapazität: " + String.format("%.0f", cap) + " kWh\nStromkosten: 29.16 cent pro KWh\n");
+        }else if(car.getFid()==1){
+            tv_beschreibungElektro.setText("Kosten der Gefahrenen Strecken, der letzten 7-Tage\n" +
+                    car.getName() + "\nVerbrauch: " + car.getConsumption() + " L/100Km\nTankvolumen: " + car.getPowerstore() + " Liter\nSuper Benzin: 130 cent pro Liter\n");
+        }else{
+            tv_beschreibungElektro.setText("Kosten der Gefahrenen Strecken, der letzten 7-Tage\n" +
+                    car.getName() + "\nVerbrauch: " + car.getConsumption() + " L/100km (ADAC)\nTankvolumen: " + car.getPowerstore() + " Liter\nDiesel: 110 cent pro Liter\n");
+        }
 
         chart.setPinchZoom(false);
         chart.setScaleEnabled(false);
@@ -126,8 +137,9 @@ public class Chart_Woche_Kosten extends Fragment
         chart.getXAxis().setAxisMinimum(0);
         //chart.getXAxis().setAxisMaximum(0 + chart.getBarData().getGroupWidth(groupSpace, barSpace));
         chart.getData().setHighlightEnabled(false);
-        chart.getDescription().setPosition(150,12);
+        chart.getDescription().setPosition(100,12);
         chart.getDescription().setText("Kosten in €");
+        data.setValueFormatter(new MyValueFormatter());
         chart.invalidate();
 
         Legend l = chart.getLegend();
@@ -162,5 +174,17 @@ public class Chart_Woche_Kosten extends Fragment
 
 
 
+    }
+
+    private class MyValueFormatter implements IValueFormatter {
+        private DecimalFormat mFormat;
+        public MyValueFormatter() {
+            mFormat = new DecimalFormat("###,###,##0.00"); // use one decimal
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return mFormat.format(value) + "€";
+        }
     }
 }

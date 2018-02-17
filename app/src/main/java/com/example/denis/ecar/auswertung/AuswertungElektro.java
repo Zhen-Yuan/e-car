@@ -18,9 +18,9 @@ public class AuswertungElektro
     {    }
 
     //Todo Größenordnungen? Km/m;Kwh
-    public double getKostenElektro(double dVerbrauchElektro)// strompreis aktuell ~29.16 cent quelle https://www.stromauskunft.de/strompreise/strompreise-2017/
+    public double getKosten(double dVerbrauchElektro)// strompreis aktuell ~29.16 cent quelle https://www.stromauskunft.de/strompreise/strompreise-2017/
     {//ausgabe in Euro (0.2916) 22.1kWh Tesla Model S
-        return getdStrecke()/100*dVerbrauchElektro*getdStrompreis();
+        return dVerbrauchElektro*getdStrompreis()*getdStrecke()/100;
     }
 
     public double getBatterieProzent(double dStrecke, double dVerbrauch, double dReichweite)
@@ -30,7 +30,7 @@ public class AuswertungElektro
 
     public double getKostenElektroProKm(double dVerbrauchElektro)
     {
-        return getKostenElektro(dVerbrauchElektro)/getdStrecke(); // € pro km
+        return getKosten(dVerbrauchElektro)/getdStrecke(); // € pro km
     }
 
     //Getter/Setter

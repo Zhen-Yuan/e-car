@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity
                         "Tesla",
                         "Universaler Mobile Connector mit rotem 11 kW-Industriestrom-Adapter (400V, 16A) und 3 kW \"Schuko\"-Steckdosenadapter (230V, 13A)\nZugang zum wachsenden Tesla Supercharger-Netzwerk \n\nInnenansicht: \n17-Zoll-Touchscreen \nBordkarten und Navigation mit Gratis-Updates für 7 Jahre \nSchlüsselloser Zugang \nWiFi- und Mobilfunk-Konnektivität \nFernbedienung über Mobile-App für Smartphones \nTürgriffe mit automatischem Einzug \n\" +Elektrische Fensterheber mit Tastendruck-Automatik \nHD-Rückfahrkamera \nBluetooth-Freisprechsystem \nSprachgesteuerte Funktionen \nAM-, FM-, DAB+ und Internet-Radio \nSpiegel mit Abblendautomatik \nLED-Ambienteleuchten im Innenraum \nBeleuchtete Türgriffe \nElektrisch einklappbare, beheizbare Seitenspiegel mit Positionsspeicher \nZwei USB-Anschlüsse für Mediengeräte und Nebenverbraucher \n12 V-Netzbuchse \nBeheizbare Vordersitze mit 12 elektrischen Verstellfunktionen, Memoryfunktion und Fahrerprofilspeicher \nFrontstauraum (statt sperrigem Motor!), Gepäckraum hinten und 60/40 umklappbare Rücksitze - 894 Liter Stauraum",
                         0,
-                        158,
+                        15.8,
                         510,
                         100,
                         bitmapvar,
@@ -148,8 +148,8 @@ public class MainActivity extends AppCompatActivity
                         "Renault",
                         "Der französische Autohersteller Renault verkauft den Renault Zoe seit 2013, 2017 gab es ein wichtiges Update. Der fünftürige Kleinwagen kommt mit seinem 65 kW Motor auf eine Höchstgeschwindigkeit von 135 km/h. Wie die meisten Elektroautos hat der Renault Zoe mit seiner „Z.E. 40 Batterie“ genannten 41-kWh-Batterie (Vormodell: 22 kWh) eine anständige Reichweite: Etwa 400 km schafft das Elektroauto auf dem Papier (NEFZ), Renault gibt die realistische Reichweite mit 300 km an. Ein kompaktes Stadtauto, das auch Landpartien schafft.",
                         0,
-                        65,
-                        400,
+                        20.3,
+                        300,
                         41,
                         bitmapvar,
                         3);
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity
                         "BMW",
                         "Der Kleinwagen BMW i3 wurde von vornherein als reines Elektroauto konzipiert. Kein deutscher Wettbewerber ging dabei so konsequent und durchdacht vor wie BMW. So wiegt der BMW i3 mit 1.195 Kilogramm rund 400 kg weniger als etwa ein Nissan Leaf oder ein Volkswagen e-Golf. Dazu ist er mit 125 kW (170 PS) sauschnell und schafft je nach Akku eine Reichweite 190 bis 300 Kilometer. Ein ideales Stadtauto.",
                         0,
-                        125,
+                        20,
                         290,
                         33,
                         bitmapvar,
@@ -170,11 +170,23 @@ public class MainActivity extends AppCompatActivity
                         "Nissan",
                         "Der Nissan Leaf gilt als das Elektroauto mit der besten CO2-Bilanz. Ab einem Preis von 23.365 Euro zuzüglich einer monatlichen Batteriemiete ab 79 Euro kann man ihn kaufen. Dabei sichert man sich die Elektroautoprämie: Nissan legt 1000 Euro extra drauf, dadurch gibt es insgesamt 5000 Euro Elektro-Bonus.",
                         0,
-                        80,
-                        200,
-                        40,
+                        20.4,
+                        250,
+                        30,
                         bitmapvar,
                         3);
+
+                bitmapvar = BitmapFactory.decodeResource(getResources(), R.drawable.nissan_leaf);
+                dataSource.createEcarCar(
+                        "Blyatmobil",
+                        "Putin",
+                        "Lada",
+                        0,
+                        10.0,
+                        500,
+                        50,
+                        bitmapvar,
+                        1);
             }
             dataSource.close();
             bswitch = true;
@@ -292,9 +304,12 @@ public class MainActivity extends AppCompatActivity
             openSettings();
         } else if(id == R.id.nav_logout) {
             signOut();
-        } else if(id == R.id.nav_ActivityAuswertung) {
-            evalMaps();
-        } else if(id == R.id.nav_ActivityAuswertungNeu)
+        }
+
+        // else if(id == R.id.nav_ActivityAuswertung) {
+        //    evalMaps();
+        //}
+        else if(id == R.id.nav_ActivityAuswertungNeu)
         {
             evalMapsNeu();
         }else if(id == R.id.nav_ActivityLiveAuswertung)

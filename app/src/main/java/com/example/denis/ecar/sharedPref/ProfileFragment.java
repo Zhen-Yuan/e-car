@@ -143,8 +143,16 @@ public class ProfileFragment extends Fragment
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
-        User u = dataSnapshot.getValue(User.class);
-        Picasso.with(getContext()).load(u.getImageUrl()).into(profileImage);
+        try {//cykablyatsteffi
+            User u = dataSnapshot.getValue(User.class);
+            Picasso.with(getContext()).load(u.getImageUrl()).into(profileImage);
+        }catch(Exception e){
+            User u = new User();
+            u.setName("eCarculator");
+            u.setId("1");
+            u.setName("eCarculator");
+            //u.setPassword("ggwp");
+        }
     }
 
 

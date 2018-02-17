@@ -19,7 +19,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="E-Car"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="18sp" />
 
         </LinearLayout>
     </LinearLayout>
@@ -34,28 +36,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Beschreibung Ecar" />
+            android:text="Beschreibung Ecar"
+            android:textAlignment="center"
+            android:textColor="#012d00" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chart"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-
-        </LinearLayout>
+            android:layout_weight="1" />
 
     </LinearLayout>
 

@@ -73,8 +73,17 @@ public class Chart_Verbrauch extends Fragment
     public void chartBeispiel(ArrayList yVals, EcarCar car) {
         this.car=car;
         double cap = (car.getRange()/100)*car.getConsumption();
-        tv_beschreibungElektro.setText("Gefahrene Zeit(s) und Batteriestatus(%)\n" +
-                car.getName()+"\nVerbrauch: "+car.getConsumption()+"kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+"kWh\nReichweite ~ "+car.getRange()+"km\n");
+
+        if(car.getFid()==3) {
+            tv_beschreibungElektro.setText(car.getName()+"\nVerbrauch: "+car.getConsumption()+" kWh/100km (ADAC)\nAkkukapazität: "+String.format("%.0f",cap)+" kWh\nReichweite ~ "+car.getRange()+" km\n" +
+                    "\nGefahrene Zeit(min) und Batteriestatus(%)");
+        }else if(car.getFid()==1){
+            tv_beschreibungElektro.setText(car.getName()+"\nVerbrauch: "+car.getConsumption()+" L/100km\nTankvolumen: " + car.getPowerstore()+" Liter\nReichweite ~ "+car.getRange()+" km\n" +
+                    "\nGefahrene Zeit(min) und Tank(%)");
+        }else{
+            tv_beschreibungElektro.setText(car.getName()+"\nVerbrauch: "+car.getConsumption()+" L/100km\nTankvolumen: " + car.getPowerstore()+" kWh\nReichweite ~ "+car.getRange()+" km\n" +
+                    "\nGefahrene Zeit(min) und Tank(%)");
+        }
 
         LineDataSet set1 = new LineDataSet(yVals, "Ladezustand");
 
@@ -82,19 +91,21 @@ public class Chart_Verbrauch extends Fragment
         set1.setDrawCircles(false);
         set1.setDrawValues(false);
         LineData data = new LineData(set1);
+
         chart.setData(data);
         chart.getDescription().setEnabled(true);
-        chart.getDescription().setPosition(100,475);
+        chart.getDescription().setPosition(100,350);
         chart.getDescription().setText("Batterie [%]");
         //chart.setBackgroundColor(Color.WHITE);
         chart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        chart.getLegend().setYOffset(5);
         //chart.setVisibleYRange(100,0, YAxis.AxisDependency.LEFT);
         chart.getAxisLeft().setLabelCount(5);
         chart.getAxisLeft().setAxisMaxValue(100);
         chart.getAxisLeft().setAxisMinValue(0);
         chart.getAxisRight().setEnabled(false);
-        chart.getXAxis().setDrawGridLines(false);
+        chart.getXAxis().setDrawGridLines(true);
         chart.invalidate();
 
 

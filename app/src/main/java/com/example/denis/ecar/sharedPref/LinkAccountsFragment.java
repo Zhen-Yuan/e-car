@@ -441,8 +441,14 @@ public class LinkAccountsFragment extends Fragment implements ValueEventListener
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        tvName.setText(u.getName());
-        tvEmail.setText(u.getEmail());
+        try {
+            tvName.setText(u.getName());
+            tvEmail.setText(u.getEmail());
+        }catch (Exception e){
+            tvName.setText("eCarculator");
+            tvEmail.setText("safe.eCar@HS-Bochum.de");
+        }
+
     }
 
     @Override

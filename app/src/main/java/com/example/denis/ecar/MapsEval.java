@@ -559,7 +559,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(6, y.get(6) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(6, y.get(6) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -567,7 +567,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(5, y.get(5) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(5, y.get(5) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -575,7 +575,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(4, y.get(4) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(4, y.get(4) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -583,7 +583,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(3, y.get(3) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(3, y.get(3) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -591,7 +591,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(2, y.get(2) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(2, y.get(2) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }//Log.d("dist",dist/1000+"");
             }
             calnow.add(Calendar.DATE, -1);
@@ -599,7 +599,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(1, y.get(1) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(1, y.get(1) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, -1);
@@ -607,7 +607,7 @@ public class MapsEval extends FragmentActivity implements OnMapReadyCallback {
                 if (allData.get(i).getSesid() == allData.get(i + 2).getSesid()) {
                     dist = calcDist(allData.get(i).getData(), allData.get(i + 1).getData(), allData.get(i + 2).getData(), allData.get(i + 3).getData());
                     auswE.setdStrecke(dist);
-                    y.set(0, y.get(0) + auswE.getKostenElektro(ecarCar.getConsumption()/1000));
+                    y.set(0, y.get(0) + auswE.getKosten(ecarCar.getConsumption()/1000));
                 }
             }
             calnow.add(Calendar.DATE, 6);
