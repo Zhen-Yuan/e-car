@@ -1,14 +1,12 @@
 package com.example.denis.ecar.StreckenView;
 
 
-import android.annotation.SuppressLint;
 import android.content.ClipData;
-import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -22,20 +20,18 @@ import com.example.denis.ecar.R;
 import com.example.denis.ecar.datenbank.EcarDataSource;
 import com.example.denis.ecar.datenbank.EcarDbHelper;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PageFragment extends Fragment {
-    TextView textView;
-    double gesTime = 0;
-    private EcarDataSource dataSource;
 
-    //private FloatingActionButton fab;
-    private CircleImageView imgEdit;
-    private PassData passData;
-    private static final String IMAGEVIEW_TAG = "icon cut";
+    private TextView textView;
+    private EcarDataSource dataSource;
+    private double gesTime = 0;
+    private int sessionID, min, max;
+
+    private FloatingActionButton fab;
+    //private PassData passData;
 
 
     public PageFragment() {
@@ -43,16 +39,28 @@ public class PageFragment extends Fragment {
     }
 
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         dataSource = new EcarDataSource(getContext());
-        View view = inflater.inflate(R.layout.fragment_strecke_page_layout,container,false);
+        final View view = inflater.inflate(R.layout.fragment_strecke_page_layout,container,false);
         textView = (TextView) view.findViewById(R.id.tvTest);
         Bundle bund = getArguments();
         LinearLayout lmsplit = (LinearLayout) view.findViewById(R.id.splitlay);
+
+        fab = (FloatingActionButton) view.findViewById(R.id.fab_edit);
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ClipData data = ClipData.newPlainText("", "");
+                View.DragShadowBuilder shadow = new View.DragShadowBuilder(fab);
+                view.startDrag(data, shadow, null, 0);
+                return false;
+            }
+        });
+
+
         final LinearLayout lm = (LinearLayout) view.findViewById(R.id.linlay);
         lm.setOrientation(LinearLayout.VERTICAL);
 
@@ -64,6 +72,7 @@ public class PageFragment extends Fragment {
         String date = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date (epoch*1000));
         textView.setTextSize(20);
         textView.setText("Strecken für den "+date.toString()+"\n");
+
         if(cur == null){
             return view;
         }
@@ -81,14 +90,13 @@ public class PageFragment extends Fragment {
         }
         cur.moveToFirst();
         for(int i2=0; i2<cur.getCount();i2++){
-            final int sessionID = cur.getInt(idIndex);
-            final int min = cur.getInt(idmin);
-            final int max = cur.getInt(idmax);
+            sessionID = cur.getInt(idIndex);
+            min = cur.getInt(idmin);
+            max = cur.getInt(idmax);
             int zeitspanne = max - min;
             // Create LinearLayout
             LinearLayout ll = new LinearLayout(getContext());
             ll.setOrientation(LinearLayout.HORIZONTAL);
-
 
             final Button btn = new Button(getContext());
             btn.setId(i2+1);
@@ -111,31 +119,33 @@ public class PageFragment extends Fragment {
 
             btn.setLayoutParams(params);
             final int index = i2;
+            btn.setTag(index);
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Log.d("Button","Clicked Button Index: "+index);
+                    String msg = "Clicked Button Index: "+index + "\nmin: " + min + " \nmax: " + max;
+                    Log.d("Button", msg);
                 }
             });
             btn.setOnDragListener(new View.OnDragListener() {
                 @Override
-                public boolean onDrag(View v, DragEvent event) {
-                    int dragEvent = event.getAction();
-                    //final View view = (View) event.getLocalState();
-
-                    switch (dragEvent) {
+                public boolean onDrag(View v, DragEvent dragEvent) {
+                    int event = dragEvent.getAction();
+                    switch (event) {
                         case DragEvent.ACTION_DRAG_ENTERED:
                             // change color of the button
-                            btn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                            view.findViewWithTag(index).setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                             break;
                         case DragEvent.ACTION_DRAG_EXITED:
                             // return to usual color
-                            btn.setBackgroundColor(getResources().getColor(R.color.colorGoogle));
+                            view.findViewWithTag(index).setBackgroundColor(getResources().getColor(R.color.colorGoogle));
                             break;
                         case DragEvent.ACTION_DROP:
-                            return true;
+                            return false;
                         case DragEvent.ACTION_DRAG_ENDED:
-                            passData.sendData(sessionID, min, max);
-                            showDialog();
+                            if (dragEvent.getResult()) {
+                                //passData.sendData(sessionID, min, max);
+                                openEdit(sessionID, min, max);
+                            }
                             return true;
                     }
                     return true;
@@ -148,82 +158,16 @@ public class PageFragment extends Fragment {
             cur.moveToNext();
             if(cur.isAfterLast()){return view;}
         }
-
-        imgEdit = (CircleImageView) view.findViewById(R.id.ivEdit);
-        imgEdit.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return false;
-            }
-        });
-        imgEdit.setTag(IMAGEVIEW_TAG);
-        imgEdit.setOnLongClickListener(new View.OnLongClickListener() {
-            public boolean onLongClick(View v) {
-                ClipData data = ClipData.newPlainText("","");
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(imgEdit);
-                v.startDrag(data, myShadow, null, 0);
-                return false;
-            }
-    });
-
-
-
-            //fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        //fab.performClick();
-
-                /*.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent me) {
-                if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(v.getWidth(),  v.getHeight());
-                    //set the margins. Not sure why but multiplying the height by 1.5 seems to keep my finger centered on the button while it's moving
-                    params.setMargins((int)me.getRawX() - v.getWidth()/2, (int)(me.getRawY() - v.getHeight()*1.5), (int)me.getRawX() - v.getWidth()/2, (int)(me.getRawY() - v.getHeight()*1.5));
-                    v.setLayoutParams(params);
-                }
-                return true;
-            }
-        });
-                /*.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
-                String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-
-                ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(fab);
-                fab.setVisibility(View.INVISIBLE);
-                v.startDrag(dragData,myShadow,null,0);
-                return true;
-            }
-        }); */
         return view;
     }
 
 
-    public void showDialog() {
-        FragmentManager fragmentManager = getFragmentManager();
-        EditFragment editDialog = new EditFragment();
-        editDialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen);
-        editDialog.show(fragmentManager, "editFragement");
-    /*  FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, editDialog).addToBackStack(null).commit();    */
-    }
-
-
-    interface PassData {
-        void sendData(int sid, int min, int max);
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        // to prevent NullPointerException
-        try {
-            passData = (PassData) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Fehler beim Abrufen der Daten. Bitte versuchen Sie es erneut.");
-        }
+    public void openEdit(int sid, int min, int max) {
+        Intent intent = new Intent(getActivity(), EditActivity.class);
+        intent.putExtra("sessionId", sid);
+        intent.putExtra("min", min);
+        intent.putExtra("max", max);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

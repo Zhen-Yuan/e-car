@@ -45,6 +45,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -449,8 +450,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         User u = dataSnapshot.getValue(User.class);
-        //username.setText(u.getName());
-        //Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
+        username.setText(u.getName());
+        if (u.getImageUrl() != null) {
+            Picasso.with(this).load(u.getImageUrl()).into(ivProfileImage);
+        }
     }
 
     @Override

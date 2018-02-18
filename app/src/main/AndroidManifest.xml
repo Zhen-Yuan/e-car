@@ -25,12 +25,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <!-- Streckenview -->
-        <activity android:name=".StreckenView.ViewStrecken"
-            android:label="@string/activity_view_string"/>
+        <activity
+            android:name=".StreckenView.ViewStrecken"
+            android:label="@string/activity_view_string" />
 
         <!-- Tabbed Auswertung -->
-        <activity android:name=".auswertungTab.AuswertungMain"></activity>
+        <activity android:name=".auswertungTab.AuswertungMain" />
 
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ custom fb stuff ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <meta-data
@@ -91,10 +93,10 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCKNxZcMQ5msLHTyKy3In1Wav_qCh7pDz4" />
+            android:value="AIzaSyCX_VuBM_EdW1s_WD-_hm3ehBHLMCvhONY" />
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyCKNxZcMQ5msLHTyKy3In1Wav_qCh7pDz4" />
+            android:value="AIzaSyCX_VuBM_EdW1s_WD-_hm3ehBHLMCvhONY" />
 
         <activity
             android:name=".MapsActivity"
@@ -140,7 +142,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".sharedPref.Settings" />
         </activity>
-
+        <activity android:name=".StreckenView.EditActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
