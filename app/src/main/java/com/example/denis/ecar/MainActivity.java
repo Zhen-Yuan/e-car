@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             public void onPageSelected(int position) {
-                // Check if this is the page you want.
+
             }
         });
         /*                  Automatische Slideshow - NICHT LÖSCHEN! (Funktioniert) Könnte für den Welcomescreen interresant sein!
